@@ -2,7 +2,7 @@ package com.mxt.anitrend.view.fragment.search;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.View;
 
 import com.annimon.stream.IntPair;
@@ -45,9 +45,9 @@ public class CharacterSearchFragment extends FragmentBaseList<RecyclerItem, Page
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null)
-            searchQuery = getArguments().getString(KeyUtil.arg_search);
-        mColumnSize = R.integer.grid_giphy_x3; isPager = true;
-        mAdapter = new GroupCharacterAdapter(getContext());
+            searchQuery = getArguments().getString(KeyUtil.Companion.getArg_search());
+        setMColumnSize(R.integer.grid_giphy_x3); setIsPager(true);
+        setMAdapter(new GroupCharacterAdapter(getContext()));
         setPresenter(new BasePresenter(getContext()));
         setViewModel(true);
     }
@@ -66,12 +66,12 @@ public class CharacterSearchFragment extends FragmentBaseList<RecyclerItem, Page
      */
     @Override
     public void makeRequest() {
-        QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(isPager)
-                .putVariable(KeyUtil.arg_search, searchQuery)
-                .putVariable(KeyUtil.arg_page, getPresenter().getCurrentPage())
-                .putVariable(KeyUtil.arg_sort, KeyUtil.SEARCH_MATCH);
-        getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        getViewModel().requestData(KeyUtil.CHARACTER_SEARCH_REQ, getContext());
+        QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(getIsPager())
+                .putVariable(KeyUtil.Companion.getArg_search(), searchQuery)
+                .putVariable(KeyUtil.Companion.getArg_page(), getPresenter().getCurrentPage())
+                .putVariable(KeyUtil.Companion.getArg_sort(), KeyUtil.Companion.getSEARCH_MATCH());
+        getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        getViewModel().requestData(KeyUtil.Companion.getCHARACTER_SEARCH_REQ(), getContext());
     }
 
     /**
@@ -90,7 +90,7 @@ public class CharacterSearchFragment extends FragmentBaseList<RecyclerItem, Page
                 onPostProcessed(Collections.emptyList());
         } else
             onPostProcessed(Collections.emptyList());
-        if(mAdapter.getItemCount() < 1)
+        if(getMAdapter().getItemCount() < 1)
             onPostProcessed(null);
     }
 
@@ -106,7 +106,7 @@ public class CharacterSearchFragment extends FragmentBaseList<RecyclerItem, Page
         switch (target.getId()) {
             case R.id.container:
                 Intent intent = new Intent(getActivity(), CharacterActivity.class);
-                intent.putExtra(KeyUtil.arg_id, ((CharacterBase)data.getSecond()).getId());
+                intent.putExtra(KeyUtil.Companion.getArg_id(), ((CharacterBase)data.getSecond()).getId());
                 CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                 break;
         }

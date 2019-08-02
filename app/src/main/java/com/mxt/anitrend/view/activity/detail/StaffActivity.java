@@ -2,10 +2,10 @@ package com.mxt.anitrend.view.activity.detail;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.Nullable;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -51,19 +51,19 @@ public class StaffActivity extends ActivityBase<StaffBase, BasePresenter> {
         setSupportActionBar(toolbar);
         setPresenter(new BasePresenter(this));
         setViewModel(true);
-        id = getIntent().getLongExtra(KeyUtil.arg_id, -1);
+        setId(getIntent().getLongExtra(KeyUtil.Companion.getArg_id(), -1));
     }
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        getViewModel().getParams().putLong(KeyUtil.arg_id, id);
+        getViewModel().getParams().putLong(KeyUtil.Companion.getArg_id(), getId());
         onActivityReady();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        boolean isAuth = getPresenter().getApplicationPref().isAuthenticated();
+        boolean isAuth = getPresenter().getSettings().isAuthenticated();
         getMenuInflater().inflate(R.menu.custom_menu, menu);
         menu.findItem(R.id.action_favourite).setVisible(isAuth);
         if(isAuth) {
@@ -89,7 +89,7 @@ public class StaffActivity extends ActivityBase<StaffBase, BasePresenter> {
                     break;
             }
         } else
-            NotifyUtil.makeText(getApplicationContext(), R.string.text_activity_loading, Toast.LENGTH_SHORT).show();
+            NotifyUtil.INSTANCE.makeText(getApplicationContext(), R.string.text_activity_loading, Toast.LENGTH_SHORT).show();
         return super.onOptionsItemSelected(item);
     }
 
@@ -102,7 +102,7 @@ public class StaffActivity extends ActivityBase<StaffBase, BasePresenter> {
         StaffPageAdapter pageAdapter = new StaffPageAdapter(getSupportFragmentManager(), getApplicationContext());
         pageAdapter.setParams(getViewModel().getParams());
         viewPager.setAdapter(pageAdapter);
-        viewPager.setOffscreenPageLimit(offScreenLimit + 1);
+        viewPager.setOffscreenPageLimit(getOffScreenLimit() + 1);
         smartTabLayout.setViewPager(viewPager);
     }
 
@@ -125,9 +125,9 @@ public class StaffActivity extends ActivityBase<StaffBase, BasePresenter> {
     @Override
     protected void makeRequest() {
         QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(false)
-                .putVariable(KeyUtil.arg_id, id);
-        getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        getViewModel().requestData(KeyUtil.STAFF_BASE_REQ, getApplicationContext());
+                .putVariable(KeyUtil.Companion.getArg_id(), getId());
+        getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        getViewModel().requestData(KeyUtil.Companion.getSTAFF_BASE_REQ(), getApplicationContext());
     }
 
     /**

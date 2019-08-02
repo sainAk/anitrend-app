@@ -2,7 +2,7 @@ package com.mxt.anitrend.view.fragment.detail;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.View;
 
 import com.annimon.stream.IntPair;
@@ -28,7 +28,7 @@ public class MessageFeedFragment extends FeedListFragment {
 
     public static MessageFeedFragment newInstance(Bundle params, @KeyUtil.MessageType int messageType) {
         Bundle args = new Bundle(params);
-        args.putInt(KeyUtil.arg_message_type, messageType);
+        args.putInt(KeyUtil.Companion.getArg_message_type(), messageType);
         MessageFeedFragment fragment = new MessageFeedFragment();
         fragment.setArguments(args);
         return fragment;
@@ -38,11 +38,11 @@ public class MessageFeedFragment extends FeedListFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            messageType = getArguments().getInt(KeyUtil.arg_message_type);
-            userId = getArguments().getLong(KeyUtil.arg_userId);
+            messageType = getArguments().getInt(KeyUtil.Companion.getArg_message_type());
+            userId = getArguments().getLong(KeyUtil.Companion.getArg_userId());
         }
-        isMenuDisabled = true; isFeed = false;
-        ((FeedAdapter)mAdapter).setMessageType(messageType);
+        setIsMenuDisabled(true); setIsFeed(false);
+        ((FeedAdapter) getMAdapter()).setMessageType(messageType);
     }
 
     @Override
@@ -53,10 +53,10 @@ public class MessageFeedFragment extends FeedListFragment {
     @Override
     public void makeRequest() {
         queryContainer = GraphUtil.INSTANCE.getDefaultQuery(true);
-        queryContainer.putVariable(KeyUtil.arg_page, getPresenter().getCurrentPage())
-                .putVariable(messageType == KeyUtil.MESSAGE_TYPE_INBOX ? KeyUtil.arg_userId : KeyUtil.arg_messengerId, userId);
-        getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        getViewModel().requestData(KeyUtil.FEED_MESSAGE_REQ, getContext());
+        queryContainer.putVariable(KeyUtil.Companion.getArg_page(), getPresenter().getCurrentPage())
+                .putVariable(messageType == KeyUtil.Companion.getMESSAGE_TYPE_INBOX() ? KeyUtil.Companion.getArg_userId() : KeyUtil.Companion.getArg_messengerId(), userId);
+        getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        getViewModel().requestData(KeyUtil.Companion.getFEED_MESSAGE_REQ(), getContext());
     }
 
     @Override
@@ -67,7 +67,7 @@ public class MessageFeedFragment extends FeedListFragment {
                 if (data.getSecond().getMessenger() != null) {
                     intent = new Intent(getActivity(), ProfileActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra(KeyUtil.arg_id, data.getSecond().getMessenger().getId());
+                    intent.putExtra(KeyUtil.Companion.getArg_id(), data.getSecond().getMessenger().getId());
                     CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                 }
                 break;
@@ -75,16 +75,16 @@ public class MessageFeedFragment extends FeedListFragment {
                 if (data.getSecond().getRecipient() != null) {
                     intent = new Intent(getActivity(), ProfileActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra(KeyUtil.arg_id, data.getSecond().getRecipient().getId());
+                    intent.putExtra(KeyUtil.Companion.getArg_id(), data.getSecond().getRecipient().getId());
                     CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                 }
                 break;
             case R.id.widget_edit:
-                mBottomSheet = new BottomSheetComposer.Builder().setUserActivity(data.getSecond())
-                        .setRequestMode(KeyUtil.MUT_SAVE_MESSAGE_FEED)
+                setMBottomSheet(new BottomSheetComposer.Builder().setUserActivity(data.getSecond())
+                        .setRequestMode(KeyUtil.Companion.getMUT_SAVE_MESSAGE_FEED())
                         .setUserModel(data.getSecond().getRecipient())
                         .setTitle(R.string.edit_status_title)
-                        .build();
+                        .build());
                 showBottomSheet();
                 break;
             default:

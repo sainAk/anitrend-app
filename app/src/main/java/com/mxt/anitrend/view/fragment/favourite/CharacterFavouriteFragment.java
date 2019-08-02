@@ -2,7 +2,7 @@ package com.mxt.anitrend.view.fragment.favourite;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.View;
 
 import com.annimon.stream.IntPair;
@@ -44,9 +44,9 @@ public class CharacterFavouriteFragment extends FragmentBaseList<RecyclerItem, C
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null)
-            userId = getArguments().getLong(KeyUtil.arg_id);
-        mColumnSize = R.integer.grid_giphy_x3; isPager = true;
-        mAdapter = new GroupCharacterAdapter(getContext());
+            userId = getArguments().getLong(KeyUtil.Companion.getArg_id());
+        setMColumnSize(R.integer.grid_giphy_x3); setIsPager(true);
+        setMAdapter(new GroupCharacterAdapter(getContext()));
         setPresenter(new BasePresenter(getContext()));
         setViewModel(true);
     }
@@ -59,11 +59,11 @@ public class CharacterFavouriteFragment extends FragmentBaseList<RecyclerItem, C
 
     @Override
     public void makeRequest() {
-        QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(isPager)
-                .putVariable(KeyUtil.arg_id, userId)
-                .putVariable(KeyUtil.arg_page, getPresenter().getCurrentPage());
-        getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        getViewModel().requestData(KeyUtil.USER_CHARACTER_FAVOURITES_REQ, getContext());
+        QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(getIsPager())
+                .putVariable(KeyUtil.Companion.getArg_id(), userId)
+                .putVariable(KeyUtil.Companion.getArg_page(), getPresenter().getCurrentPage());
+        getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        getViewModel().requestData(KeyUtil.Companion.getUSER_CHARACTER_FAVOURITES_REQ(), getContext());
     }
 
     @Override
@@ -79,7 +79,7 @@ public class CharacterFavouriteFragment extends FragmentBaseList<RecyclerItem, C
                 onPostProcessed(Collections.emptyList());
         } else
             onPostProcessed(Collections.emptyList());
-        if(mAdapter.getItemCount() < 1)
+        if(getMAdapter().getItemCount() < 1)
             onPostProcessed(null);
     }
 
@@ -95,7 +95,7 @@ public class CharacterFavouriteFragment extends FragmentBaseList<RecyclerItem, C
         switch (target.getId()) {
             case R.id.container:
                 Intent intent = new Intent(getActivity(), CharacterActivity.class);
-                intent.putExtra(KeyUtil.arg_id, ((CharacterBase)data.getSecond()).getId());
+                intent.putExtra(KeyUtil.Companion.getArg_id(), ((CharacterBase)data.getSecond()).getId());
                 CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                 break;
         }

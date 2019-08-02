@@ -1,11 +1,11 @@
 package com.mxt.anitrend.base.custom.sheet;
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.View;
 
@@ -107,7 +107,7 @@ public abstract class BottomSheetList<T extends Parcelable> extends BottomSheetB
     protected void setViewModel(boolean stateSupported) {
         if(viewModel == null) {
             viewModel = ViewModelProviders.of(this).get(ViewModelBase.class);
-            viewModel.setContext(getContext());
+            viewModel.setMessages(getContext());
             if(!viewModel.getModel().hasActiveObservers())
                 viewModel.getModel().observe(this, this);
             if(stateSupported)

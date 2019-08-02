@@ -1,7 +1,7 @@
 package com.mxt.anitrend.base.custom.view.image;
 
 import android.content.Context;
-import android.databinding.BindingAdapter;
+import androidx.databinding.BindingAdapter;
 import android.graphics.Point;
 import android.util.AttributeSet;
 
@@ -21,7 +21,7 @@ import com.mxt.anitrend.util.KeyUtil;
  * or set to wrap content to automatically get the view width at runtime
  */
 
-public class AspectImageView extends android.support.v7.widget.AppCompatImageView implements CustomView {
+public class AspectImageView extends androidx.appcompat.widget.AppCompatImageView implements CustomView {
 
     private int spanSize;
     private int defaultMargin;
@@ -48,7 +48,7 @@ public class AspectImageView extends android.support.v7.widget.AppCompatImageVie
         if((Width = MeasureSpec.getSize(widthMeasureSpec)) == 0)
             Width = (deviceDimens.x / spanSize) - defaultMargin;
 
-        int Height = (int) (Width * KeyUtil.AspectRatio);
+        int Height = (int) (Width * KeyUtil.Companion.getAspectRatio());
         super.onMeasure(MeasureSpec.makeMeasureSpec(Width, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(Height, MeasureSpec.EXACTLY));
     }

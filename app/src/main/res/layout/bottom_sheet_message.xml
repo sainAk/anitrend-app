@@ -42,19 +42,21 @@
         android:gravity="end"
         android:orientation="horizontal">
 
-        <android.support.v7.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/bottom_negative"
             android:textColor="?colorAccent"
             android:layout_marginEnd="@dimen/xl_margin"
             app:backgroundTint="?attr/cardColor"
-            style="@style/MaterialTipButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             tools:text="No"/>
 
-        <android.support.v7.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/bottom_positive"
             android:layout_marginEnd="@dimen/xl_margin"
             app:backgroundTint="?colorAccent"
-            style="@style/MaterialTipButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             tools:text="Yes"/>
 
     </LinearLayout>

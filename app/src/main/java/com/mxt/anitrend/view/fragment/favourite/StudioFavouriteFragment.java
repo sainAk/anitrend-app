@@ -2,7 +2,7 @@ package com.mxt.anitrend.view.fragment.favourite;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.View;
 
 import com.annimon.stream.IntPair;
@@ -41,9 +41,9 @@ public class StudioFavouriteFragment extends FragmentBaseList<StudioBase, Connec
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null)
-            userId = getArguments().getLong(KeyUtil.arg_id);
-        mColumnSize = R.integer.grid_list_x2; isPager = true;
-        mAdapter = new StudioAdapter(getContext());
+            userId = getArguments().getLong(KeyUtil.Companion.getArg_id());
+        setMColumnSize(R.integer.grid_list_x2); setIsPager(true);
+        setMAdapter(new StudioAdapter(getContext()));
         setPresenter(new BasePresenter(getContext()));
         setViewModel(true);
     }
@@ -55,11 +55,11 @@ public class StudioFavouriteFragment extends FragmentBaseList<StudioBase, Connec
 
     @Override
     public void makeRequest() {
-        QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(isPager)
-                .putVariable(KeyUtil.arg_id, userId)
-                .putVariable(KeyUtil.arg_page, getPresenter().getCurrentPage());
-        getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        getViewModel().requestData(KeyUtil.USER_STUDIO_FAVOURITES_REQ, getContext());
+        QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(getIsPager())
+                .putVariable(KeyUtil.Companion.getArg_id(), userId)
+                .putVariable(KeyUtil.Companion.getArg_page(), getPresenter().getCurrentPage());
+        getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        getViewModel().requestData(KeyUtil.Companion.getUSER_STUDIO_FAVOURITES_REQ(), getContext());
     }
 
     @Override
@@ -75,7 +75,7 @@ public class StudioFavouriteFragment extends FragmentBaseList<StudioBase, Connec
                 onPostProcessed(Collections.emptyList());
         } else
             onPostProcessed(Collections.emptyList());
-        if(mAdapter.getItemCount() < 1)
+        if(getMAdapter().getItemCount() < 1)
             onPostProcessed(null);
     }
 
@@ -91,7 +91,7 @@ public class StudioFavouriteFragment extends FragmentBaseList<StudioBase, Connec
         switch (target.getId()) {
             case R.id.container:
                 Intent intent = new Intent(getActivity(), StudioActivity.class);
-                intent.putExtra(KeyUtil.arg_id, data.getSecond().getId());
+                intent.putExtra(KeyUtil.Companion.getArg_id(), data.getSecond().getId());
                 startActivity(intent);
                 break;
         }

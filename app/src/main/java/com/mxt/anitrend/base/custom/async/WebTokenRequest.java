@@ -3,7 +3,7 @@ package com.mxt.anitrend.base.custom.async;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.mxt.anitrend.base.custom.presenter.CommonPresenter;
@@ -13,8 +13,8 @@ import com.mxt.anitrend.model.api.retro.WebFactory;
 import com.mxt.anitrend.model.entity.anilist.WebToken;
 import com.mxt.anitrend.model.entity.base.AuthBase;
 import com.mxt.anitrend.presenter.base.BasePresenter;
-import com.mxt.anitrend.util.AnalyticsUtil;
-import com.mxt.anitrend.util.ApplicationPref;
+import com.mxt.anitrend.analytics.AnalyticsLogging;
+import com.mxt.anitrend.util.Settings;
 import com.mxt.anitrend.util.JobSchedulerUtil;
 import com.mxt.anitrend.util.ShortcutUtil;
 
@@ -41,14 +41,14 @@ public class WebTokenRequest {
      */
     public static void invalidateInstance(Context context) {
         CommonPresenter presenter = new BasePresenter(context);
-        presenter.getApplicationPref().setAuthenticated(false);
+        presenter.getSettings().setAuthenticated(false);
         presenter.getDatabase().invalidateBoxStores();
         JobSchedulerUtil.INSTANCE.cancelJob();
-        WebFactory.invalidate();
+        WebFactory.INSTANCE.invalidate();
         token = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1)
             ShortcutUtil.removeAllDynamicShortcuts(context);
-        AnalyticsUtil.clearSession();
+        AnalyticsLogging.INSTANCE.clearSession();
     }
 
     /**
@@ -57,7 +57,7 @@ public class WebTokenRequest {
      */
     private static void checkTokenState(Context context, BasePresenter presenter) {
         if(token == null || token.getExpires() < (System.currentTimeMillis() / 1000L)) {
-            WebToken response = WebFactory.requestCodeTokenSync(presenter.getDatabase().getAuthCode().getCode());
+            WebToken response = WebFactory.INSTANCE.requestCodeTokenSync(presenter.getDatabase().getAuthCode().getCode());
             if(response != null) {
                 createNewTokenReference(response);
                 presenter.getDatabase().saveWebToken(response);
@@ -74,7 +74,7 @@ public class WebTokenRequest {
      */
     public static void getToken(Context context) {
         synchronized (lock) {
-            if(new ApplicationPref(context).isAuthenticated()) {
+            if(new Settings(context).isAuthenticated()) {
                 BasePresenter presenter = new BasePresenter(context);
                 if (token == null || token.getExpires() < (System.currentTimeMillis() / 1000L)) {
                     token = presenter.getDatabase().getWebToken();
@@ -116,7 +116,7 @@ public class WebTokenRequest {
     private static class AuthenticationCodeAsync extends AsyncTask<String, Void, WebToken> {
         @Override
         protected WebToken doInBackground(String... codes) {
-            return WebFactory.requestCodeTokenSync(codes[0]);
+            return WebFactory.INSTANCE.requestCodeTokenSync(codes[0]);
         }
     }
 }

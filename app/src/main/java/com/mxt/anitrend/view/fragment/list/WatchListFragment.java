@@ -1,10 +1,10 @@
 package com.mxt.anitrend.view.fragment.list;
 
-import android.arch.lifecycle.Lifecycle;
+import androidx.lifecycle.Lifecycle;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.mxt.anitrend.BuildConfig;
@@ -40,7 +40,7 @@ public class WatchListFragment extends FragmentChannelBase implements RetroCallb
     public static FragmentChannelBase newInstance(Bundle params, boolean popular) {
         Bundle args = new Bundle(params);
         FragmentChannelBase fragment = new WatchListFragment();
-        args.putBoolean(KeyUtil.arg_popular, popular);
+        args.putBoolean(KeyUtil.Companion.getArg_popular(), popular);
         fragment.setArguments(args);
         return fragment;
     }
@@ -48,8 +48,8 @@ public class WatchListFragment extends FragmentChannelBase implements RetroCallb
     public static FragmentChannelBase newInstance(List<ExternalLink> externalLinks, boolean popular) {
         FragmentChannelBase fragment = new WatchListFragment();
         Bundle args = new Bundle();
-        args.putParcelableArrayList(KeyUtil.arg_list_model, (ArrayList<? extends Parcelable>) externalLinks);
-        args.putBoolean(KeyUtil.arg_popular, popular);
+        args.putParcelableArrayList(KeyUtil.Companion.getArg_list_model(), (ArrayList<? extends Parcelable>) externalLinks);
+        args.putBoolean(KeyUtil.Companion.getArg_popular(), popular);
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,8 +63,8 @@ public class WatchListFragment extends FragmentChannelBase implements RetroCallb
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mediaId = getArguments().getLong(KeyUtil.arg_id);
-            mediaType = getArguments().getString(KeyUtil.arg_mediaType);
+            mediaId = getArguments().getLong(KeyUtil.Companion.getArg_id());
+            mediaType = getArguments().getString(KeyUtil.Companion.getArg_mediaType());
         }
         mAdapter = new EpisodeAdapter(getContext());
         mAdapter.setClickListener(clickListener);
@@ -88,22 +88,22 @@ public class WatchListFragment extends FragmentChannelBase implements RetroCallb
         if(externalLinks != null) {
             boolean feed = targetLink != null && targetLink.startsWith(BuildConfig.FEEDS_LINK);
             Bundle bundle = getViewModel().getParams();
-            bundle.putString(KeyUtil.arg_search, targetLink);
-            bundle.putBoolean(KeyUtil.arg_feed, feed);
+            bundle.putString(KeyUtil.Companion.getArg_search(), targetLink);
+            bundle.putBoolean(KeyUtil.Companion.getArg_feed(), feed);
             getViewModel().requestData(getRequestMode(feed), getContext());
         } else {
             QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(false)
-                    .putVariable(KeyUtil.arg_id, mediaId)
-                    .putVariable(KeyUtil.arg_type, mediaType);
-            getPresenter().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-            getPresenter().requestData(KeyUtil.MEDIA_EPISODES_REQ, getContext(), this);
+                    .putVariable(KeyUtil.Companion.getArg_id(), mediaId)
+                    .putVariable(KeyUtil.Companion.getArg_type(), mediaType);
+            getPresenter().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+            getPresenter().requestData(KeyUtil.Companion.getMEDIA_EPISODES_REQ(), getContext(), this);
         }
     }
 
     private @KeyUtil.RequestType int getRequestMode(boolean feed) {
         if(feed)
-            return isPopular? KeyUtil.EPISODE_POPULAR_REQ: KeyUtil.EPISODE_LATEST_REQ;
-        return KeyUtil.EPISODE_FEED_REQ;
+            return isPopular? KeyUtil.Companion.getEPISODE_POPULAR_REQ() : KeyUtil.Companion.getEPISODE_LATEST_REQ();
+        return KeyUtil.Companion.getEPISODE_FEED_REQ();
     }
 
     @Override
@@ -121,7 +121,7 @@ public class WatchListFragment extends FragmentChannelBase implements RetroCallb
                         makeRequest();
                 }
             } else
-                Log.e(TAG, ErrorUtil.INSTANCE.getError(response));
+                Log.e(getTAG(), ErrorUtil.INSTANCE.getError(response));
         }
     }
 
@@ -129,7 +129,7 @@ public class WatchListFragment extends FragmentChannelBase implements RetroCallb
     public void onFailure(@NonNull Call<ConnectionContainer<List<ExternalLink>>> call, @NonNull Throwable throwable) {
         if(isAlive() && getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
             throwable.printStackTrace();
-            Log.e(TAG, throwable.getMessage());
+            Log.e(getTAG(), throwable.getMessage());
         }
     }
 }

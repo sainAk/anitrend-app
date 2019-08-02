@@ -2,8 +2,8 @@ package com.mxt.anitrend.view.sheet;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.mxt.anitrend.R;
 import com.mxt.anitrend.base.custom.sheet.BottomSheetBase;
@@ -44,7 +44,7 @@ public class BottomReviewReader extends BottomSheetBase {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null)
-            model = getArguments().getParcelable(KeyUtil.arg_model);
+            model = getArguments().getParcelable(KeyUtil.Companion.getArg_model());
     }
 
     /**
@@ -79,7 +79,7 @@ public class BottomReviewReader extends BottomSheetBase {
         }
 
         public BottomSheetBuilder setReview(Review review) {
-            bundle.putParcelable(KeyUtil.arg_model, review);
+            bundle.putParcelable(KeyUtil.Companion.getArg_model(), review);
             return this;
         }
     }

@@ -1,7 +1,7 @@
 package com.mxt.anitrend.util;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.annimon.stream.Stream;
 import com.mxt.anitrend.base.custom.view.widget.AutoIncrementWidget;
@@ -24,37 +24,37 @@ public class MediaListUtil {
      */
     public static Bundle getMediaListParams(@NonNull MediaList model, @KeyUtil.ScoreFormat String scoreFormat) {
         QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(false)
-                .putVariable(KeyUtil.arg_scoreFormat, scoreFormat);
+                .putVariable(KeyUtil.Companion.getArg_scoreFormat(), scoreFormat);
 
         if (model.getId() > 0)
-            queryContainer.putVariable(KeyUtil.arg_id, model.getId());
-        queryContainer.putVariable(KeyUtil.arg_mediaId, model.getMediaId());
-        queryContainer.putVariable(KeyUtil.arg_listStatus, model.getStatus());
-        queryContainer.putVariable(KeyUtil.arg_listScore, model.getScore());
-        queryContainer.putVariable(KeyUtil.arg_listNotes, model.getNotes());
-        queryContainer.putVariable(KeyUtil.arg_listPrivate, model.isHidden());
-        queryContainer.putVariable(KeyUtil.arg_listPriority, model.getPriority());
-        queryContainer.putVariable(KeyUtil.arg_listHiddenFromStatusLists, model.isHiddenFromStatusLists());
-        queryContainer.putVariable(KeyUtil.arg_startedAt, model.getStartedAt());
-        queryContainer.putVariable(KeyUtil.arg_completedAt, model.getCompletedAt());
+            queryContainer.putVariable(KeyUtil.Companion.getArg_id(), model.getId());
+        queryContainer.putVariable(KeyUtil.Companion.getArg_mediaId(), model.getMediaId());
+        queryContainer.putVariable(KeyUtil.Companion.getArg_listStatus(), model.getStatus());
+        queryContainer.putVariable(KeyUtil.Companion.getArg_listScore(), model.getScore());
+        queryContainer.putVariable(KeyUtil.Companion.getArg_listNotes(), model.getNotes());
+        queryContainer.putVariable(KeyUtil.Companion.getArg_listPrivate(), model.isHidden());
+        queryContainer.putVariable(KeyUtil.Companion.getArg_listPriority(), model.getPriority());
+        queryContainer.putVariable(KeyUtil.Companion.getArg_listHiddenFromStatusLists(), model.isHiddenFromStatusLists());
+        queryContainer.putVariable(KeyUtil.Companion.getArg_startedAt(), model.getStartedAt());
+        queryContainer.putVariable(KeyUtil.Companion.getArg_completedAt(), model.getCompletedAt());
 
         if (model.getAdvancedScores() != null)
-            queryContainer.putVariable(KeyUtil.arg_listAdvancedScore, model.getAdvancedScores());
+            queryContainer.putVariable(KeyUtil.Companion.getArg_listAdvancedScore(), model.getAdvancedScores());
 
         if (!CompatUtil.INSTANCE.isEmpty(model.getCustomLists())) {
             List<String> enabledCustomLists = Stream.of(model.getCustomLists())
                     .filter(CustomList::isEnabled)
                     .map(CustomList::getName)
                     .toList();
-            queryContainer.putVariable(KeyUtil.arg_listCustom, enabledCustomLists);
+            queryContainer.putVariable(KeyUtil.Companion.getArg_listCustom(), enabledCustomLists);
         }
 
-        queryContainer.putVariable(KeyUtil.arg_listRepeat, model.getRepeat());
-        queryContainer.putVariable(KeyUtil.arg_listProgress, model.getProgress());
-        queryContainer.putVariable(KeyUtil.arg_listProgressVolumes, model.getProgressVolumes());
+        queryContainer.putVariable(KeyUtil.Companion.getArg_listRepeat(), model.getRepeat());
+        queryContainer.putVariable(KeyUtil.Companion.getArg_listProgress(), model.getProgress());
+        queryContainer.putVariable(KeyUtil.Companion.getArg_listProgressVolumes(), model.getProgressVolumes());
 
         Bundle bundle = new Bundle();
-        bundle.putParcelable(KeyUtil.arg_graph_params, queryContainer);
+        bundle.putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
         return bundle;
     }
 
@@ -62,7 +62,7 @@ public class MediaListUtil {
      * Checks if the sorting should be done on titles
      */
     public static boolean isTitleSort(@KeyUtil.MediaListSort String mediaSort) {
-        return CompatUtil.INSTANCE.equals(mediaSort, KeyUtil.TITLE);
+        return CompatUtil.INSTANCE.equals(mediaSort, KeyUtil.Companion.getTITLE());
     }
 
     /**

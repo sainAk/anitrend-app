@@ -44,7 +44,7 @@ public class CommentWidget extends SingleLineTextView implements CustomView {
     }
 
     public void setReplyCount(int replyCount) {
-        setText(WidgetPresenter.convertToText(replyCount));
+        setText(WidgetPresenter.Companion.convertToText(replyCount));
     }
 
     /**

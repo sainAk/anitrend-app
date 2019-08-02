@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,10 +71,10 @@ public class MediaStatsFragment extends FragmentBase<Media, MediaPresenter, Medi
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mediaId = getArguments().getLong(KeyUtil.arg_id);
-            mediaType = getArguments().getString(KeyUtil.arg_mediaType);
+            mediaId = getArguments().getLong(KeyUtil.Companion.getArg_id());
+            mediaType = getArguments().getString(KeyUtil.Companion.getArg_mediaType());
         }
-        isMenuDisabled = true; mColumnSize = R.integer.grid_list_x2;
+        setIsMenuDisabled(true); setMColumnSize(R.integer.grid_list_x2);
         setPresenter(new MediaPresenter(getContext()));
         setViewModel(true);
     }
@@ -82,11 +82,11 @@ public class MediaStatsFragment extends FragmentBase<Media, MediaPresenter, Medi
     @Nullable @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentSeriesStatsBinding.inflate(inflater, container, false);
-        unbinder = ButterKnife.bind(this, binding.getRoot());
+        setUnbinder(ButterKnife.bind(this, binding.getRoot()));
         binding.stateLayout.showLoading();
-        binding.linksRecycler.setLayoutManager(new StaggeredGridLayoutManager(getResources().getInteger(mColumnSize), StaggeredGridLayoutManager.VERTICAL));
+        binding.linksRecycler.setLayoutManager(new StaggeredGridLayoutManager(getResources().getInteger(getMColumnSize()), StaggeredGridLayoutManager.VERTICAL));
         binding.linksRecycler.setHasFixedSize(true);
-        binding.rankingRecycler.setLayoutManager(new StaggeredGridLayoutManager(getResources().getInteger(mColumnSize), StaggeredGridLayoutManager.VERTICAL));
+        binding.rankingRecycler.setLayoutManager(new StaggeredGridLayoutManager(getResources().getInteger(getMColumnSize()), StaggeredGridLayoutManager.VERTICAL));
         binding.rankingRecycler.setHasFixedSize(true);
         return binding.getRoot();
     }
@@ -112,34 +112,34 @@ public class MediaStatsFragment extends FragmentBase<Media, MediaPresenter, Medi
                     Intent intent = new Intent(getActivity(), MediaBrowseActivity.class);
                     Bundle args = new Bundle();
                     QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(true)
-                            .putVariable(KeyUtil.arg_type, mediaType)
-                            .putVariable(KeyUtil.arg_format, data.getSecond().getFormat());
+                            .putVariable(KeyUtil.Companion.getArg_type(), mediaType)
+                            .putVariable(KeyUtil.Companion.getArg_format(), data.getSecond().getFormat());
 
                     if(MediaUtil.isAnimeType(model))
-                        queryContainer.putVariable(KeyUtil.arg_season, data.getSecond().getSeason());
+                        queryContainer.putVariable(KeyUtil.Companion.getArg_season(), data.getSecond().getSeason());
 
                     if(!data.getSecond().isAllTime()) {
                         if (MediaUtil.isAnimeType(model))
-                            queryContainer.putVariable(KeyUtil.arg_seasonYear, data.getSecond().getYear());
+                            queryContainer.putVariable(KeyUtil.Companion.getArg_seasonYear(), data.getSecond().getYear());
                         else
-                            queryContainer.putVariable(KeyUtil.arg_startDateLike, String.format(Locale.getDefault(),
+                            queryContainer.putVariable(KeyUtil.Companion.getArg_startDateLike(), String.format(Locale.getDefault(),
                                     "%d%%", data.getSecond().getYear()));
                     }
 
                     switch (data.getSecond().getType()) {
-                        case KeyUtil.RATED:
-                            queryContainer.putVariable(KeyUtil.arg_sort, KeyUtil.SCORE + KeyUtil.DESC);
+                        case KeyUtil.Companion.getRATED():
+                            queryContainer.putVariable(KeyUtil.Companion.getArg_sort(), KeyUtil.Companion.getSCORE() + KeyUtil.Companion.getDESC());
                             break;
-                        case KeyUtil.POPULAR:
-                            queryContainer.putVariable(KeyUtil.arg_sort, KeyUtil.POPULARITY + KeyUtil.DESC);
+                        case KeyUtil.Companion.getPOPULAR():
+                            queryContainer.putVariable(KeyUtil.Companion.getArg_sort(), KeyUtil.Companion.getPOPULARITY() + KeyUtil.Companion.getDESC());
                             break;
                     }
 
-                    args.putParcelable(KeyUtil.arg_graph_params, queryContainer);
-                    args.putParcelable(KeyUtil.arg_media_util, new MediaBrowseUtil()
+                    args.putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+                    args.putParcelable(KeyUtil.Companion.getArg_media_util(), new MediaBrowseUtil()
                             .setCompactType(true)
                             .setFilterEnabled(false));
-                    args.putString(KeyUtil.arg_activity_tag, data.getSecond().getTypeHtmlPlainTitle());
+                    args.putString(KeyUtil.Companion.getArg_activity_tag(), data.getSecond().getTypeHtmlPlainTitle());
                     intent.putExtras(args);
                     startActivity(intent);
                 }
@@ -181,10 +181,10 @@ public class MediaStatsFragment extends FragmentBase<Media, MediaPresenter, Medi
     @Override
     public void makeRequest() {
         QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(false)
-                .putVariable(KeyUtil.arg_id, mediaId)
-                .putVariable(KeyUtil.arg_type, mediaType);
-        getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        getViewModel().requestData(KeyUtil.MEDIA_STATS_REQ, getContext());
+                .putVariable(KeyUtil.Companion.getArg_id(), mediaId)
+                .putVariable(KeyUtil.Companion.getArg_type(), mediaType);
+        getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        getViewModel().requestData(KeyUtil.Companion.getMEDIA_STATS_REQ(), getContext());
     }
 
     private void showScoreDistribution() {

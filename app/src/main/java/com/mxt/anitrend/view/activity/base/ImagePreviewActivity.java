@@ -6,10 +6,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -65,11 +65,11 @@ public class ImagePreviewActivity extends ActivityBase<Void, BasePresenter> {
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        if(getIntent().hasExtra(KeyUtil.arg_model) && !TextUtils.isEmpty(getIntent().getStringExtra(KeyUtil.arg_model))) {
-            mImageUri = getIntent().getStringExtra(KeyUtil.arg_model);
+        if(getIntent().hasExtra(KeyUtil.Companion.getArg_model()) && !TextUtils.isEmpty(getIntent().getStringExtra(KeyUtil.Companion.getArg_model()))) {
+            mImageUri = getIntent().getStringExtra(KeyUtil.Companion.getArg_model());
             Glide.with(this).load(mImageUri).into(mImageView);
         } else
-            NotifyUtil.makeText(this, R.string.layout_empty_response, R.drawable.ic_warning_white_18dp, Toast.LENGTH_SHORT).show();
+            NotifyUtil.INSTANCE.makeText(this, R.string.layout_empty_response, R.drawable.ic_warning_white_18dp, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -87,13 +87,13 @@ public class ImagePreviewActivity extends ActivityBase<Void, BasePresenter> {
                 if (requestPermissionIfMissing(Manifest.permission.WRITE_EXTERNAL_STORAGE))
                     downloadAttachment();
                 else if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))
-                    DialogUtil.createMessage(this, R.string.title_permission_write, R.string.text_permission_write, (dialog, which) -> {
+                    DialogUtil.Companion.createMessage(this, R.string.title_permission_write, R.string.text_permission_write, (dialog, which) -> {
                         switch (which) {
                             case POSITIVE:
-                                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION);
+                                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Companion.getREQUEST_PERMISSION());
                                 break;
                             case NEGATIVE:
-                                NotifyUtil.makeText(this, R.string.canceled_by_user, Toast.LENGTH_SHORT).show();
+                                NotifyUtil.INSTANCE.makeText(this, R.string.canceled_by_user, Toast.LENGTH_SHORT).show();
                                 break;
                         }
                     });
@@ -114,7 +114,7 @@ public class ImagePreviewActivity extends ActivityBase<Void, BasePresenter> {
                     startActivity(intent);
                 } catch (Exception e) {
                     Log.e(toString(), e.getLocalizedMessage());
-                    NotifyUtil.makeText(this, R.string.text_unknown_error, Toast.LENGTH_SHORT).show();
+                    NotifyUtil.INSTANCE.makeText(this, R.string.text_unknown_error, Toast.LENGTH_SHORT).show();
                 }
                 return true;
         }
@@ -151,11 +151,11 @@ public class ImagePreviewActivity extends ActivityBase<Void, BasePresenter> {
         DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
         if (dm != null) {
             dm.enqueue(r);
-            NotifyUtil.createAlerter(this, R.string.title_download_info, R.string.text_download_info,
-                    R.drawable.ic_cloud_download_white_24dp, R.color.colorStateGreen, KeyUtil.DURATION_SHORT);
+            NotifyUtil.INSTANCE.createAlerter(this, R.string.title_download_info, R.string.text_download_info,
+                    R.drawable.ic_cloud_download_white_24dp, R.color.colorStateGreen, KeyUtil.Companion.getDURATION_SHORT());
         } else
-            NotifyUtil.createAlerter(this, R.string.title_download_info, R.string.text_unknown_error,
-                    R.drawable.ic_cloud_download_white_24dp, R.color.colorStateRed, KeyUtil.DURATION_SHORT);
+            NotifyUtil.INSTANCE.createAlerter(this, R.string.title_download_info, R.string.text_unknown_error,
+                    R.drawable.ic_cloud_download_white_24dp, R.color.colorStateRed, KeyUtil.Companion.getDURATION_SHORT());
     }
 
     /**

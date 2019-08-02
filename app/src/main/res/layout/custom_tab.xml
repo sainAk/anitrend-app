@@ -7,7 +7,7 @@
     android:layout_height="?actionBarSize"
     android:paddingBottom="@dimen/md_margin"
     app:stl_dividerColor="@android:color/transparent"
-    app:stl_defaultTabTextColor="?attr/titleColor"
+    app:stl_defaultTabTextColor="@color/primaryTextColor"
     app:stl_defaultTabTextMinWidth="120dp"
     app:stl_indicatorAlwaysInCenter="true"
     app:stl_indicatorColor="?colorAccent"

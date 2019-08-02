@@ -17,11 +17,11 @@ import java.util.Locale;
 public class MediaUtil {
 
     public static <T extends MediaBase> boolean isAnimeType(T series) {
-        return (series != null && CompatUtil.INSTANCE.equals(series.getType(), KeyUtil.ANIME));
+        return (series != null && CompatUtil.INSTANCE.equals(series.getType(), KeyUtil.Companion.getANIME()));
     }
 
     public static <T extends MediaBase> boolean isMangaType(T series) {
-        return (series != null && CompatUtil.INSTANCE.equals(series.getType(), KeyUtil.MANGA));
+        return (series != null && CompatUtil.INSTANCE.equals(series.getType(), KeyUtil.Companion.getMANGA()));
     }
 
     public static boolean isIncrementLimitReached(MediaList model) {
@@ -34,7 +34,7 @@ public class MediaUtil {
 
     public static boolean isAllowedStatus(MediaList model) {
         MediaBase mediaBase = model.getMedia();
-        return !CompatUtil.INSTANCE.equals(mediaBase.getStatus(), KeyUtil.NOT_YET_RELEASED);
+        return !CompatUtil.INSTANCE.equals(mediaBase.getStatus(), KeyUtil.Companion.getNOT_YET_RELEASED());
     }
 
     public static <T extends MediaBase> String getMediaTitle(T series) {
@@ -56,7 +56,7 @@ public class MediaUtil {
     public static List<MediaList> getAiringMedia(List<MediaList> mediaLists) {
         if(mediaLists != null)
             return Stream.of(mediaLists)
-                    .filter(media -> CompatUtil.INSTANCE.equals(media.getMedia().getStatus(), KeyUtil.RELEASING))
+                    .filter(media -> CompatUtil.INSTANCE.equals(media.getMedia().getStatus(), KeyUtil.Companion.getRELEASING()))
                     .toList();
         return Collections.emptyList();
     }

@@ -7,7 +7,7 @@ import android.view.MenuItem;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.mxt.anitrend.R;
-import com.mxt.anitrend.util.ApplicationPref;
+import com.mxt.anitrend.util.Settings;
 import com.mxt.anitrend.util.CompatUtil;
 import com.mxt.anitrend.util.DialogUtil;
 import com.mxt.anitrend.util.GraphUtil;
@@ -21,9 +21,9 @@ public class SuggestionListFragment extends MediaBrowseFragment {
 
     public static SuggestionListFragment newInstance(Bundle params) {
         Bundle args = new Bundle(params);
-        args.putParcelable(KeyUtil.arg_graph_params, GraphUtil.INSTANCE.getDefaultQuery(true)
-                .putVariable(KeyUtil.arg_mediaType, KeyUtil.ANIME)
-                .putVariable(KeyUtil.arg_onList, false));
+        args.putParcelable(KeyUtil.Companion.getArg_graph_params(), GraphUtil.INSTANCE.getDefaultQuery(true)
+                .putVariable(KeyUtil.Companion.getArg_mediaType(), KeyUtil.Companion.getANIME())
+                .putVariable(KeyUtil.Companion.getArg_onList(), false));
         SuggestionListFragment fragment = new SuggestionListFragment();
         fragment.setArguments(args);
         return fragment;
@@ -31,14 +31,14 @@ public class SuggestionListFragment extends MediaBrowseFragment {
 
     @Override
     public void makeRequest() {
-        ApplicationPref pref = getPresenter().getApplicationPref();
+        Settings pref = getPresenter().getSettings();
         Bundle bundle = getViewModel().getParams();
-        queryContainer.putVariable(KeyUtil.arg_tagsInclude, getPresenter().getTopFavouriteTags(6))
-                .putVariable(KeyUtil.arg_genresInclude, getPresenter().getTopFavouriteGenres(4))
-                .putVariable(KeyUtil.arg_sort, pref.getMediaSort() + pref.getSortOrder())
-                .putVariable(KeyUtil.arg_page, getPresenter().getCurrentPage());
-        bundle.putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        getViewModel().requestData(KeyUtil.MEDIA_BROWSE_REQ, getContext());
+        queryContainer.putVariable(KeyUtil.Companion.getArg_tagsInclude(), getPresenter().getTopFavouriteTags(6))
+                .putVariable(KeyUtil.Companion.getArg_genresInclude(), getPresenter().getTopFavouriteGenres(4))
+                .putVariable(KeyUtil.Companion.getArg_sort(), pref.getMediaSort() + pref.getSortOrder())
+                .putVariable(KeyUtil.Companion.getArg_page(), getPresenter().getCurrentPage());
+        bundle.putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        getViewModel().requestData(KeyUtil.Companion.getMEDIA_BROWSE_REQ(), getContext());
     }
 
     @Override
@@ -56,19 +56,19 @@ public class SuggestionListFragment extends MediaBrowseFragment {
         if (getContext() != null)
             switch (item.getItemId()) {
                 case R.id.action_sort:
-                    DialogUtil.createSelection(getContext(), R.string.app_filter_sort, CompatUtil.INSTANCE.getIndexOf(KeyUtil.MediaSortType,
-                            getPresenter().getApplicationPref().getMediaSort()), CompatUtil.INSTANCE.capitalizeWords(KeyUtil.MediaSortType),
+                    DialogUtil.Companion.createSelection(getContext(), R.string.app_filter_sort, CompatUtil.INSTANCE.getIndexOf(KeyUtil.Companion.getMediaSortType(),
+                            getPresenter().getSettings().getMediaSort()), CompatUtil.INSTANCE.capitalizeWords(KeyUtil.Companion.getMediaSortType()),
                             (dialog, which) -> {
                                 if(which == DialogAction.POSITIVE)
-                                    getPresenter().getApplicationPref().setMediaSort(KeyUtil.MediaSortType[dialog.getSelectedIndex()]);
+                                    getPresenter().getSettings().setMediaSort(KeyUtil.Companion.getMediaSortType()[dialog.getSelectedIndex()]);
                             });
                     return true;
                 case R.id.action_order:
-                    DialogUtil.createSelection(getContext(), R.string.app_filter_order, CompatUtil.INSTANCE.getIndexOf(KeyUtil.SortOrderType,
-                            getPresenter().getApplicationPref().getSortOrder()), CompatUtil.INSTANCE.getStringList(getContext(), R.array.order_by_types),
+                    DialogUtil.Companion.createSelection(getContext(), R.string.app_filter_order, CompatUtil.INSTANCE.getIndexOf(KeyUtil.Companion.getSortOrderType(),
+                            getPresenter().getSettings().getSortOrder()), CompatUtil.INSTANCE.getStringList(getContext(), R.array.order_by_types),
                             (dialog, which) -> {
                                 if(which == DialogAction.POSITIVE)
-                                    getPresenter().getApplicationPref().saveSortOrder(KeyUtil.SortOrderType[dialog.getSelectedIndex()]);
+                                    getPresenter().getSettings().setSortOrder(KeyUtil.Companion.getSortOrderType()[dialog.getSelectedIndex()]);
                             });
                     return true;
             }

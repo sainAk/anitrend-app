@@ -1,7 +1,7 @@
 package com.mxt.anitrend.view.fragment.detail;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.mxt.anitrend.model.entity.container.request.QueryContainerBuilder;
 import com.mxt.anitrend.util.KeyUtil;
@@ -16,7 +16,7 @@ public class MediaFeedFragment extends FeedListFragment {
 
     public static MediaFeedFragment newInstance(Bundle params, QueryContainerBuilder queryContainer) {
         Bundle args = new Bundle(params);
-        args.putParcelable(KeyUtil.arg_graph_params, queryContainer);
+        args.putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
         MediaFeedFragment fragment = new MediaFeedFragment();
         fragment.setArguments(args);
         return fragment;
@@ -25,13 +25,13 @@ public class MediaFeedFragment extends FeedListFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        isMenuDisabled = true; isFeed = false;
+        setIsMenuDisabled(true); setIsFeed(false);
     }
 
     @Override
     public void makeRequest() {
-        queryContainer.putVariable(KeyUtil.arg_page, getPresenter().getCurrentPage());
-        getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        getViewModel().requestData(KeyUtil.MEDIA_SOCIAL_REQ, getContext());
+        queryContainer.putVariable(KeyUtil.Companion.getArg_page(), getPresenter().getCurrentPage());
+        getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        getViewModel().requestData(KeyUtil.Companion.getMEDIA_SOCIAL_REQ(), getContext());
     }
 }

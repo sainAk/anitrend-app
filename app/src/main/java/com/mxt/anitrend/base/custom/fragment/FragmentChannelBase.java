@@ -5,10 +5,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -69,8 +69,8 @@ public abstract class FragmentChannelBase extends FragmentBase<Channel, WidgetPr
     private final View.OnClickListener stateLayoutOnClick = view -> {
         if(swipeRefreshLayout.isRefreshing())
             swipeRefreshLayout.setRefreshing(false);
-        if(snackbar != null && snackbar.isShown())
-            snackbar.dismiss();
+        if(getSnackbar() != null && getSnackbar().isShown())
+            getSnackbar().dismiss();
         showLoading();
         onRefresh();
     };
@@ -78,8 +78,8 @@ public abstract class FragmentChannelBase extends FragmentBase<Channel, WidgetPr
     private final View.OnClickListener snackBarOnClick = view -> {
         if(swipeRefreshLayout.isRefreshing())
             swipeRefreshLayout.setRefreshing(false);
-        if(snackbar != null && snackbar.isShown())
-            snackbar.dismiss();
+        if(getSnackbar() != null && getSnackbar().isShown())
+            getSnackbar().dismiss();
         swipeRefreshLayout.setLoading(true);
         makeRequest();
     };
@@ -91,12 +91,12 @@ public abstract class FragmentChannelBase extends FragmentBase<Channel, WidgetPr
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null) {
-            isPopular = getArguments().getBoolean(KeyUtil.arg_popular);
-            externalLinks = getArguments().getParcelableArrayList(KeyUtil.arg_list_model);
+            isPopular = getArguments().getBoolean(KeyUtil.Companion.getArg_popular());
+            externalLinks = getArguments().getParcelableArrayList(KeyUtil.Companion.getArg_list_model());
             if(externalLinks != null)
                 targetLink = EpisodeUtil.INSTANCE.episodeSupport(externalLinks);
         }
-        mColumnSize = R.integer.single_list_x1;
+        setMColumnSize(R.integer.single_list_x1);
     }
 
     /**
@@ -107,10 +107,10 @@ public abstract class FragmentChannelBase extends FragmentBase<Channel, WidgetPr
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_list, container, false);
-        unbinder = ButterKnife.bind(this, root);
+        setUnbinder(ButterKnife.bind(this, root));
         recyclerView.setHasFixedSize(true); //originally set to fixed size true
         recyclerView.setNestedScrollingEnabled(true); //set to false if somethings fail to work properly
-        mLayoutManager = new StaggeredGridLayoutManager(getResources().getInteger(mColumnSize), StaggeredGridLayoutManager.VERTICAL);
+        mLayoutManager = new StaggeredGridLayoutManager(getResources().getInteger(getMColumnSize()), StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(mLayoutManager);
 
         swipeRefreshLayout.setOnRefreshAndLoadListener(this);
@@ -157,8 +157,8 @@ public abstract class FragmentChannelBase extends FragmentBase<Channel, WidgetPr
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(KeyUtil.key_pagination, isPager);
-        outState.putInt(KeyUtil.key_columns, mColumnSize);
+        outState.putBoolean(KeyUtil.Companion.getKey_pagination(), getIsPager());
+        outState.putInt(KeyUtil.Companion.getKey_columns(), getMColumnSize());
     }
 
     /**
@@ -176,13 +176,13 @@ public abstract class FragmentChannelBase extends FragmentBase<Channel, WidgetPr
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if(savedInstanceState != null) {
-            isPager = savedInstanceState.getBoolean(KeyUtil.key_pagination);
-            mColumnSize = savedInstanceState.getInt(KeyUtil.key_columns);
+            setIsPager(savedInstanceState.getBoolean(KeyUtil.Companion.getKey_pagination()));
+            setMColumnSize(savedInstanceState.getInt(KeyUtil.Companion.getKey_columns()));
         }
     }
 
     protected void addScrollLoadTrigger() {
-        if(isPager)
+        if(getIsPager())
             if (!recyclerView.hasOnScrollListener()) {
                 getPresenter().initListener(mLayoutManager, this);
                 recyclerView.addOnScrollListener(getPresenter());
@@ -190,7 +190,7 @@ public abstract class FragmentChannelBase extends FragmentBase<Channel, WidgetPr
     }
 
     protected void removeScrollLoadTrigger() {
-        if (isPager)
+        if (getIsPager())
             recyclerView.clearOnScrollListeners();
     }
 
@@ -213,12 +213,12 @@ public abstract class FragmentChannelBase extends FragmentBase<Channel, WidgetPr
             swipeRefreshLayout.setRefreshing(false);
         if(swipeRefreshLayout.isLoading())
             swipeRefreshLayout.setLoading(false);
-        if(getPresenter() != null && getPresenter().getCurrentPage() > 1 && isPager) {
+        if(getPresenter() != null && getPresenter().getCurrentPage() > 1 && getIsPager()) {
             if(stateLayout.isLoading())
                 stateLayout.showContent();
-            snackbar = NotifyUtil.make(stateLayout, R.string.text_unable_to_load_next_page, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.try_again, snackBarOnClick);
-            snackbar.show();
+            setSnackbar(NotifyUtil.INSTANCE.make(stateLayout, R.string.text_unable_to_load_next_page, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.try_again, snackBarOnClick));
+            getSnackbar().show();
         }
         else {
             showLoading();
@@ -234,12 +234,12 @@ public abstract class FragmentChannelBase extends FragmentBase<Channel, WidgetPr
             swipeRefreshLayout.setRefreshing(false);
         if(swipeRefreshLayout.isLoading())
             swipeRefreshLayout.setLoading(false);
-        if(getPresenter() != null && getPresenter().getCurrentPage() > 1 && isPager) {
+        if(getPresenter() != null && getPresenter().getCurrentPage() > 1 && getIsPager()) {
             if(stateLayout.isLoading())
                 stateLayout.showContent();
-            snackbar = NotifyUtil.make(stateLayout, R.string.text_unable_to_load_next_page, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.try_again, snackBarOnClick);
-            snackbar.show();
+            setSnackbar(NotifyUtil.INSTANCE.make(stateLayout, R.string.text_unable_to_load_next_page, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.try_again, snackBarOnClick));
+            getSnackbar().show();
         }
         else {
             showLoading();
@@ -351,7 +351,7 @@ public abstract class FragmentChannelBase extends FragmentBase<Channel, WidgetPr
         public void onItemClick(View target, IntPair<Episode> data) {
             switch (target.getId()) {
                 case R.id.series_image:
-                    DialogUtil.createMessage(getActivity(), data.getSecond().getTitle(), data.getSecond().getDescription()+"<br/><br/>"+copyright,
+                    DialogUtil.Companion.createMessage(getActivity(), data.getSecond().getTitle(), data.getSecond().getDescription()+"<br/><br/>"+copyright,
                             R.string.Watch, R.string.Dismiss, R.string.action_search, (dialog, which) -> {
                                 Intent intent;
                                 switch (which) {
@@ -360,12 +360,12 @@ public abstract class FragmentChannelBase extends FragmentBase<Channel, WidgetPr
                                             intent = new Intent(Intent.ACTION_VIEW, Uri.parse(data.getSecond().getLink()));
                                             startActivity(intent);
                                         } else
-                                            NotifyUtil.makeText(getActivity(), R.string.text_premium_show, Toast.LENGTH_SHORT).show();
+                                            NotifyUtil.INSTANCE.makeText(getActivity(), R.string.text_premium_show, Toast.LENGTH_SHORT).show();
                                         break;
                                     case NEUTRAL:
                                         if(getActivity() != null) {
                                             intent = new Intent(getActivity(), SearchActivity.class);
-                                            intent.putExtra(KeyUtil.arg_search, EpisodeUtil.INSTANCE.getActualTile(data.getSecond().getTitle()));
+                                            intent.putExtra(KeyUtil.Companion.getArg_search(), EpisodeUtil.INSTANCE.getActualTile(data.getSecond().getTitle()));
                                             getActivity().startActivity(intent);
                                         }
                                         break;

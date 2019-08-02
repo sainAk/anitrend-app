@@ -28,8 +28,8 @@ object GraphUtil {
      * Used to check if the newly applied preference key is a should trigger an application refresh
      */
     fun isKeyFilter(preferenceKey: String): Boolean {
-        return !CompatUtil.equals(preferenceKey, ApplicationPref._isLightTheme) &&
-                !CompatUtil.equals(preferenceKey, ApplicationPref._updateChannel)
+        return !CompatUtil.equals(preferenceKey, Settings._isLightTheme) &&
+                !CompatUtil.equals(preferenceKey, Settings._updateChannel)
     }
 
     /**

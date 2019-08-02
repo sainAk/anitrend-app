@@ -2,7 +2,7 @@ package com.mxt.anitrend.view.fragment.detail;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.View;
 import android.widget.Toast;
 
@@ -51,11 +51,11 @@ public class ReviewFragment extends FragmentBaseList<Review, PageContainer<Revie
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null) {
-            mediaId = getArguments().getLong(KeyUtil.arg_id);
-            mediaType = getArguments().getString(KeyUtil.arg_mediaType);
+            mediaId = getArguments().getLong(KeyUtil.Companion.getArg_id());
+            mediaType = getArguments().getString(KeyUtil.Companion.getArg_mediaType());
         }
-        mAdapter = new ReviewAdapter(getContext(), true);
-        mColumnSize = R.integer.single_list_x1; isPager = true;
+        setMAdapter(new ReviewAdapter(getContext(), true));
+        setMColumnSize(R.integer.single_list_x1); setIsPager(true);
         setPresenter(new BasePresenter(getContext()));
         setViewModel(true);
     }
@@ -75,12 +75,12 @@ public class ReviewFragment extends FragmentBaseList<Review, PageContainer<Revie
     public void makeRequest() {
         if(mediaId == 0)
             return;
-        QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(isPager)
-                .putVariable(KeyUtil.arg_mediaId, mediaId)
-                .putVariable(KeyUtil.arg_mediaType, mediaType)
-                .putVariable(KeyUtil.arg_page, getPresenter().getCurrentPage());
-        getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        getViewModel().requestData(KeyUtil.MEDIA_REVIEWS_REQ, getContext());
+        QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(getIsPager())
+                .putVariable(KeyUtil.Companion.getArg_mediaId(), mediaId)
+                .putVariable(KeyUtil.Companion.getArg_mediaType(), mediaType)
+                .putVariable(KeyUtil.Companion.getArg_page(), getPresenter().getCurrentPage());
+        getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        getViewModel().requestData(KeyUtil.Companion.getMEDIA_REVIEWS_REQ(), getContext());
     }
 
     @Override
@@ -94,7 +94,7 @@ public class ReviewFragment extends FragmentBaseList<Review, PageContainer<Revie
                 onPostProcessed(Collections.emptyList());
         } else
             onPostProcessed(Collections.emptyList());
-        if(mAdapter.getItemCount() < 1)
+        if(getMAdapter().getItemCount() < 1)
             onPostProcessed(null);
     }
 
@@ -112,24 +112,24 @@ public class ReviewFragment extends FragmentBaseList<Review, PageContainer<Revie
             case R.id.series_image:
                 MediaBase mediaBase = data.getSecond().getMedia();
                 intent = new Intent(getActivity(), MediaActivity.class);
-                intent.putExtra(KeyUtil.arg_id, mediaBase.getId());
-                intent.putExtra(KeyUtil.arg_mediaType, mediaBase.getType());
+                intent.putExtra(KeyUtil.Companion.getArg_id(), mediaBase.getId());
+                intent.putExtra(KeyUtil.Companion.getArg_mediaType(), mediaBase.getType());
                 CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                 break;
             case R.id.user_avatar:
-                if(getPresenter().getApplicationPref().isAuthenticated()) {
+                if(getPresenter().getSettings().isAuthenticated()) {
                     intent = new Intent(getActivity(), ProfileActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra(KeyUtil.arg_id, data.getSecond().getUser().getId());
+                    intent.putExtra(KeyUtil.Companion.getArg_id(), data.getSecond().getUser().getId());
                     CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                 } else
-                    NotifyUtil.makeText(getActivity(), R.string.info_login_req, R.drawable.ic_warning_white_18dp, Toast.LENGTH_SHORT).show();
+                    NotifyUtil.INSTANCE.makeText(getActivity(), R.string.info_login_req, R.drawable.ic_warning_white_18dp, Toast.LENGTH_SHORT).show();
                 break;
             case R.id.review_read_more:
-                mBottomSheet = new BottomReviewReader.Builder()
+                setMBottomSheet(new BottomReviewReader.Builder()
                         .setReview(data.getSecond())
                         .setTitle(R.string.drawer_title_reviews)
-                        .build();
+                        .build());
                 showBottomSheet();
                 break;
         }
@@ -146,12 +146,12 @@ public class ReviewFragment extends FragmentBaseList<Review, PageContainer<Revie
     public void onItemLongClick(View target, IntPair<Review> data) {
         switch (target.getId()) {
             case R.id.series_image:
-                if(getPresenter().getApplicationPref().isAuthenticated()) {
-                    mediaActionUtil = new MediaActionUtil.Builder()
-                            .setId(data.getSecond().getMedia().getId()).build(getActivity());
-                    mediaActionUtil.startSeriesAction();
+                if(getPresenter().getSettings().isAuthenticated()) {
+                    setMediaActionUtil(new MediaActionUtil.Builder()
+                            .setId(data.getSecond().getMedia().getId()).build(getActivity()));
+                    getMediaActionUtil().startSeriesAction();
                 } else
-                    NotifyUtil.makeText(getContext(), R.string.info_login_req, R.drawable.ic_group_add_grey_600_18dp, Toast.LENGTH_SHORT).show();
+                    NotifyUtil.INSTANCE.makeText(getContext(), R.string.info_login_req, R.drawable.ic_group_add_grey_600_18dp, Toast.LENGTH_SHORT).show();
                 break;
         }
     }

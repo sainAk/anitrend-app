@@ -2,12 +2,13 @@ package com.mxt.anitrend.util
 
 import android.content.Context
 import android.os.Build
-import android.support.v7.widget.AppCompatTextView
+import androidx.appcompat.widget.AppCompatTextView
 import android.text.Html
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.util.Log
 import com.github.rjeschke.txtmark.Processor
+import timber.log.Timber
 
 /**
  * Created by max on 2017/03/26.
@@ -42,7 +43,7 @@ object MarkDownUtil {
                     result = result.delete(result.lastIndex - 1, result.length)
         } catch (e: Exception) {
             e.printStackTrace()
-            Log.e("convert(input)", e.message)
+            Timber.tag("convert(input)").e(e)
         }
 
         return result
@@ -62,7 +63,7 @@ object MarkDownUtil {
                     result = result.delete(result.length - 1, result.length)
         } catch (e: Exception) {
             e.printStackTrace()
-            Log.e("convert(input...)", e.message)
+            Timber.tag("convert(input...)").e(e)
         }
 
         return result

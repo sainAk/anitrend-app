@@ -1,8 +1,8 @@
 package com.mxt.anitrend.base.custom.view.image;
 
 import android.content.Context;
-import android.databinding.BindingAdapter;
-import android.support.v7.widget.AppCompatImageView;
+import androidx.databinding.BindingAdapter;
+import androidx.appcompat.widget.AppCompatImageView;
 import android.util.AttributeSet;
 
 import com.bumptech.glide.Glide;
@@ -41,10 +41,10 @@ public class WideImageView extends AppCompatImageView implements CustomView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int Width = MeasureSpec.getSize(widthMeasureSpec),
-                Height = (int) ((MeasureSpec.getSize(heightMeasureSpec) - defaultMargin) * KeyUtil.WideAspectRatio);
+                Height = (int) ((MeasureSpec.getSize(heightMeasureSpec) - defaultMargin) * KeyUtil.Companion.getWideAspectRatio());
 
         if(heightMeasureSpec == 0)
-            Height = (int) ((defaultDimens - defaultMargin) * KeyUtil.WideAspectRatio);
+            Height = (int) ((defaultDimens - defaultMargin) * KeyUtil.Companion.getWideAspectRatio());
 
         super.onMeasure(MeasureSpec.makeMeasureSpec(Width, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(Height, MeasureSpec.EXACTLY));

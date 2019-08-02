@@ -2,7 +2,7 @@ package com.mxt.anitrend.view.fragment.group;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.View;
 import android.widget.Toast;
 
@@ -51,9 +51,9 @@ public class MediaStaffRoleFragment extends FragmentBaseList<RecyclerItem, Conne
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null)
-            id = getArguments().getLong(KeyUtil.arg_id);
-        mColumnSize = R.integer.grid_giphy_x3; isPager = true;
-        mAdapter = new GroupSeriesAdapter(getContext());
+            id = getArguments().getLong(KeyUtil.Companion.getArg_id());
+        setMColumnSize(R.integer.grid_giphy_x3); setIsPager(true);
+        setMAdapter(new GroupSeriesAdapter(getContext()));
         setPresenter(new MediaPresenter(getContext()));
         setViewModel(true);
     }
@@ -63,11 +63,11 @@ public class MediaStaffRoleFragment extends FragmentBaseList<RecyclerItem, Conne
      */
     @Override
     public void makeRequest() {
-        QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(isPager)
-                .putVariable(KeyUtil.arg_id, id)
-                .putVariable(KeyUtil.arg_page, getPresenter().getCurrentPage());
-        getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        getViewModel().requestData(KeyUtil.STAFF_ROLES_REQ, getContext());
+        QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(getIsPager())
+                .putVariable(KeyUtil.Companion.getArg_id(), id)
+                .putVariable(KeyUtil.Companion.getArg_page(), getPresenter().getCurrentPage());
+        getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        getViewModel().requestData(KeyUtil.Companion.getSTAFF_ROLES_REQ(), getContext());
     }
 
     /**
@@ -87,13 +87,13 @@ public class MediaStaffRoleFragment extends FragmentBaseList<RecyclerItem, Conne
                 if (edgeContainer.hasPageInfo())
                     getPresenter().setPageInfo(edgeContainer.getPageInfo());
                 if (!edgeContainer.isEmpty())
-                    onPostProcessed(GroupingUtil.INSTANCE.groupMediaByStaffRole(edgeContainer.getEdges(), mAdapter.getData()));
+                    onPostProcessed(GroupingUtil.INSTANCE.groupMediaByStaffRole(edgeContainer.getEdges(), getMAdapter().getData()));
                 else
                     onPostProcessed(Collections.emptyList());
             }
         } else
             onPostProcessed(Collections.emptyList());
-        if(mAdapter.getItemCount() < 1)
+        if(getMAdapter().getItemCount() < 1)
             onPostProcessed(null);
     }
 
@@ -109,8 +109,8 @@ public class MediaStaffRoleFragment extends FragmentBaseList<RecyclerItem, Conne
         switch (target.getId()) {
             case R.id.container:
                 Intent intent = new Intent(getActivity(), MediaActivity.class);
-                intent.putExtra(KeyUtil.arg_id, ((MediaBase)data.getSecond()).getId());
-                intent.putExtra(KeyUtil.arg_mediaType, ((MediaBase)data.getSecond()).getType());
+                intent.putExtra(KeyUtil.Companion.getArg_id(), ((MediaBase)data.getSecond()).getId());
+                intent.putExtra(KeyUtil.Companion.getArg_mediaType(), ((MediaBase)data.getSecond()).getType());
                 CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                 break;
         }
@@ -127,12 +127,12 @@ public class MediaStaffRoleFragment extends FragmentBaseList<RecyclerItem, Conne
     public void onItemLongClick(View target, IntPair<RecyclerItem> data) {
         switch (target.getId()) {
             case R.id.container:
-                if(getPresenter().getApplicationPref().isAuthenticated()) {
-                    mediaActionUtil = new MediaActionUtil.Builder()
-                            .setId(((MediaBase)data.getSecond()).getId()).build(getActivity());
-                    mediaActionUtil.startSeriesAction();
+                if(getPresenter().getSettings().isAuthenticated()) {
+                    setMediaActionUtil(new MediaActionUtil.Builder()
+                            .setId(((MediaBase) data.getSecond()).getId()).build(getActivity()));
+                    getMediaActionUtil().startSeriesAction();
                 } else
-                    NotifyUtil.makeText(getContext(), R.string.info_login_req, R.drawable.ic_group_add_grey_600_18dp, Toast.LENGTH_SHORT).show();
+                    NotifyUtil.INSTANCE.makeText(getContext(), R.string.info_login_req, R.drawable.ic_group_add_grey_600_18dp, Toast.LENGTH_SHORT).show();
                 break;
         }
     }

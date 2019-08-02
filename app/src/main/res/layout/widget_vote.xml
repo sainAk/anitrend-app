@@ -34,17 +34,14 @@
                 tools:text=" 5"
                 />
 
-            <com.github.rahatarmanahmed.cpv.CircularProgressView
+            <ProgressBar
                 android:layout_width="@dimen/xl_margin"
                 android:layout_height="@dimen/xl_margin"
-                android:layout_gravity="center"
-                app:cpv_animAutostart="true"
-                app:cpv_color="?colorAccent"
-                app:cpv_indeterminate="true" />
+                android:layout_gravity="center"/>
 
         </ViewFlipper>
 
-        <android.support.v4.widget.Space
+        <androidx.legacy.widget.Space
             android:layout_width="@dimen/spacing_medium"
             android:layout_height="wrap_content" />
 
@@ -71,13 +68,10 @@
                 tools:text=" 5"
                 />
 
-            <com.github.rahatarmanahmed.cpv.CircularProgressView
+            <ProgressBar
                 android:layout_width="@dimen/xl_margin"
                 android:layout_height="@dimen/xl_margin"
-                android:layout_gravity="center"
-                app:cpv_animAutostart="true"
-                app:cpv_color="?colorAccent"
-                app:cpv_indeterminate="true" />
+                android:layout_gravity="center" />
 
         </ViewFlipper>
 

@@ -16,13 +16,13 @@ public class UserStatsConverter implements PropertyConverter<UserStats, String> 
     public synchronized UserStats convertToEntityProperty(String databaseValue) {
         if(databaseValue == null)
             return null;
-        return WebFactory.gson.fromJson(databaseValue, UserStats.class);
+        return WebFactory.INSTANCE.getGson().fromJson(databaseValue, UserStats.class);
     }
 
     @Override
     public synchronized String convertToDatabaseValue(UserStats entityProperty) {
         if(entityProperty == null)
             return null;
-        return WebFactory.gson.toJson(entityProperty);
+        return WebFactory.INSTANCE.getGson().toJson(entityProperty);
     }
 }

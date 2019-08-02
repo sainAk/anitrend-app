@@ -4,11 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -110,12 +110,12 @@ public class ProfileStatsWidget extends FrameLayout implements CustomView, View.
 
     public void setParams(Bundle bundle) {
         this.bundle = bundle;
-        if(bundle.containsKey(KeyUtil.arg_id))
-            queryContainer.putVariable(KeyUtil.arg_id, bundle.getLong(KeyUtil.arg_id));
+        if(bundle.containsKey(KeyUtil.Companion.getArg_id()))
+            queryContainer.putVariable(KeyUtil.Companion.getArg_id(), bundle.getLong(KeyUtil.Companion.getArg_id()));
         else
-            queryContainer.putVariable(KeyUtil.arg_userName, bundle.getString(KeyUtil.arg_userName));
-        presenter.getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        presenter.requestData(KeyUtil.USER_STATS_REQ, getContext(), this);
+            queryContainer.putVariable(KeyUtil.Companion.getArg_userName(), bundle.getString(KeyUtil.Companion.getArg_userName()));
+        presenter.getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        presenter.requestData(KeyUtil.Companion.getUSER_STATS_REQ(), getContext(), this);
     }
 
     /**
@@ -142,14 +142,14 @@ public class ProfileStatsWidget extends FrameLayout implements CustomView, View.
                 intent = new Intent(getContext(), MediaListActivity.class);
                 intent.putExtras(bundle);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra(KeyUtil.arg_mediaType, KeyUtil.ANIME);
+                intent.putExtra(KeyUtil.Companion.getArg_mediaType(), KeyUtil.Companion.getANIME());
                 getContext().startActivity(intent);
                 break;
             case R.id.user_manga_total_container:
                 intent = new Intent(getContext(), MediaListActivity.class);
                 intent.putExtras(bundle);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra(KeyUtil.arg_mediaType, KeyUtil.MANGA);
+                intent.putExtra(KeyUtil.Companion.getArg_mediaType(), KeyUtil.Companion.getMANGA());
                 getContext().startActivity(intent);
                 break;
         }

@@ -27,13 +27,10 @@
             android:layout_height="@dimen/avatar_ripple_radius"
             tools:src="@drawable/ic_favorite_white_24dp" />
 
-        <com.github.rahatarmanahmed.cpv.CircularProgressView
+        <ProgressBar
             android:layout_width="@dimen/xl_margin"
             android:layout_height="@dimen/xl_margin"
-            android:layout_gravity="center"
-            app:cpv_animAutostart="true"
-            app:cpv_color="?colorAccent"
-            app:cpv_indeterminate="true" />
+            android:layout_gravity="center" />
 
     </ViewFlipper>
 </layout>

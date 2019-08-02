@@ -1,11 +1,11 @@
 package com.mxt.anitrend.view.activity.detail;
 
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.Nullable;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,7 +29,6 @@ import com.mxt.anitrend.util.MediaActionUtil;
 import com.mxt.anitrend.util.NotifyUtil;
 import com.mxt.anitrend.util.TapTargetUtil;
 import com.mxt.anitrend.util.TutorialUtil;
-import com.mxt.anitrend.view.activity.base.ImagePreviewActivity;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 
 import java.util.Locale;
@@ -66,22 +65,22 @@ public class MediaActivity extends ActivityBase<MediaBase, MediaPresenter> imple
         setSupportActionBar(toolbar);
         disableToolbarTitle();
         setViewModel(true);
-        if(getIntent().hasExtra(KeyUtil.arg_id))
-            id = getIntent().getLongExtra(KeyUtil.arg_id, -1);
-        if(getIntent().hasExtra(KeyUtil.arg_mediaType))
-            mediaType = getIntent().getStringExtra(KeyUtil.arg_mediaType);
+        if(getIntent().hasExtra(KeyUtil.Companion.getArg_id()))
+            setId(getIntent().getLongExtra(KeyUtil.Companion.getArg_id(), -1));
+        if(getIntent().hasExtra(KeyUtil.Companion.getArg_mediaType()))
+            mediaType = getIntent().getStringExtra(KeyUtil.Companion.getArg_mediaType());
     }
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mActionBar.setHomeAsUpIndicator(CompatUtil.INSTANCE.getDrawable(this, R.drawable.ic_arrow_back_white_24dp));
+        getMActionBar().setHomeAsUpIndicator(CompatUtil.INSTANCE.getDrawable(this, R.drawable.ic_arrow_back_white_24dp));
         onActivityReady();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        boolean isAuth = getPresenter().getApplicationPref().isAuthenticated();
+        boolean isAuth = getPresenter().getSettings().isAuthenticated();
         getMenuInflater().inflate(R.menu.media_base_menu, menu);
         menu.findItem(R.id.action_favourite).setVisible(isAuth);
 
@@ -100,11 +99,11 @@ public class MediaActivity extends ActivityBase<MediaBase, MediaPresenter> imple
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(model != null) {
-            switch (item.getItemId()) { 
+            switch (item.getItemId()) {
                 case R.id.action_manage:
-                    mediaActionUtil = new MediaActionUtil.Builder()
-                            .setId(model.getId()).build(this);
-                    mediaActionUtil.startSeriesAction();
+                    setMediaActionUtil(new MediaActionUtil.Builder()
+                            .setId(model.getId()).build(this));
+                    getMediaActionUtil().startSeriesAction();
                     break;
                 case R.id.action_share:
                     Intent intent = new Intent();
@@ -116,7 +115,7 @@ public class MediaActivity extends ActivityBase<MediaBase, MediaPresenter> imple
                     break;
             }
         } else
-            NotifyUtil.makeText(getApplicationContext(), R.string.text_activity_loading, Toast.LENGTH_SHORT).show();
+            NotifyUtil.INSTANCE.makeText(getApplicationContext(), R.string.text_activity_loading, Toast.LENGTH_SHORT).show();
         return super.onOptionsItemSelected(item);
     }
 
@@ -128,14 +127,14 @@ public class MediaActivity extends ActivityBase<MediaBase, MediaPresenter> imple
     protected void onActivityReady() {
         if(mediaType != null) {
             BaseStatePageAdapter baseStatePageAdapter = new AnimePageAdapter(getSupportFragmentManager(), getApplicationContext());
-            if (!CompatUtil.INSTANCE.equals(mediaType, KeyUtil.ANIME))
+            if (!CompatUtil.INSTANCE.equals(mediaType, KeyUtil.Companion.getANIME()))
                 baseStatePageAdapter = new MangaPageAdapter(getSupportFragmentManager(), getApplicationContext());
             baseStatePageAdapter.setParams(getIntent().getExtras());
             viewPager.setAdapter(baseStatePageAdapter);
-            viewPager.setOffscreenPageLimit(offScreenLimit);
+            viewPager.setOffscreenPageLimit(getOffScreenLimit());
             smartTabLayout.setViewPager(viewPager);
         } else
-            NotifyUtil.createAlerter(this, R.string.text_error_request, R.string.text_unknown_error, R.drawable.ic_warning_white_18dp, R.color.colorStateRed);
+            NotifyUtil.INSTANCE.createAlerter(this, R.string.text_error_request, R.string.text_unknown_error, R.drawable.ic_warning_white_18dp, R.color.colorStateRed);
     }
 
     @Override
@@ -154,11 +153,11 @@ public class MediaActivity extends ActivityBase<MediaBase, MediaPresenter> imple
             binding.setOnClickListener(this);
             WideImageView.setImage(binding.seriesBanner, model.getBannerImage());
             setFavouriteWidgetMenuItemIcon(); setManageMenuItemIcon();
-            if(getPresenter().getApplicationPref().isAuthenticated()) {
+            if(getPresenter().getSettings().isAuthenticated()) {
                 MaterialTapTargetPrompt.Builder favouritesPrompt = new TutorialUtil().setContext(this)
-                        .setFocalColour(R.color.colorGrey600)
-                        .setTapTarget(KeyUtil.KEY_DETAIL_TIP)
-                        .setApplicationPref(getPresenter().getApplicationPref())
+                        .setFocalColour(R.color.secondaryTextColor)
+                        .setTapTarget(KeyUtil.Companion.getKEY_DETAIL_TIP())
+                        .setSettings(getPresenter().getSettings())
                         .createTapTarget(R.string.tip_series_options_title,
                                 R.string.tip_series_options_message, R.id.action_manage);
                 TapTargetUtil.showMultiplePrompts(favouritesPrompt);
@@ -169,11 +168,11 @@ public class MediaActivity extends ActivityBase<MediaBase, MediaPresenter> imple
     @Override
     protected void makeRequest() {
         QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(false)
-                .putVariable(KeyUtil.arg_mediaType, mediaType)
-                .putVariable(KeyUtil.arg_id, id);
+                .putVariable(KeyUtil.Companion.getArg_mediaType(), mediaType)
+                .putVariable(KeyUtil.Companion.getArg_id(), getId());
 
-        getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        getViewModel().requestData(KeyUtil.MEDIA_BASE_REQ, getApplicationContext());
+        getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        getViewModel().requestData(KeyUtil.Companion.getMEDIA_BASE_REQ(), getApplicationContext());
     }
 
     /**

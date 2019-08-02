@@ -1,16 +1,18 @@
 package com.mxt.anitrend.util;
 
-import android.support.annotation.ColorRes;
-import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.v4.app.FragmentActivity;
+import androidx.annotation.ColorRes;
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.fragment.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 
 import com.mxt.anitrend.base.custom.presenter.CommonPresenter;
 
+import com.mxt.anitrend.extension.ContextExtKt;
+import timber.log.Timber;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt.PromptStateChangeListener;
 
@@ -20,10 +22,10 @@ import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt.PromptSt
  * <br/>
  *
  * <code>
- * new TutorialUtil().setContext(this)
+ * new TutorialUtil().setMessages(this)
  *     .setFocalColour(R.color.colorGrey600)
  *     .setTapTarget(KeyUtil.KEY_NOTIFICATION_TIP)
- *     .setApplicationPref(getPresenter().getApplicationPref())
+ *     .setApplicationPref(getPresenter().getSettings())
  *     .createTapTarget(
  *         R.string.tip_notifications_title,
  *         R.string.tip_notifications_text,
@@ -33,13 +35,15 @@ import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt.PromptSt
  */
 public class TutorialUtil {
 
+    private String TAG = getClass().getSimpleName();
+    
     private @KeyUtil.TapTargetType String tapTarget;
     private @ColorRes int focalColour;
 
     private @Nullable PromptStateChangeListener listener;
     private FragmentActivity context;
 
-    private ApplicationPref applicationPref;
+    private Settings settings;
 
     /**
      * Optional. After the tip is dismissed, this helper class will automatically save
@@ -88,10 +92,10 @@ public class TutorialUtil {
      * the presenters application preference object rather than creating a new one.
      * <br/>
      *
-     * @see CommonPresenter#getApplicationPref()
+     * @see CommonPresenter#getSettings()
      */
-    public TutorialUtil setApplicationPref(ApplicationPref applicationPref) {
-        this.applicationPref = applicationPref;
+    public TutorialUtil setSettings(Settings settings) {
+        this.settings = settings;
         return this;
     }
 
@@ -102,14 +106,14 @@ public class TutorialUtil {
      * @param resource Item that should be focused on by the application tip
      */
     public @Nullable MaterialTapTargetPrompt.Builder createTapTarget(@IdRes int resource) {
-        if(applicationPref == null) {
-            Log.e(toString(), "Did you forget to set the current application preferences?");
+        if(settings == null) {
+            Timber.tag(TAG).e("Did you forget to set the current application preferences?");
             return null;
         }
-        if (!TapTargetUtil.isActive(tapTarget) && applicationPref.shouldShowTipFor(tapTarget))
+        if (!TapTargetUtil.isActive(tapTarget) && settings.shouldShowTipFor(tapTarget))
             return TapTargetUtil.buildDefault(context, resource)
                     .setPromptStateChangeListener(defaultStateChangeListener)
-                    .setFocalColour(CompatUtil.INSTANCE.getColor(context, focalColour));
+                    .setFocalColour(ContextExtKt.getCompatColor(context, focalColour));
         return null;
     }
 
@@ -122,14 +126,14 @@ public class TutorialUtil {
      * @param resource Item that should be focused on by the application tip
      */
     public @Nullable MaterialTapTargetPrompt.Builder createTapTarget(@StringRes int primary, @StringRes int secondary, @IdRes int resource) {
-        if(applicationPref == null) {
-            Log.e(toString(), "Did you forget to set the current application preferences?");
+        if(settings == null) {
+            Timber.tag(TAG).e("Did you forget to set the current application preferences?");
             return null;
         }
-        if (!TapTargetUtil.isActive(tapTarget) && applicationPref.shouldShowTipFor(tapTarget))
+        if (!TapTargetUtil.isActive(tapTarget) && settings.shouldShowTipFor(tapTarget))
             return TapTargetUtil.buildDefault(context, primary, secondary, resource)
                     .setPromptStateChangeListener(defaultStateChangeListener)
-                    .setFocalColour(CompatUtil.INSTANCE.getColor(context, focalColour));
+                    .setFocalColour(ContextExtKt.getCompatColor(context, focalColour));
         return null;
     }
 
@@ -142,14 +146,14 @@ public class TutorialUtil {
      * @param resource Item that should be focused on by the application tip
      */
     public @Nullable MaterialTapTargetPrompt.Builder createTapTarget(@StringRes int primary, @StringRes int secondary, View resource) {
-        if(applicationPref == null) {
-            Log.e(toString(), "Did you forget to set the current application preferences?");
+        if(settings == null) {
+            Timber.tag(TAG).e("Did you forget to set the current application preferences?");
             return null;
         }
-        if (!TapTargetUtil.isActive(tapTarget) && applicationPref.shouldShowTipFor(tapTarget))
+        if (!TapTargetUtil.isActive(tapTarget) && settings.shouldShowTipFor(tapTarget))
             return TapTargetUtil.buildDefault(context, primary, secondary, resource)
                     .setPromptStateChangeListener(defaultStateChangeListener)
-                    .setFocalColour(CompatUtil.INSTANCE.getColor(context, focalColour));
+                    .setFocalColour(ContextExtKt.getCompatColor(context, focalColour));
         return null;
     }
 
@@ -160,14 +164,14 @@ public class TutorialUtil {
      * @param resource Item that should be focused on by the application tip
      */
     public void showTapTarget(@IdRes int resource) {
-        if(applicationPref == null) {
-            Log.e(toString(), "Did you forget to set the current application preferences?");
+        if(settings == null) {
+            Timber.tag(TAG).e("Did you forget to set the current application preferences?");
             return;
         }
-        if (!TapTargetUtil.isActive(tapTarget) && applicationPref.shouldShowTipFor(tapTarget))
+        if (!TapTargetUtil.isActive(tapTarget) && settings.shouldShowTipFor(tapTarget))
             TapTargetUtil.buildDefault(context, resource)
                     .setPromptStateChangeListener(defaultStateChangeListener)
-                    .setFocalColour(CompatUtil.INSTANCE.getColor(context, focalColour))
+                    .setFocalColour(ContextExtKt.getCompatColor(context, focalColour))
                     .show();
     }
 
@@ -180,14 +184,14 @@ public class TutorialUtil {
      * @param resource Item that should be focused on by the application tip
      */
     public void showTapTarget(@StringRes int primary, @StringRes int secondary, @IdRes int resource) {
-        if(applicationPref == null) {
-            Log.e(toString(), "Did you forget to set the current application preferences?");
+        if(settings == null) {
+            Timber.tag(TAG).e("Did you forget to set the current application preferences?");
             return;
         }
-        if (!TapTargetUtil.isActive(tapTarget) && applicationPref.shouldShowTipFor(tapTarget))
+        if (!TapTargetUtil.isActive(tapTarget) && settings.shouldShowTipFor(tapTarget))
             TapTargetUtil.buildDefault(context, primary, secondary, resource)
                     .setPromptStateChangeListener(defaultStateChangeListener)
-                    .setFocalColour(CompatUtil.INSTANCE.getColor(context, focalColour))
+                    .setFocalColour(ContextExtKt.getCompatColor(context, focalColour))
                     .show();
     }
 
@@ -200,14 +204,14 @@ public class TutorialUtil {
      * @param resource Item that should be focused on by the application tip
      */
     public void showTapTarget(@StringRes int primary, @StringRes int secondary, View resource) {
-        if(applicationPref == null) {
-            Log.e(toString(), "Did you forget to set the current application preferences?");
+        if(settings == null) {
+            Timber.tag(TAG).e("Did you forget to set the current application preferences?");
             return;
         }
-        if (!TapTargetUtil.isActive(tapTarget) && applicationPref.shouldShowTipFor(tapTarget))
+        if (!TapTargetUtil.isActive(tapTarget) && settings.shouldShowTipFor(tapTarget))
             TapTargetUtil.buildDefault(context, primary, secondary, resource)
                     .setPromptStateChangeListener(defaultStateChangeListener)
-                    .setFocalColour(CompatUtil.INSTANCE.getColor(context, focalColour))
+                    .setFocalColour(ContextExtKt.getCompatColor(context, focalColour))
                     .show();
     }
 
@@ -217,7 +221,7 @@ public class TutorialUtil {
             switch (state) {
                 case MaterialTapTargetPrompt.STATE_NON_FOCAL_PRESSED:
                 case MaterialTapTargetPrompt.STATE_FOCAL_PRESSED:
-                    applicationPref.disableTipFor(tapTarget);
+                    settings.disableTipFor(tapTarget);
                     break;
                 case MaterialTapTargetPrompt.STATE_DISMISSED:
                     TapTargetUtil.setActive(tapTarget, true);

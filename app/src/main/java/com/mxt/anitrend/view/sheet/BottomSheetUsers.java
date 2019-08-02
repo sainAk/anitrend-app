@@ -4,10 +4,10 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -46,7 +46,7 @@ public class BottomSheetUsers extends BottomSheetList<UserBase> implements Mater
         mColumnSize = getResources().getInteger(R.integer.single_list_x1);
         mAdapter = new UserAdapter(getActivity());
         if(getArguments() != null) {
-            List<UserBase> baseList = getArguments().getParcelableArrayList(KeyUtil.arg_list_model);
+            List<UserBase> baseList = getArguments().getParcelableArrayList(KeyUtil.Companion.getArg_list_model());
             if(!CompatUtil.INSTANCE.isEmpty(baseList))
                 mAdapter.onItemsInserted(baseList);
         }
@@ -146,7 +146,7 @@ public class BottomSheetUsers extends BottomSheetList<UserBase> implements Mater
             case R.id.container:
                 Intent intent = new Intent(getActivity(), ProfileActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra(KeyUtil.arg_id, data.getSecond().getId());
+                intent.putExtra(KeyUtil.Companion.getArg_id(), data.getSecond().getId());
                 if(getActivity() != null)
                     getActivity().startActivity(intent);
                 break;
@@ -176,7 +176,7 @@ public class BottomSheetUsers extends BottomSheetList<UserBase> implements Mater
         }
 
         public BottomSheetBuilder setModel(List<UserBase> model) {
-            bundle.putParcelableArrayList(KeyUtil.arg_list_model, (ArrayList<? extends Parcelable>) model);
+            bundle.putParcelableArrayList(KeyUtil.Companion.getArg_list_model(), (ArrayList<? extends Parcelable>) model);
             return this;
         }
     }

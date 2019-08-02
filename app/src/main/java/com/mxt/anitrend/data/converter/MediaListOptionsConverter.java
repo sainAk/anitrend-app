@@ -15,13 +15,13 @@ public class MediaListOptionsConverter implements PropertyConverter<MediaListOpt
     public MediaListOptions convertToEntityProperty(String databaseValue) {
         if(databaseValue == null)
             return null;
-        return WebFactory.gson.fromJson(databaseValue, MediaListOptions.class);
+        return WebFactory.INSTANCE.getGson().fromJson(databaseValue, MediaListOptions.class);
     }
 
     @Override
     public String convertToDatabaseValue(MediaListOptions entityProperty) {
         if(entityProperty == null)
             return null;
-        return WebFactory.gson.toJson(entityProperty);
+        return WebFactory.INSTANCE.getGson().toJson(entityProperty);
     }
 }

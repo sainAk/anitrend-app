@@ -34,43 +34,43 @@ public class RegexUtilTests {
         matcher = RegexUtil.INSTANCE.findIntentKeys("https://anilist.co/anime/100483/Yuragisou-no-Yuunasan/");
         assertNotNull(matcher);
         String type = matcher.group(1);
-        assertEquals(KeyUtil.DEEP_LINK_ANIME, type);
+        assertEquals(KeyUtil.Companion.getDEEP_LINK_ANIME(), type);
 
         matcher = RegexUtil.INSTANCE.findIntentKeys("https://anilist.co/manga/87213/Yuragisou-no-Yuunasan/");
         assertNotNull(matcher);
         type = matcher.group(1);
-        assertEquals(KeyUtil.DEEP_LINK_MANGA, type);
+        assertEquals(KeyUtil.Companion.getDEEP_LINK_MANGA(), type);
 
         /* This is deprecated in the new front end */
         matcher = RegexUtil.INSTANCE.findIntentKeys("https://anilist.co/actor/102263/Youko-Hikasa");
         assertNotNull(matcher);
         type = matcher.group(1);
-        assertEquals(KeyUtil.DEEP_LINK_ACTOR, type);
+        assertEquals(KeyUtil.Companion.getDEEP_LINK_ACTOR(), type);
 
         matcher = RegexUtil.INSTANCE.findIntentKeys("https://anilist.co/character/88573/Subaru-Natsuki");
         assertNotNull(matcher);
         type = matcher.group(1);
-        assertEquals(KeyUtil.DEEP_LINK_CHARACTER, type);
+        assertEquals(KeyUtil.Companion.getDEEP_LINK_CHARACTER(), type);
 
         matcher = RegexUtil.INSTANCE.findIntentKeys("https://anilist.co/staff/102263/Youko-Hikasa");
         assertNotNull(matcher);
         type = matcher.group(1);
-        assertEquals(KeyUtil.DEEP_LINK_STAFF, type);
+        assertEquals(KeyUtil.Companion.getDEEP_LINK_STAFF(), type);
 
         matcher = RegexUtil.INSTANCE.findIntentKeys("https://anilist.co/studio/18/Toei-Animation");
         assertNotNull(matcher);
         type = matcher.group(1);
-        assertEquals(KeyUtil.DEEP_LINK_STUDIO, type);
+        assertEquals(KeyUtil.Companion.getDEEP_LINK_STUDIO(), type);
 
         matcher = RegexUtil.INSTANCE.findIntentKeys("https://anilist.co/activity/38932001");
         assertNotNull(matcher);
         type = matcher.group(1);
-        assertEquals(KeyUtil.DEEP_LINK_ACTIVITY, type);
+        assertEquals(KeyUtil.Companion.getDEEP_LINK_ACTIVITY(), type);
 
         matcher = RegexUtil.INSTANCE.findIntentKeys("https://anilist.co/user/wax911/");
         assertNotNull(matcher);
         type = matcher.group(1);
-        assertEquals(KeyUtil.DEEP_LINK_USER, type);
+        assertEquals(KeyUtil.Companion.getDEEP_LINK_USER(), type);
     }
 
     @Test

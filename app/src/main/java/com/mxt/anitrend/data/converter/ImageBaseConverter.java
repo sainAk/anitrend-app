@@ -11,13 +11,13 @@ public class ImageBaseConverter implements PropertyConverter<ImageBase, String> 
     public ImageBase convertToEntityProperty(String databaseValue) {
         if(databaseValue == null)
             return null;
-        return WebFactory.gson.fromJson(databaseValue, ImageBase.class);
+        return WebFactory.INSTANCE.getGson().fromJson(databaseValue, ImageBase.class);
     }
 
     @Override
     public String convertToDatabaseValue(ImageBase entityProperty) {
         if(entityProperty == null)
             return null;
-        return WebFactory.gson.toJson(entityProperty);
+        return WebFactory.INSTANCE.getGson().toJson(entityProperty);
     }
 }

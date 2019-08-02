@@ -3,9 +3,9 @@ package com.mxt.anitrend.util
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import android.support.annotation.VisibleForTesting
-import android.support.v4.app.FragmentActivity
-import android.support.v4.app.ShareCompat
+import androidx.annotation.VisibleForTesting
+import androidx.fragment.app.FragmentActivity
+import androidx.core.app.ShareCompat
 import android.text.TextUtils
 
 import java.util.regex.Matcher
@@ -96,7 +96,7 @@ class IntentBundleUtil(private val intent: Intent) {
         }
     }
 
-    fun checkIntentData(context: FragmentActivity) {
+    fun checkIntentData(context: androidx.fragment.app.FragmentActivity) {
         if (context.intent?.hasExtra(KeyUtil.arg_shortcut_used) == true && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1)
             ShortcutUtil.reportShortcutUsage(context, context.intent.getIntExtra(KeyUtil.arg_shortcut_used, KeyUtil.SHORTCUT_SEARCH))
 

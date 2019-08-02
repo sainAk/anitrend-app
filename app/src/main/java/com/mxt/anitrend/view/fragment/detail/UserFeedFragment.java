@@ -1,7 +1,7 @@
 package com.mxt.anitrend.view.fragment.detail;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.mxt.anitrend.model.entity.container.request.QueryContainerBuilder;
 import com.mxt.anitrend.util.KeyUtil;
@@ -19,7 +19,7 @@ public class UserFeedFragment extends FeedListFragment {
 
     public static UserFeedFragment newInstance(Bundle params, QueryContainerBuilder queryContainer) {
         Bundle args = new Bundle(params);
-        args.putParcelable(KeyUtil.arg_graph_params, queryContainer);
+        args.putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
         UserFeedFragment fragment = new UserFeedFragment();
         fragment.setArguments(args);
         return fragment;
@@ -34,24 +34,24 @@ public class UserFeedFragment extends FeedListFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null)
-            if (getArguments().containsKey(KeyUtil.arg_id))
-                userId = getArguments().getLong(KeyUtil.arg_id);
+            if (getArguments().containsKey(KeyUtil.Companion.getArg_id()))
+                userId = getArguments().getLong(KeyUtil.Companion.getArg_id());
             else
-                userName = getArguments().getString(KeyUtil.arg_userName);
-        isMenuDisabled = true; isFeed = false;
+                userName = getArguments().getString(KeyUtil.Companion.getArg_userName());
+        setIsMenuDisabled(true); setIsFeed(false);
     }
 
     @Override
     public void makeRequest() {
-        if(getPresenter().getApplicationPref().isAuthenticated() && getPresenter().isCurrentUser(userId, userName))
+        if(getPresenter().getSettings().isAuthenticated() && getPresenter().isCurrentUser(userId, userName))
             userId = getPresenter().getDatabase().getCurrentUser().getId();
 
         if (userId > 0)
-            queryContainer.putVariable(KeyUtil.arg_userId, userId);
+            queryContainer.putVariable(KeyUtil.Companion.getArg_userId(), userId);
         else
-            queryContainer.putVariable(KeyUtil.arg_userName, userName);
+            queryContainer.putVariable(KeyUtil.Companion.getArg_userName(), userName);
 
-        if (queryContainer.containsVariable(KeyUtil.arg_userId) || queryContainer.containsVariable(KeyUtil.arg_userName))
+        if (queryContainer.containsVariable(KeyUtil.Companion.getArg_userId()) || queryContainer.containsVariable(KeyUtil.Companion.getArg_userName()))
             super.makeRequest();
     }
 

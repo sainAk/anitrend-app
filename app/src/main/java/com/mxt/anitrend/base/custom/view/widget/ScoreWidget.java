@@ -1,7 +1,7 @@
 package com.mxt.anitrend.base.custom.view.widget;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
@@ -51,19 +51,19 @@ public class ScoreWidget extends ProgressWidget {
     public void setScoreFormat(@KeyUtil.ScoreFormat String scoreFormat) {
         this.scoreFormat = scoreFormat;
         switch (scoreFormat) {
-            case KeyUtil.POINT_10_DECIMAL:
+            case KeyUtil.Companion.getPOINT_10_DECIMAL():
                 scoreMaximum = 10.0f;
                 break;
-            case KeyUtil.POINT_100:
+            case KeyUtil.Companion.getPOINT_100():
                 scoreMaximum = 100;
                 break;
-            case KeyUtil.POINT_10:
+            case KeyUtil.Companion.getPOINT_10():
                 scoreMaximum = 10;
                 break;
-            case KeyUtil.POINT_5:
+            case KeyUtil.Companion.getPOINT_5():
                 scoreMaximum = 5;
                 break;
-            case KeyUtil.POINT_3:
+            case KeyUtil.Companion.getPOINT_3():
                 scoreMaximum = 3;
 
                 break;
@@ -79,7 +79,7 @@ public class ScoreWidget extends ProgressWidget {
     protected void setDefaultDeltaFactor() {
         if (scoreFormat != null) {
             switch (scoreFormat) {
-                case KeyUtil.POINT_10_DECIMAL:
+                case KeyUtil.Companion.getPOINT_10_DECIMAL():
                     char separator = DecimalFormatSymbols.getInstance().getDecimalSeparator();
                     binding.progressCurrent.setKeyListener(DigitsKeyListener.getInstance("0123456789" + separator));
                     deltaFactor = 0.1f;
@@ -93,7 +93,7 @@ public class ScoreWidget extends ProgressWidget {
 
     private void setScoreMaximum() {
         binding.progressMaximum.setVisibility(VISIBLE);
-        if (CompatUtil.INSTANCE.equals(scoreFormat, KeyUtil.POINT_10_DECIMAL))
+        if (CompatUtil.INSTANCE.equals(scoreFormat, KeyUtil.Companion.getPOINT_10_DECIMAL()))
             binding.progressMaximum.setText(String.format(Locale.getDefault(), "/ %.1f", scoreMaximum));
         else
             binding.progressMaximum.setText(String.format(Locale.getDefault(), "/ %d", (int) scoreMaximum));
@@ -101,7 +101,7 @@ public class ScoreWidget extends ProgressWidget {
 
     public void setScoreCurrent(float scoreCurrent) {
         this.scoreCurrent = scoreCurrent;
-        if (CompatUtil.INSTANCE.equals(scoreFormat, KeyUtil.POINT_10_DECIMAL))
+        if (CompatUtil.INSTANCE.equals(scoreFormat, KeyUtil.Companion.getPOINT_10_DECIMAL()))
             binding.progressCurrent.setText(String.format(Locale.getDefault(), "%.1f", scoreCurrent));
         else
             binding.progressCurrent.setText(String.format(Locale.getDefault(), "%d", (int) scoreCurrent));
@@ -120,7 +120,7 @@ public class ScoreWidget extends ProgressWidget {
     private void scoreChange(float delta) {
         if (boundCheck(delta)) {
             scoreCurrent = delta;
-            if (CompatUtil.INSTANCE.equals(scoreFormat, KeyUtil.POINT_10_DECIMAL))
+            if (CompatUtil.INSTANCE.equals(scoreFormat, KeyUtil.Companion.getPOINT_10_DECIMAL()))
                 binding.progressCurrent.setText(String.format(Locale.getDefault(), "%.1f", scoreCurrent));
             else
                 binding.progressCurrent.setText(String.format(Locale.getDefault(), "%d", (int) scoreCurrent));
@@ -160,7 +160,7 @@ public class ScoreWidget extends ProgressWidget {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        if (scoreFormat.equals(KeyUtil.POINT_10_DECIMAL) && !boundCheck(temporaryValue)) {
+        if (scoreFormat.equals(KeyUtil.Companion.getPOINT_10_DECIMAL()) && !boundCheck(temporaryValue)) {
             temporaryValue /= 10;
             scoreCurrent = temporaryValue;
             binding.progressCurrent.post(() -> scoreChange(scoreCurrent));

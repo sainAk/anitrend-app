@@ -3,7 +3,7 @@ package com.mxt.anitrend.view.activity.base;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -34,11 +34,11 @@ public class VideoPlayerActivity extends ActivityBase<Void, BasePresenter> imple
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_player);
         ButterKnife.bind(this);
-        if (getIntent().hasExtra(KeyUtil.arg_model)) {
-            contentLink = getIntent().getStringExtra(KeyUtil.arg_model);
+        if (getIntent().hasExtra(KeyUtil.Companion.getArg_model())) {
+            contentLink = getIntent().getStringExtra(KeyUtil.Companion.getArg_model());
             onActivityReady();
         } else {
-            NotifyUtil.makeText(this, R.string.text_error_request, R.drawable.ic_warning_white_18dp, Toast.LENGTH_LONG).show();
+            NotifyUtil.INSTANCE.makeText(this, R.string.text_error_request, R.drawable.ic_warning_white_18dp, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -62,7 +62,7 @@ public class VideoPlayerActivity extends ActivityBase<Void, BasePresenter> imple
             e.printStackTrace();
         }
         if(Jzvd.backPress()) {
-            NotifyUtil.makeText(this, R.string.text_confirm_exit, Toast.LENGTH_SHORT).show();
+            NotifyUtil.INSTANCE.makeText(this, R.string.text_confirm_exit, Toast.LENGTH_SHORT).show();
             return;
         }
         super.onBackPressed();

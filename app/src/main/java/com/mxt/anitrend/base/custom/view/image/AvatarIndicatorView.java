@@ -61,7 +61,7 @@ public class AvatarIndicatorView extends FrameLayout implements CustomView, View
     }
 
     private void checkLastSyncTime() {
-        if(presenter.getApplicationPref().isAuthenticated()) {
+        if(presenter.getSettings().isAuthenticated()) {
             if((currentUser = presenter.getDatabase().getCurrentUser()) != null) {
                 AvatarImageView.setImage(binding.userAvatar, currentUser.getAvatar());
                 if (currentUser.getUnreadNotificationCount() > 0) {
@@ -82,8 +82,8 @@ public class AvatarIndicatorView extends FrameLayout implements CustomView, View
 
     @Override @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void onModelChanged(BaseConsumer<User> consumer) {
-        if(consumer.getRequestMode() == KeyUtil.USER_CURRENT_REQ) {
-            if (DateUtil.INSTANCE.timeDifferenceSatisfied(KeyUtil.TIME_UNIT_MINUTES, mLastSynced, 15))
+        if(consumer.getRequestMode() == KeyUtil.Companion.getUSER_CURRENT_REQ()) {
+            if (DateUtil.INSTANCE.timeDifferenceSatisfied(KeyUtil.Companion.getTIME_UNIT_MINUTES(), mLastSynced, 15))
                 mLastSynced = System.currentTimeMillis();
             checkLastSyncTime();
         }
@@ -105,7 +105,7 @@ public class AvatarIndicatorView extends FrameLayout implements CustomView, View
 
     @Override
     public void onClick(View view) {
-        if(presenter.getApplicationPref().isAuthenticated() && currentUser != null) {
+        if(presenter.getSettings().isAuthenticated() && currentUser != null) {
             if (view.getId() == R.id.user_avatar) {
                 Intent intent;
                 if (currentUser.getUnreadNotificationCount() > 0) {
@@ -114,7 +114,7 @@ public class AvatarIndicatorView extends FrameLayout implements CustomView, View
                 }
                 else {
                     intent = new Intent(getContext(), ProfileActivity.class);
-                    intent.putExtra(KeyUtil.arg_userName, currentUser.getName());
+                    intent.putExtra(KeyUtil.Companion.getArg_userName(), currentUser.getName());
                 }
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 getContext().startActivity(intent);

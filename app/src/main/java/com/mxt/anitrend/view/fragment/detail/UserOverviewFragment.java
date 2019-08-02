@@ -1,8 +1,8 @@
 package com.mxt.anitrend.view.fragment.detail;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,12 +50,12 @@ public class UserOverviewFragment extends FragmentBase<User, BasePresenter, User
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            if (getArguments().containsKey(KeyUtil.arg_id))
-                userId = getArguments().getLong(KeyUtil.arg_id);
+            if (getArguments().containsKey(KeyUtil.Companion.getArg_id()))
+                userId = getArguments().getLong(KeyUtil.Companion.getArg_id());
             else
-                userName = getArguments().getString(KeyUtil.arg_userName);
+                userName = getArguments().getString(KeyUtil.Companion.getArg_userName());
         }
-        isMenuDisabled = true;
+        setIsMenuDisabled(true);
         setPresenter(new BasePresenter(getContext()));
         setViewModel(true);
     }
@@ -81,7 +81,7 @@ public class UserOverviewFragment extends FragmentBase<User, BasePresenter, User
     @Nullable @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentUserAboutBinding.inflate(inflater, container, false);
-        unbinder = ButterKnife.bind(this, binding.getRoot());
+        setUnbinder(ButterKnife.bind(this, binding.getRoot()));
         binding.stateLayout.showLoading();
         return binding.getRoot();
     }
@@ -113,11 +113,11 @@ public class UserOverviewFragment extends FragmentBase<User, BasePresenter, User
     @Override
     public void makeRequest() {
         QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(false)
-                .putVariable(KeyUtil.arg_userName, userName);
+                .putVariable(KeyUtil.Companion.getArg_userName(), userName);
         if(userId > 0)
-            queryContainer.putVariable(KeyUtil.arg_id, userId);
-        getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        getViewModel().requestData(KeyUtil.USER_OVERVIEW_REQ, getContext());
+            queryContainer.putVariable(KeyUtil.Companion.getArg_id(), userId);
+        getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        getViewModel().requestData(KeyUtil.Companion.getUSER_OVERVIEW_REQ(), getContext());
     }
 
     /**
@@ -194,7 +194,7 @@ public class UserOverviewFragment extends FragmentBase<User, BasePresenter, User
                     binding.userStats.setData(ringList, 500);
                 }
                 else
-                    NotifyUtil.makeText(getActivity(), R.string.text_error_request, Toast.LENGTH_SHORT).show();
+                    NotifyUtil.INSTANCE.makeText(getActivity(), R.string.text_error_request, Toast.LENGTH_SHORT).show();
                 break;
         }
     }

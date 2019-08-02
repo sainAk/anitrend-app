@@ -2,11 +2,11 @@ package com.mxt.anitrend.base.custom.view.widget;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.ColorRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -67,33 +67,33 @@ public class VoteWidget extends LinearLayout implements CustomView, View.OnClick
 
     private void setParameters(@KeyUtil.ReviewRating String ratingType) {
         QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(false)
-                .putVariable(KeyUtil.arg_id, model.getId())
-                .putVariable(KeyUtil.arg_rating, ratingType);
-        presenter.getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        presenter.requestData(KeyUtil.MUT_RATE_REVIEW, getContext(), this);
+                .putVariable(KeyUtil.Companion.getArg_id(), model.getId())
+                .putVariable(KeyUtil.Companion.getArg_rating(), ratingType);
+        presenter.getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        presenter.requestData(KeyUtil.Companion.getMUT_RATE_REVIEW(), getContext(), this);
     }
 
     @Override
     public void onClick(View view) {
-        if(presenter.getApplicationPref().isAuthenticated()) {
+        if(presenter.getSettings().isAuthenticated()) {
             switch (view.getId()) {
                 case R.id.widget_thumb_up_flipper:
-                    if (binding.widgetThumbUpFlipper.getDisplayedChild() == WidgetPresenter.CONTENT_STATE) {
+                    if (binding.widgetThumbUpFlipper.getDisplayedChild() == WidgetPresenter.Companion.getCONTENT_STATE()) {
                         binding.widgetThumbUpFlipper.showNext();
-                        setParameters(CompatUtil.INSTANCE.equals(model.getUserRating(), KeyUtil.UP_VOTE) ? KeyUtil.NO_VOTE : KeyUtil.UP_VOTE);
+                        setParameters(CompatUtil.INSTANCE.equals(model.getUserRating(), KeyUtil.Companion.getUP_VOTE()) ? KeyUtil.Companion.getNO_VOTE() : KeyUtil.Companion.getUP_VOTE());
                     } else
-                        NotifyUtil.makeText(getContext(), R.string.busy_please_wait, Toast.LENGTH_SHORT).show();
+                        NotifyUtil.INSTANCE.makeText(getContext(), R.string.busy_please_wait, Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.widget_thumb_down_flipper:
-                    if (binding.widgetThumbDownFlipper.getDisplayedChild() == WidgetPresenter.CONTENT_STATE) {
+                    if (binding.widgetThumbDownFlipper.getDisplayedChild() == WidgetPresenter.Companion.getCONTENT_STATE()) {
                         binding.widgetThumbDownFlipper.showNext();
-                        setParameters(CompatUtil.INSTANCE.equals(model.getUserRating(), KeyUtil.DOWN_VOTE) ? KeyUtil.NO_VOTE : KeyUtil.DOWN_VOTE);
+                        setParameters(CompatUtil.INSTANCE.equals(model.getUserRating(), KeyUtil.Companion.getDOWN_VOTE()) ? KeyUtil.Companion.getNO_VOTE() : KeyUtil.Companion.getDOWN_VOTE());
                     } else
-                        NotifyUtil.makeText(getContext(), R.string.busy_please_wait, Toast.LENGTH_SHORT).show();
+                        NotifyUtil.INSTANCE.makeText(getContext(), R.string.busy_please_wait, Toast.LENGTH_SHORT).show();
                     break;
             }
         } else
-            NotifyUtil.makeText(getContext(), R.string.info_login_req, R.drawable.ic_group_add_grey_600_18dp, Toast.LENGTH_SHORT).show();
+            NotifyUtil.INSTANCE.makeText(getContext(), R.string.info_login_req, R.drawable.ic_group_add_grey_600_18dp, Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -117,11 +117,11 @@ public class VoteWidget extends LinearLayout implements CustomView, View.OnClick
     }
 
     private void resetFlipperState() {
-        if(binding.widgetThumbUpFlipper.getDisplayedChild() == WidgetPresenter.LOADING_STATE)
-            binding.widgetThumbUpFlipper.setDisplayedChild(WidgetPresenter.CONTENT_STATE);
+        if(binding.widgetThumbUpFlipper.getDisplayedChild() == WidgetPresenter.Companion.getLOADING_STATE())
+            binding.widgetThumbUpFlipper.setDisplayedChild(WidgetPresenter.Companion.getCONTENT_STATE());
 
-        if(binding.widgetThumbDownFlipper.getDisplayedChild() == WidgetPresenter.LOADING_STATE)
-            binding.widgetThumbDownFlipper.setDisplayedChild(WidgetPresenter.CONTENT_STATE);
+        if(binding.widgetThumbDownFlipper.getDisplayedChild() == WidgetPresenter.Companion.getLOADING_STATE())
+            binding.widgetThumbDownFlipper.setDisplayedChild(WidgetPresenter.Companion.getCONTENT_STATE());
     }
 
     public void setModel(Review model, @ColorRes int colorStyle) {
@@ -147,12 +147,12 @@ public class VoteWidget extends LinearLayout implements CustomView, View.OnClick
             binding.widgetThumbDown.setTextColor(CompatUtil.INSTANCE.getColor(getContext(), colorStyle));
         }
         switch (model.getUserRating()) {
-            case KeyUtil.UP_VOTE:
+            case KeyUtil.Companion.getUP_VOTE():
                 binding.widgetThumbUp.setCompoundDrawablesWithIntrinsicBounds(CompatUtil.INSTANCE.getDrawable(getContext(),
                         R.drawable.ic_thumb_up_grey_600_18dp, R.color.colorStateGreen), null, null, null);
                 applyColorStyleTo(binding.widgetThumbDown, R.drawable.ic_thumb_down_grey_600_18dp);
                 break;
-            case KeyUtil.DOWN_VOTE:
+            case KeyUtil.Companion.getDOWN_VOTE():
                 binding.widgetThumbDown.setCompoundDrawablesWithIntrinsicBounds(CompatUtil.INSTANCE.getDrawable(getContext(),
                     R.drawable.ic_thumb_down_grey_600_18dp, R.color.colorStateOrange), null, null, null);
                 applyColorStyleTo(binding.widgetThumbUp, R.drawable.ic_thumb_up_grey_600_18dp);
@@ -163,9 +163,9 @@ public class VoteWidget extends LinearLayout implements CustomView, View.OnClick
                 break;
         }
 
-        binding.widgetThumbUp.setText(WidgetPresenter.convertToText(model.getRating()));
+        binding.widgetThumbUp.setText(WidgetPresenter.Companion.convertToText(model.getRating()));
         final int downVotes = model.getRatingAmount() - model.getRating();
-        binding.widgetThumbDown.setText(WidgetPresenter.convertToText(downVotes < 0 ? 0 : downVotes));
+        binding.widgetThumbDown.setText(WidgetPresenter.Companion.convertToText(downVotes < 0 ? 0 : downVotes));
         resetFlipperState();
     }
 

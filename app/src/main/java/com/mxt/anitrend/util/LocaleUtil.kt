@@ -4,6 +4,7 @@ import android.annotation.TargetApi
 import android.content.Context
 import android.os.Build
 import com.mxt.anitrend.App
+import com.mxt.anitrend.extension.getPreference
 
 import java.util.Locale
 
@@ -14,8 +15,8 @@ import java.util.Locale
  */
 object LocaleUtil {
 
-    fun onAttach(context: Context, applicationPref: ApplicationPref): Context {
-        val language = applicationPref.userLanguage
+    fun onAttach(context: Context): Context {
+        val language = context.getPreference().userLanguage
 
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             updateResources(context, language)

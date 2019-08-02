@@ -2,7 +2,7 @@ package com.mxt.anitrend.view.fragment.favourite;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.View;
 import android.widget.Toast;
 
@@ -37,7 +37,7 @@ public class MediaFavouriteFragment extends FragmentBaseList<MediaBase, Connecti
 
     public static MediaFavouriteFragment newInstance(Bundle params, @KeyUtil.MediaType String mediaType) {
         Bundle args = new Bundle(params);
-        args.putString(KeyUtil.arg_mediaType, mediaType);
+        args.putString(KeyUtil.Companion.getArg_mediaType(), mediaType);
         MediaFavouriteFragment fragment = new MediaFavouriteFragment();
         fragment.setArguments(args);
         return fragment;
@@ -47,12 +47,12 @@ public class MediaFavouriteFragment extends FragmentBaseList<MediaBase, Connecti
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null) {
-            userId = getArguments().getLong(KeyUtil.arg_id);
-            mediaType = getArguments().getString(KeyUtil.arg_mediaType);
+            userId = getArguments().getLong(KeyUtil.Companion.getArg_id());
+            mediaType = getArguments().getString(KeyUtil.Companion.getArg_mediaType());
         }
-        mAdapter = new MediaAdapter(getContext(), true);
+        setMAdapter(new MediaAdapter(getContext(), true));
         setPresenter(new BasePresenter(getContext()));
-        mColumnSize = R.integer.grid_giphy_x3; isPager = true;
+        setMColumnSize(R.integer.grid_giphy_x3); setIsPager(true);
         setViewModel(true);
     }
 
@@ -66,19 +66,19 @@ public class MediaFavouriteFragment extends FragmentBaseList<MediaBase, Connecti
      */
     @Override
     public void makeRequest() {
-        QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(isPager)
-                .putVariable(KeyUtil.arg_id, userId)
-                .putVariable(KeyUtil.arg_page, getPresenter().getCurrentPage());
-        getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        getViewModel().requestData(CompatUtil.INSTANCE.equals(mediaType, KeyUtil.ANIME) ?
-                KeyUtil.USER_ANIME_FAVOURITES_REQ : KeyUtil.USER_MANGA_FAVOURITES_REQ, getContext());
+        QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(getIsPager())
+                .putVariable(KeyUtil.Companion.getArg_id(), userId)
+                .putVariable(KeyUtil.Companion.getArg_page(), getPresenter().getCurrentPage());
+        getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        getViewModel().requestData(CompatUtil.INSTANCE.equals(mediaType, KeyUtil.Companion.getANIME()) ?
+                KeyUtil.Companion.getUSER_ANIME_FAVOURITES_REQ() : KeyUtil.Companion.getUSER_MANGA_FAVOURITES_REQ(), getContext());
     }
 
     @Override
     public void onChanged(@Nullable ConnectionContainer<Favourite> content) {
         if(content != null) {
             if(!content.isEmpty()) {
-                PageContainer<MediaBase> pageContainer = CompatUtil.INSTANCE.equals(mediaType, KeyUtil.ANIME) ?
+                PageContainer<MediaBase> pageContainer = CompatUtil.INSTANCE.equals(mediaType, KeyUtil.Companion.getANIME()) ?
                         content.getConnection().getAnime() : content.getConnection().getManga();
                 if(pageContainer.hasPageInfo())
                     getPresenter().setPageInfo(pageContainer.getPageInfo());
@@ -88,7 +88,7 @@ public class MediaFavouriteFragment extends FragmentBaseList<MediaBase, Connecti
                 onPostProcessed(Collections.emptyList());
         } else
             onPostProcessed(Collections.emptyList());
-        if(mAdapter.getItemCount() < 1)
+        if(getMAdapter().getItemCount() < 1)
             onPostProcessed(null);
     }
 
@@ -104,8 +104,8 @@ public class MediaFavouriteFragment extends FragmentBaseList<MediaBase, Connecti
         switch (target.getId()) {
             case R.id.container:
                 Intent intent = new Intent(getActivity(), MediaActivity.class);
-                intent.putExtra(KeyUtil.arg_id, data.getSecond().getId());
-                intent.putExtra(KeyUtil.arg_mediaType, data.getSecond().getType());
+                intent.putExtra(KeyUtil.Companion.getArg_id(), data.getSecond().getId());
+                intent.putExtra(KeyUtil.Companion.getArg_mediaType(), data.getSecond().getType());
                 CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                 break;
         }
@@ -122,12 +122,12 @@ public class MediaFavouriteFragment extends FragmentBaseList<MediaBase, Connecti
     public void onItemLongClick(View target, IntPair<MediaBase> data) {
         switch (target.getId()) {
             case R.id.container:
-                if(getPresenter().getApplicationPref().isAuthenticated()) {
-                    mediaActionUtil = new MediaActionUtil.Builder()
-                            .setId(data.getSecond().getId()).build(getActivity());
-                    mediaActionUtil.startSeriesAction();
+                if(getPresenter().getSettings().isAuthenticated()) {
+                    setMediaActionUtil(new MediaActionUtil.Builder()
+                            .setId(data.getSecond().getId()).build(getActivity()));
+                    getMediaActionUtil().startSeriesAction();
                 } else
-                    NotifyUtil.makeText(getContext(), R.string.info_login_req, R.drawable.ic_group_add_grey_600_18dp, Toast.LENGTH_SHORT).show();
+                    NotifyUtil.INSTANCE.makeText(getContext(), R.string.info_login_req, R.drawable.ic_group_add_grey_600_18dp, Toast.LENGTH_SHORT).show();
                 break;
         }
     }

@@ -2,10 +2,10 @@ package com.mxt.anitrend.view.activity.detail;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.Nullable;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -51,20 +51,20 @@ public class CharacterActivity extends ActivityBase<CharacterBase, BasePresenter
         setSupportActionBar(toolbar);
         setPresenter(new BasePresenter(this));
         setViewModel(true);
-        if(getIntent().hasExtra(KeyUtil.arg_id))
-            id = getIntent().getLongExtra(KeyUtil.arg_id, -1);
+        if(getIntent().hasExtra(KeyUtil.Companion.getArg_id()))
+            setId(getIntent().getLongExtra(KeyUtil.Companion.getArg_id(), -1));
     }
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        getViewModel().getParams().putLong(KeyUtil.arg_id, id);
+        getViewModel().getParams().putLong(KeyUtil.Companion.getArg_id(), getId());
         onActivityReady();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        boolean isAuth = getPresenter().getApplicationPref().isAuthenticated();
+        boolean isAuth = getPresenter().getSettings().isAuthenticated();
         getMenuInflater().inflate(R.menu.custom_menu, menu);
         menu.findItem(R.id.action_favourite).setVisible(isAuth);
         if(isAuth) {
@@ -90,7 +90,7 @@ public class CharacterActivity extends ActivityBase<CharacterBase, BasePresenter
                     break;
             }
         } else
-            NotifyUtil.makeText(getApplicationContext(), R.string.text_activity_loading, Toast.LENGTH_SHORT).show();
+            NotifyUtil.INSTANCE.makeText(getApplicationContext(), R.string.text_activity_loading, Toast.LENGTH_SHORT).show();
         return super.onOptionsItemSelected(item);
     }
 
@@ -103,7 +103,7 @@ public class CharacterActivity extends ActivityBase<CharacterBase, BasePresenter
         CharacterPageAdapter pageAdapter = new CharacterPageAdapter(getSupportFragmentManager(), getApplicationContext());
         pageAdapter.setParams(getViewModel().getParams());
         viewPager.setAdapter(pageAdapter);
-        viewPager.setOffscreenPageLimit(offScreenLimit);
+        viewPager.setOffscreenPageLimit(getOffScreenLimit());
         smartTabLayout.setViewPager(viewPager);
     }
 
@@ -127,9 +127,9 @@ public class CharacterActivity extends ActivityBase<CharacterBase, BasePresenter
     @Override
     protected void makeRequest() {
         QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(false)
-                .putVariable(KeyUtil.arg_id, id);
-        getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        getViewModel().requestData(KeyUtil.CHARACTER_BASE_REQ, getApplicationContext());
+                .putVariable(KeyUtil.Companion.getArg_id(), getId());
+        getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        getViewModel().requestData(KeyUtil.Companion.getCHARACTER_BASE_REQ(), getApplicationContext());
     }
 
     /**

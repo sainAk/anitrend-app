@@ -1,8 +1,8 @@
 package com.mxt.anitrend.base.custom.view.widget;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -74,8 +74,8 @@ public class FavouriteWidget extends FrameLayout implements CustomView, RetroCal
     }
 
     private void resetFlipperState() {
-        if(binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.LOADING_STATE)
-            binding.widgetFlipper.setDisplayedChild(WidgetPresenter.CONTENT_STATE);
+        if(binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.Companion.getLOADING_STATE())
+            binding.widgetFlipper.setDisplayedChild(WidgetPresenter.Companion.getCONTENT_STATE());
     }
 
     public void setModel(List<UserBase> model) {
@@ -83,23 +83,23 @@ public class FavouriteWidget extends FrameLayout implements CustomView, RetroCal
         setIconType();
     }
 
-    public void setRequestParams(@KeyUtil.LikeType String likeType, long modelId) {
+    public void setRequestParams(@KeyUtil.LikeType String likeType, Long modelId) {
         QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(false)
-                .putVariable(KeyUtil.arg_id, modelId)
-                .putVariable(KeyUtil.arg_type, likeType);
-        presenter.getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
+                .putVariable(KeyUtil.Companion.getArg_id(), modelId)
+                .putVariable(KeyUtil.Companion.getArg_type(), likeType);
+        presenter.getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.widget_flipper:
-                if (binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.CONTENT_STATE) {
+                if (binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.Companion.getCONTENT_STATE()) {
                     binding.widgetFlipper.showNext();
-                    presenter.requestData(KeyUtil.MUT_TOGGLE_LIKE, getContext(), this);
+                    presenter.requestData(KeyUtil.Companion.getMUT_TOGGLE_LIKE(), getContext(), this);
                 }
                 else
-                    NotifyUtil.makeText(getContext(), R.string.busy_please_wait, Toast.LENGTH_SHORT).show();
+                    NotifyUtil.INSTANCE.makeText(getContext(), R.string.busy_please_wait, Toast.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -111,7 +111,7 @@ public class FavouriteWidget extends FrameLayout implements CustomView, RetroCal
         else
             binding.widgetLike.setCompoundDrawablesWithIntrinsicBounds(CompatUtil.INSTANCE.getDrawable(getContext(),
                     R.drawable.ic_favorite_grey_600_18dp), null, null, null);
-        binding.widgetLike.setText(WidgetPresenter.convertToText(CompatUtil.INSTANCE.sizeOf(model)));
+        binding.widgetLike.setText(WidgetPresenter.Companion.convertToText(CompatUtil.INSTANCE.sizeOf(model)));
         resetFlipperState();
     }
 

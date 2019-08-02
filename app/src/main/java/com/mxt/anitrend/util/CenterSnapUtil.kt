@@ -1,16 +1,14 @@
 package com.mxt.anitrend.util
 
-import android.support.v7.widget.PagerSnapHelper
-import android.support.v7.widget.RecyclerView
 import android.view.View
-
+import androidx.recyclerview.widget.RecyclerView
 import com.mxt.anitrend.base.interfaces.view.CustomView
 
 /**
  * Created by max on 2018/08/11.
  */
 
-class CenterSnapUtil(private var positionChangeListener: PositionChangeListener?) : PagerSnapHelper(), CustomView {
+class CenterSnapUtil(private var positionChangeListener: PositionChangeListener?) : androidx.recyclerview.widget.PagerSnapHelper(), CustomView {
 
     override fun calculateDistanceToFinalSnap(layoutManager: RecyclerView.LayoutManager, targetView: View): IntArray? {
         return super.calculateDistanceToFinalSnap(layoutManager, targetView)

@@ -3,8 +3,8 @@ package com.mxt.anitrend.base.custom.view.widget;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -36,7 +36,7 @@ import retrofit2.Response;
 
 public class AutoIncrementWidget extends LinearLayout implements CustomView, View.OnClickListener, RetroCallback<MediaList> {
 
-    private @KeyUtil.RequestType int requestType = KeyUtil.MUT_SAVE_MEDIA_LIST;
+    private @KeyUtil.RequestType int requestType = KeyUtil.Companion.getMUT_SAVE_MEDIA_LIST();
     private WidgetPresenter<MediaList> presenter;
     private WidgetAutoIncrementerBinding binding;
     private @KeyUtil.MediaListStatus String status;
@@ -78,15 +78,15 @@ public class AutoIncrementWidget extends LinearLayout implements CustomView, Vie
             if (!MediaUtil.isIncrementLimitReached(model)) {
                 switch (view.getId()) {
                     case R.id.widget_flipper:
-                        if (binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.CONTENT_STATE) {
+                        if (binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.Companion.getCONTENT_STATE()) {
                             binding.widgetFlipper.showNext();
                             updateModelState();
                         } else
-                            NotifyUtil.makeText(getContext(), R.string.busy_please_wait, Toast.LENGTH_SHORT).show();
+                            NotifyUtil.INSTANCE.makeText(getContext(), R.string.busy_please_wait, Toast.LENGTH_SHORT).show();
                         break;
                 }
             } else
-                NotifyUtil.makeText(getContext(), MediaUtil.isAnimeType(model.getMedia()) ?
+                NotifyUtil.INSTANCE.makeText(getContext(), MediaUtil.isAnimeType(model.getMedia()) ?
                                 R.string.text_unable_to_increment_episodes : R.string.text_unable_to_increment_chapters,
                         R.drawable.ic_warning_white_18dp, Toast.LENGTH_SHORT).show();
         }
@@ -106,8 +106,8 @@ public class AutoIncrementWidget extends LinearLayout implements CustomView, Vie
     }
 
     private void resetFlipperState() {
-        if(binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.LOADING_STATE)
-            binding.widgetFlipper.setDisplayedChild(WidgetPresenter.CONTENT_STATE);
+        if(binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.Companion.getLOADING_STATE())
+            binding.widgetFlipper.setDisplayedChild(WidgetPresenter.Companion.getCONTENT_STATE());
     }
 
     @Override
@@ -121,14 +121,14 @@ public class AutoIncrementWidget extends LinearLayout implements CustomView, Vie
                 binding.seriesProgressIncrement.setSeriesModel(model, presenter.isCurrentUser(currentUser));
                 if(isModelCategoryChanged || MediaListUtil.isProgressUpdatable(modelClone)) {
                     if(isModelCategoryChanged)
-                        NotifyUtil.makeText(getContext(), R.string.text_changes_saved, R.drawable.ic_check_circle_white_24dp, Toast.LENGTH_SHORT).show();
+                        NotifyUtil.INSTANCE.makeText(getContext(), R.string.text_changes_saved, R.drawable.ic_check_circle_white_24dp, Toast.LENGTH_SHORT).show();
                     presenter.notifyAllListeners(new BaseConsumer<>(requestType, model), false);
                 } else
                     resetFlipperState();
             } else {
                 resetFlipperState();
                 Log.e(this.toString(), ErrorUtil.INSTANCE.getError(response));
-                NotifyUtil.makeText(getContext(), R.string.text_error_request, Toast.LENGTH_SHORT).show();
+                NotifyUtil.INSTANCE.makeText(getContext(), R.string.text_error_request, Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -148,13 +148,13 @@ public class AutoIncrementWidget extends LinearLayout implements CustomView, Vie
 
 
     private void updateModelState() {
-        if(model.getProgress() < 1 && CompatUtil.INSTANCE.equals(model.getStatus(), KeyUtil.PLANNING)) {
-            model.setStatus(KeyUtil.CURRENT);
+        if(model.getProgress() < 1 && CompatUtil.INSTANCE.equals(model.getStatus(), KeyUtil.Companion.getPLANNING())) {
+            model.setStatus(KeyUtil.Companion.getCURRENT());
             model.setStartedAt(DateUtil.INSTANCE.getCurrentDate());
         }
         model.setProgress(model.getProgress() + 1);
         if(MediaUtil.isIncrementLimitReached(model)) {
-            model.setStatus(KeyUtil.COMPLETED);
+            model.setStatus(KeyUtil.Companion.getCOMPLETED());
             model.setCompletedAt(DateUtil.INSTANCE.getCurrentDate());
         }
         presenter.setParams(MediaListUtil.getMediaListParams(model, presenter.getDatabase()

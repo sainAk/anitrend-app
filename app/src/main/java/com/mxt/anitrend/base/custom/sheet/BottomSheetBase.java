@@ -2,13 +2,13 @@ package com.mxt.anitrend.base.custom.sheet;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v7.widget.AppCompatImageView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.appcompat.widget.AppCompatImageView;
 import android.util.Log;
 import android.view.View;
 
@@ -88,10 +88,10 @@ public abstract class BottomSheetBase<T> extends BottomSheetDialogFragment imple
         TAG = this.toString();
         super.onCreate(savedInstanceState);
         if(getArguments() != null) {
-            mTitle = getArguments().getInt(KeyUtil.arg_title);
-            mText = getArguments().getInt(KeyUtil.arg_text);
-            mPositive = getArguments().getInt(KeyUtil.arg_positive_text);
-            mNegative = getArguments().getInt(KeyUtil.arg_negative_text);
+            mTitle = getArguments().getInt(KeyUtil.Companion.getArg_title());
+            mText = getArguments().getInt(KeyUtil.Companion.getArg_text());
+            mPositive = getArguments().getInt(KeyUtil.Companion.getArg_positive_text());
+            mNegative = getArguments().getInt(KeyUtil.Companion.getArg_negative_text());
         }
         presenter = new BasePresenter(getContext());
     }
@@ -159,7 +159,7 @@ public abstract class BottomSheetBase<T> extends BottomSheetDialogFragment imple
 
         if (coordinatorBehavior instanceof BottomSheetBehavior) {
             bottomSheetBehavior = (BottomSheetBehavior) coordinatorBehavior;
-            bottomSheetBehavior.setPeekHeight(CompatUtil.INSTANCE.dipToPx(KeyUtil.PEEK_HEIGHT));
+            bottomSheetBehavior.setPeekHeight(CompatUtil.INSTANCE.dipToPx(KeyUtil.Companion.getPEEK_HEIGHT()));
             bottomSheetBehavior.setBottomSheetCallback(bottomSheetCallback);
         }
     }
@@ -213,17 +213,17 @@ public abstract class BottomSheetBase<T> extends BottomSheetDialogFragment imple
         }
 
         public BottomSheetBuilder setTitle(@StringRes int title) {
-            bundle.putInt(KeyUtil.arg_title, title);
+            bundle.putInt(KeyUtil.Companion.getArg_title(), title);
             return this;
         }
 
         public BottomSheetBuilder setPositiveText(@StringRes int positiveText) {
-            bundle.putInt(KeyUtil.arg_positive_text, positiveText);
+            bundle.putInt(KeyUtil.Companion.getArg_positive_text(), positiveText);
             return this;
         }
 
         public BottomSheetBuilder setNegativeText(@StringRes int negativeText) {
-            bundle.putInt(KeyUtil.arg_negative_text, negativeText);
+            bundle.putInt(KeyUtil.Companion.getArg_negative_text(), negativeText);
             return this;
         }
     }

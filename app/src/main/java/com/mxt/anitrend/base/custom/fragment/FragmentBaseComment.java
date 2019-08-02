@@ -3,11 +3,11 @@ package com.mxt.anitrend.base.custom.fragment;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,8 +68,8 @@ public abstract class FragmentBaseComment extends FragmentBase<FeedReply, Widget
     private final View.OnClickListener snackBarOnClick = view -> {
         if(swipeRefreshLayout.isRefreshing())
             swipeRefreshLayout.setRefreshing(false);
-        if(snackbar != null && snackbar.isShown())
-            snackbar.dismiss();
+        if(getSnackbar() != null && getSnackbar().isShown())
+            getSnackbar().dismiss();
         swipeRefreshLayout.setLoading(true);
         makeRequest();
     };
@@ -90,10 +90,10 @@ public abstract class FragmentBaseComment extends FragmentBase<FeedReply, Widget
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_comment, container, false);
-        unbinder = ButterKnife.bind(this, root);
+        setUnbinder(ButterKnife.bind(this, root));
         recyclerView.setHasFixedSize(true); //originally set to fixed size true
         recyclerView.setNestedScrollingEnabled(false); //set to false if somethings fail to work properly
-        mLayoutManager = new StaggeredGridLayoutManager(getResources().getInteger(mColumnSize), StaggeredGridLayoutManager.VERTICAL);
+        mLayoutManager = new StaggeredGridLayoutManager(getResources().getInteger(getMColumnSize()), StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(mLayoutManager);
         swipeRefreshLayout.setOnRefreshAndLoadListener(this);
         swipeRefreshLayout.setPermitLoad(false);
@@ -150,8 +150,8 @@ public abstract class FragmentBaseComment extends FragmentBase<FeedReply, Widget
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(KeyUtil.key_pagination, isPager);
-        outState.putInt(KeyUtil.key_columns, mColumnSize);
+        outState.putBoolean(KeyUtil.Companion.getKey_pagination(), getIsPager());
+        outState.putInt(KeyUtil.Companion.getKey_columns(), getMColumnSize());
     }
 
     /**
@@ -169,13 +169,13 @@ public abstract class FragmentBaseComment extends FragmentBase<FeedReply, Widget
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if(savedInstanceState != null) {
-            isPager = savedInstanceState.getBoolean(KeyUtil.key_pagination);
-            mColumnSize = savedInstanceState.getInt(KeyUtil.key_columns);
+            setIsPager(savedInstanceState.getBoolean(KeyUtil.Companion.getKey_pagination()));
+            setMColumnSize(savedInstanceState.getInt(KeyUtil.Companion.getKey_columns()));
         }
     }
 
     protected void addScrollLoadTrigger() {
-        if(isPager)
+        if(getIsPager())
             if (!recyclerView.hasOnScrollListener()) {
                 getPresenter().initListener(mLayoutManager, this);
                 recyclerView.addOnScrollListener(getPresenter());
@@ -183,7 +183,7 @@ public abstract class FragmentBaseComment extends FragmentBase<FeedReply, Widget
     }
 
     protected void removeScrollLoadTrigger() {
-        if (isPager)
+        if (getIsPager())
             recyclerView.clearOnScrollListeners();
     }
 
@@ -208,12 +208,12 @@ public abstract class FragmentBaseComment extends FragmentBase<FeedReply, Widget
             swipeRefreshLayout.setRefreshing(false);
         if(swipeRefreshLayout.isLoading())
             swipeRefreshLayout.setLoading(false);
-        if(getPresenter() != null && getPresenter().getCurrentPage() > 1 && isPager) {
+        if(getPresenter() != null && getPresenter().getCurrentPage() > 1 && getIsPager()) {
             if(stateLayout.isLoading())
                 stateLayout.showContent();
-            snackbar = NotifyUtil.make(stateLayout, R.string.text_unable_to_load_next_page, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.try_again, snackBarOnClick);
-            snackbar.show();
+            setSnackbar(NotifyUtil.INSTANCE.make(stateLayout, R.string.text_unable_to_load_next_page, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.try_again, snackBarOnClick));
+            getSnackbar().show();
         }
         else {
             showLoading();
@@ -230,12 +230,12 @@ public abstract class FragmentBaseComment extends FragmentBase<FeedReply, Widget
             swipeRefreshLayout.setRefreshing(false);
         if(swipeRefreshLayout.isLoading())
             swipeRefreshLayout.setLoading(false);
-        if(getPresenter() != null && getPresenter().getCurrentPage() > 1 && isPager) {
+        if(getPresenter() != null && getPresenter().getCurrentPage() > 1 && getIsPager()) {
             if(stateLayout.isLoading())
                 stateLayout.showContent();
-            snackbar = NotifyUtil.make(stateLayout, R.string.text_unable_to_load_next_page, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.try_again, snackBarOnClick);
-            snackbar.show();
+            setSnackbar(NotifyUtil.INSTANCE.make(stateLayout, R.string.text_unable_to_load_next_page, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.try_again, snackBarOnClick));
+            getSnackbar().show();
         }
         else {
             showLoading();
@@ -325,7 +325,7 @@ public abstract class FragmentBaseComment extends FragmentBase<FeedReply, Widget
     @Override
     public void onChanged(@Nullable FeedList content) {
         if(content != null && !CompatUtil.INSTANCE.isEmpty(content.getReplies())) {
-            if(isPager && !swipeRefreshLayout.isRefreshing()) {
+            if(getIsPager() && !swipeRefreshLayout.isRefreshing()) {
                 if (mAdapter.getItemCount() < 1)
                     mAdapter.onItemsInserted(content.getReplies());
                 else
@@ -335,7 +335,7 @@ public abstract class FragmentBaseComment extends FragmentBase<FeedReply, Widget
                 mAdapter.onItemsInserted(content.getReplies());
             updateUI();
         } else {
-            if (isPager)
+            if (getIsPager())
                 setLimitReached();
             if (mAdapter.getItemCount() < 1)
                 showEmpty(getString(R.string.layout_empty_response));

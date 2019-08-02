@@ -2,7 +2,7 @@ package com.mxt.anitrend.view.fragment.detail;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,7 +19,7 @@ import com.mxt.anitrend.model.entity.base.MediaBase;
 import com.mxt.anitrend.model.entity.container.body.PageContainer;
 import com.mxt.anitrend.model.entity.container.request.QueryContainerBuilder;
 import com.mxt.anitrend.presenter.base.BasePresenter;
-import com.mxt.anitrend.util.ApplicationPref;
+import com.mxt.anitrend.util.Settings;
 import com.mxt.anitrend.util.CompatUtil;
 import com.mxt.anitrend.util.DialogUtil;
 import com.mxt.anitrend.util.GraphUtil;
@@ -42,7 +42,7 @@ public class BrowseReviewFragment extends FragmentBaseList<Review, PageContainer
 
     public static BrowseReviewFragment newInstance(@KeyUtil.MediaType String mediaType) {
         Bundle args = new Bundle();
-        args.putString(KeyUtil.arg_mediaType, mediaType);
+        args.putString(KeyUtil.Companion.getArg_mediaType(), mediaType);
         BrowseReviewFragment fragment = new BrowseReviewFragment();
         fragment.setArguments(args);
         return fragment;
@@ -58,9 +58,9 @@ public class BrowseReviewFragment extends FragmentBaseList<Review, PageContainer
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null)
-            mediaType = getArguments().getString(KeyUtil.arg_mediaType);
-        isPager = true; mColumnSize = R.integer.single_list_x1; isFilterable = true;
-        mAdapter = new ReviewAdapter(getContext());
+            mediaType = getArguments().getString(KeyUtil.Companion.getArg_mediaType());
+        setIsPager(true); setMColumnSize(R.integer.single_list_x1); setIsFilterable(true);
+        setMAdapter(new ReviewAdapter(getContext()));
         setPresenter(new BasePresenter(getContext()));
         setViewModel(true);
     }
@@ -80,19 +80,19 @@ public class BrowseReviewFragment extends FragmentBaseList<Review, PageContainer
         if (getContext() != null)
             switch (item.getItemId()) {
                 case R.id.action_sort:
-                    DialogUtil.createSelection(getContext(), R.string.app_filter_sort, CompatUtil.INSTANCE.getIndexOf(KeyUtil.ReviewSortType,
-                            getPresenter().getApplicationPref().getReviewSort()), CompatUtil.INSTANCE.capitalizeWords(KeyUtil.ReviewSortType),
+                    DialogUtil.Companion.createSelection(getContext(), R.string.app_filter_sort, CompatUtil.INSTANCE.getIndexOf(KeyUtil.Companion.getReviewSortType(),
+                            getPresenter().getSettings().getReviewSort()), CompatUtil.INSTANCE.capitalizeWords(KeyUtil.Companion.getReviewSortType()),
                             (dialog, which) -> {
                                 if(which == DialogAction.POSITIVE)
-                                    getPresenter().getApplicationPref().setReviewSort(KeyUtil.ReviewSortType[dialog.getSelectedIndex()]);
+                                    getPresenter().getSettings().setReviewSort(KeyUtil.Companion.getReviewSortType()[dialog.getSelectedIndex()]);
                             });
                     return true;
                 case R.id.action_order:
-                    DialogUtil.createSelection(getContext(), R.string.app_filter_order, CompatUtil.INSTANCE.getIndexOf(KeyUtil.SortOrderType,
-                            getPresenter().getApplicationPref().getSortOrder()), CompatUtil.INSTANCE.getStringList(getContext(), R.array.order_by_types),
+                    DialogUtil.Companion.createSelection(getContext(), R.string.app_filter_order, CompatUtil.INSTANCE.getIndexOf(KeyUtil.Companion.getSortOrderType(),
+                            getPresenter().getSettings().getSortOrder()), CompatUtil.INSTANCE.getStringList(getContext(), R.array.order_by_types),
                             (dialog, which) -> {
                                 if(which == DialogAction.POSITIVE)
-                                    getPresenter().getApplicationPref().saveSortOrder(KeyUtil.SortOrderType[dialog.getSelectedIndex()]);
+                                    getPresenter().getSettings().setSortOrder(KeyUtil.Companion.getSortOrderType()[dialog.getSelectedIndex()]);
                             });
                     return true;
             }
@@ -112,14 +112,14 @@ public class BrowseReviewFragment extends FragmentBaseList<Review, PageContainer
      */
     @Override
     public void makeRequest() {
-        ApplicationPref pref = getPresenter().getApplicationPref();
+        Settings pref = getPresenter().getSettings();
         QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(true)
-                .putVariable(KeyUtil.arg_mediaType, mediaType)
-                .putVariable(KeyUtil.arg_page, getPresenter().getCurrentPage())
-                .putVariable(KeyUtil.arg_sort, pref.getReviewSort() + pref.getSortOrder());
+                .putVariable(KeyUtil.Companion.getArg_mediaType(), mediaType)
+                .putVariable(KeyUtil.Companion.getArg_page(), getPresenter().getCurrentPage())
+                .putVariable(KeyUtil.Companion.getArg_sort(), pref.getReviewSort() + pref.getSortOrder());
 
-        getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        getViewModel().requestData(KeyUtil.MEDIA_REVIEWS_REQ, getContext());
+        getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        getViewModel().requestData(KeyUtil.Companion.getMEDIA_REVIEWS_REQ(), getContext());
     }
 
     @Override
@@ -133,7 +133,7 @@ public class BrowseReviewFragment extends FragmentBaseList<Review, PageContainer
                 onPostProcessed(Collections.emptyList());
         } else
             onPostProcessed(Collections.emptyList());
-        if(mAdapter.getItemCount() < 1)
+        if(getMAdapter().getItemCount() < 1)
             onPostProcessed(null);
     }
 
@@ -150,15 +150,15 @@ public class BrowseReviewFragment extends FragmentBaseList<Review, PageContainer
             case R.id.series_image:
                 MediaBase mediaBase = data.getSecond().getMedia();
                 Intent intent = new Intent(getActivity(), MediaActivity.class);
-                intent.putExtra(KeyUtil.arg_id, mediaBase.getId());
-                intent.putExtra(KeyUtil.arg_mediaType, mediaBase.getType());
+                intent.putExtra(KeyUtil.Companion.getArg_id(), mediaBase.getId());
+                intent.putExtra(KeyUtil.Companion.getArg_mediaType(), mediaBase.getType());
                 CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                 break;
             case R.id.review_read_more:
-                mBottomSheet = new BottomReviewReader.Builder()
+                setMBottomSheet(new BottomReviewReader.Builder()
                         .setReview(data.getSecond())
                         .setTitle(R.string.drawer_title_reviews)
-                        .build();
+                        .build());
                 showBottomSheet();
                 break;
         }
@@ -175,12 +175,12 @@ public class BrowseReviewFragment extends FragmentBaseList<Review, PageContainer
     public void onItemLongClick(View target, IntPair<Review> data) {
         switch (target.getId()) {
             case R.id.series_image:
-                if(getPresenter().getApplicationPref().isAuthenticated()) {
-                    mediaActionUtil = new MediaActionUtil.Builder()
-                            .setId(data.getSecond().getMedia().getId()).build(getActivity());
-                    mediaActionUtil.startSeriesAction();
+                if(getPresenter().getSettings().isAuthenticated()) {
+                    setMediaActionUtil(new MediaActionUtil.Builder()
+                            .setId(data.getSecond().getMedia().getId()).build(getActivity()));
+                    getMediaActionUtil().startSeriesAction();
                 } else
-                    NotifyUtil.makeText(getContext(), R.string.info_login_req, R.drawable.ic_group_add_grey_600_18dp, Toast.LENGTH_SHORT).show();
+                    NotifyUtil.INSTANCE.makeText(getContext(), R.string.info_login_req, R.drawable.ic_group_add_grey_600_18dp, Toast.LENGTH_SHORT).show();
                 break;
         }
     }

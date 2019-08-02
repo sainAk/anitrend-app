@@ -1,10 +1,10 @@
 package com.mxt.anitrend.view.activity.detail;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.Nullable;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -47,14 +47,14 @@ public class MediaListActivity extends ActivityBase<User, BasePresenter> {
         setSupportActionBar(toolbar);
         setViewModel(true);
         if((bundle = getIntent().getExtras()) != null)
-            mediaType = bundle.getString(KeyUtil.arg_mediaType);
+            mediaType = bundle.getString(KeyUtil.Companion.getArg_mediaType());
     }
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         if(bundle != null)
-            setTitle(CompatUtil.INSTANCE.equals(mediaType, KeyUtil.ANIME) ? R.string.title_anime_list: R.string.title_manga_list);
+            setTitle(CompatUtil.INSTANCE.equals(mediaType, KeyUtil.Companion.getANIME()) ? R.string.title_anime_list: R.string.title_manga_list);
         onActivityReady();
     }
 
@@ -64,9 +64,9 @@ public class MediaListActivity extends ActivityBase<User, BasePresenter> {
         menu.findItem(R.id.action_settings).setVisible(false);
         menu.findItem(R.id.action_extra).setVisible(false);
         menu.findItem(R.id.action_share).setVisible(false);
-        if(mSearchView != null) {
+        if(getMSearchView() != null) {
             MenuItem searchItem = menu.findItem(R.id.action_search);
-            mSearchView.setMenuItem(searchItem);
+            getMSearchView().setMenuItem(searchItem);
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -85,7 +85,7 @@ public class MediaListActivity extends ActivityBase<User, BasePresenter> {
     @Override
     protected void updateUI() {
         viewPager.setAdapter(pageAdapter);
-        viewPager.setOffscreenPageLimit(offScreenLimit + 2);
+        viewPager.setOffscreenPageLimit(getOffScreenLimit() + 2);
         smartTabLayout.setViewPager(viewPager);
     }
 

@@ -1,9 +1,8 @@
 package com.mxt.anitrend.view.fragment.detail;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,6 @@ import com.mxt.anitrend.presenter.base.BasePresenter;
 import com.mxt.anitrend.util.CompatUtil;
 import com.mxt.anitrend.util.GraphUtil;
 import com.mxt.anitrend.util.KeyUtil;
-import com.mxt.anitrend.view.activity.base.ImagePreviewActivity;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -45,14 +43,14 @@ public class StaffOverviewFragment extends FragmentBase<StaffBase, BasePresenter
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null)
-            id = getArguments().getLong(KeyUtil.arg_id);
+            id = getArguments().getLong(KeyUtil.Companion.getArg_id());
         setViewModel(true);
     }
 
     @Nullable @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentStaffOverviewBinding.inflate(inflater, container, false);
-        unbinder = ButterKnife.bind(this, binding.getRoot());
+        setUnbinder(ButterKnife.bind(this, binding.getRoot()));
         binding.stateLayout.showLoading();
         return binding.getRoot();
     }
@@ -79,9 +77,9 @@ public class StaffOverviewFragment extends FragmentBase<StaffBase, BasePresenter
     @Override
     public void makeRequest() {
         QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(false)
-                .putVariable(KeyUtil.arg_id, id);
-        getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        getViewModel().requestData(KeyUtil.STAFF_OVERVIEW_REQ, getContext());
+                .putVariable(KeyUtil.Companion.getArg_id(), id);
+        getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        getViewModel().requestData(KeyUtil.Companion.getSTAFF_OVERVIEW_REQ(), getContext());
 
     }
 

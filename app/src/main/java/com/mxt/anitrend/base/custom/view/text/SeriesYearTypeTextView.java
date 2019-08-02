@@ -1,7 +1,7 @@
 package com.mxt.anitrend.base.custom.view.text;
 
 import android.content.Context;
-import android.databinding.BindingAdapter;
+import androidx.databinding.BindingAdapter;
 import android.util.AttributeSet;
 
 import com.mxt.anitrend.R;
@@ -42,8 +42,8 @@ public class SeriesYearTypeTextView extends SingleLineTextView {
         FuzzyDate startDate = mediaBase.getStartDate();
         String year = startDate.isValidDate() ? String.format(Locale.getDefault(), "%d", startDate.getYear()) : context.getString(R.string.tba_placeholder);
         switch (mediaBase.getType()) {
-            case KeyUtil.ANIME:
-                if(CompatUtil.INSTANCE.equals(mediaBase.getFormat(), KeyUtil.MOVIE))
+            case KeyUtil.Companion.getANIME():
+                if(CompatUtil.INSTANCE.equals(mediaBase.getFormat(), KeyUtil.Companion.getMOVIE()))
                     seriesYearTypeTextView.setText(String.format(Locale.getDefault(), "%s - %s", year, CompatUtil.INSTANCE.capitalizeWords(mediaBase.getFormat())));
                 else {
                     if(mediaBase.getEpisodes() > 0)
@@ -52,7 +52,7 @@ public class SeriesYearTypeTextView extends SingleLineTextView {
                         seriesYearTypeTextView.setText(String.format(Locale.getDefault(), "%s - %s", year, CompatUtil.INSTANCE.capitalizeWords(mediaBase.getFormat())));
                 }
                 break;
-            case KeyUtil.MANGA:
+            case KeyUtil.Companion.getMANGA():
                 if(mediaBase.getChapters() > 0)
                     seriesYearTypeTextView.setText(String.format(Locale.getDefault(), "%s - %s", year, context.getString(R.string.text_manga_chapters, mediaBase.getChapters())));
                 else

@@ -3,7 +3,6 @@ package com.mxt.anitrend.worker
 import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
-import android.util.Log
 
 import com.mxt.anitrend.BuildConfig
 import com.mxt.anitrend.base.custom.async.WebTokenRequest
@@ -16,16 +15,20 @@ import androidx.work.Data
 import androidx.work.ListenableWorker
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import timber.log.Timber
 
 class AuthenticatorWorker(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
 
     private val presenter by lazy {
         BasePresenter(context)
     }
+
     private val authenticatorUri: Uri by lazy {
         Uri.parse(workerParams.inputData
                 .getString(KeyUtil.arg_model))
     }
+
+    private val TAG = javaClass.simpleName
 
     /**
      * Override this method to do your actual background processing.  This method is called on a
@@ -45,19 +48,19 @@ class AuthenticatorWorker(context: Context, workerParams: WorkerParameters) : Wo
      * [Result.failure] or
      * [Result.failure]
      */
-    override fun doWork(): ListenableWorker.Result {
+    override fun doWork(): Result {
         val errorDataBuilder = Data.Builder()
         try {
             val authorizationCode = authenticatorUri.getQueryParameter(BuildConfig.RESPONSE_TYPE)
             if (!TextUtils.isEmpty(authorizationCode)) {
                 val isSuccess = WebTokenRequest.getToken(applicationContext, authorizationCode)
-                presenter.applicationPref.isAuthenticated = isSuccess
+                presenter.settings.isAuthenticated = isSuccess
                 val outputData = Data.Builder()
                         .putBoolean(KeyUtil.arg_model, isSuccess)
                         .build()
-                return ListenableWorker.Result.success(outputData)
+                return Result.success(outputData)
             } else
-                Log.e(toString(), "Authorization authenticatorUri was empty or null, cannot authenticate with the current state")
+                Timber.tag(TAG).e("Authorization authenticatorUri was empty or null, cannot authenticate with the current state")
         } catch (e: ExecutionException) {
             e.printStackTrace()
             errorDataBuilder.putString(KeyUtil.arg_exception_error, e.message)
@@ -72,6 +75,6 @@ class AuthenticatorWorker(context: Context, workerParams: WorkerParameters) : Wo
                 .putString(KeyUtil.arg_uri_error_description, authenticatorUri
                         .getQueryParameter(KeyUtil.arg_uri_error_description))
                 .build()
-        return ListenableWorker.Result.failure(workerErrorOutputData)
+        return Result.failure(workerErrorOutputData)
     }
 }

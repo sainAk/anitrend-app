@@ -2,7 +2,7 @@ package com.mxt.anitrend.view.fragment.detail;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,7 +31,6 @@ import com.mxt.anitrend.util.MediaActionUtil;
 import com.mxt.anitrend.util.NotifyUtil;
 import com.mxt.anitrend.view.activity.detail.MediaActivity;
 import com.mxt.anitrend.view.activity.detail.ProfileActivity;
-import com.mxt.anitrend.view.sheet.BottomSheetGiphy;
 import com.mxt.anitrend.view.sheet.BottomSheetUsers;
 
 import org.greenrobot.eventbus.EventBus;
@@ -65,12 +64,12 @@ public class CommentFragment extends FragmentBaseComment implements BaseConsumer
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null) {
-            if (getArguments().containsKey(KeyUtil.arg_model))
-                feedList = getArguments().getParcelable(KeyUtil.arg_model);
-            if (getArguments().containsKey(KeyUtil.arg_id))
-                userActivityId = getArguments().getLong(KeyUtil.arg_id);
+            if (getArguments().containsKey(KeyUtil.Companion.getArg_model()))
+                feedList = getArguments().getParcelable(KeyUtil.Companion.getArg_model());
+            if (getArguments().containsKey(KeyUtil.Companion.getArg_id()))
+                userActivityId = getArguments().getLong(KeyUtil.Companion.getArg_id());
         }
-        mColumnSize = R.integer.single_list_x1; hasSubscriber = true;
+        setMColumnSize(R.integer.single_list_x1); setHasSubscriber(true);
         setInflateMenu(R.menu.custom_menu);
         mAdapter = new CommentAdapter(getContext());
         feedAdapter = new FeedAdapter(getContext());
@@ -97,7 +96,7 @@ public class CommentFragment extends FragmentBaseComment implements BaseConsumer
                     break;
             }
         } else
-            NotifyUtil.makeText(getContext(), R.string.text_activity_loading, Toast.LENGTH_SHORT).show();
+            NotifyUtil.INSTANCE.makeText(getContext(), R.string.text_activity_loading, Toast.LENGTH_SHORT).show();
         return super.onOptionsItemSelected(item);
     }
 
@@ -118,9 +117,9 @@ public class CommentFragment extends FragmentBaseComment implements BaseConsumer
                     case R.id.insert_emoticon:
                         break;
                     case R.id.insert_gif:
-                        mBottomSheet = new BottomSheetGiphy.Builder()
+                        setMBottomSheet(new BottomSheetGiphy.Builder()
                                 .setTitle(R.string.title_bottom_sheet_giphy)
-                                .build();
+                                .build());
 
                         showBottomSheet();
                         break;
@@ -128,7 +127,7 @@ public class CommentFragment extends FragmentBaseComment implements BaseConsumer
                         CompatUtil.INSTANCE.hideKeyboard(getActivity());
                         break;
                     default:
-                        DialogUtil.createDialogAttachMedia(target.getId(), composerWidget.getEditor(), getContext());
+                        DialogUtil.Companion.createDialogAttachMedia(target.getId(), composerWidget.getEditor(), getContext());
                         break;
                 }
             }
@@ -160,9 +159,9 @@ public class CommentFragment extends FragmentBaseComment implements BaseConsumer
         }
 
         QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(false)
-                .putVariable(KeyUtil.arg_id, userActivityId);
-        getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        getViewModel().requestData(KeyUtil.FEED_LIST_REPLY_REQ, getContext());
+                .putVariable(KeyUtil.Companion.getArg_id(), userActivityId);
+        getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        getViewModel().requestData(KeyUtil.Companion.getFEED_LIST_REPLY_REQ(), getContext());
     }
 
     /**
@@ -178,7 +177,7 @@ public class CommentFragment extends FragmentBaseComment implements BaseConsumer
     }
 
     private void initExtraComponents() {
-        composerWidget.setModel(feedList, KeyUtil.MUT_SAVE_FEED_REPLY);
+        composerWidget.setModel(feedList, KeyUtil.Companion.getMUT_SAVE_FEED_REPLY());
 
         if(feedAdapter.getItemCount() < 1) {
             feedAdapter.onItemsInserted(Collections.singletonList(feedList));
@@ -189,37 +188,37 @@ public class CommentFragment extends FragmentBaseComment implements BaseConsumer
                     switch (target.getId()) {
                         case R.id.series_image:
                             intent = new Intent(getActivity(), MediaActivity.class);
-                            intent.putExtra(KeyUtil.arg_id, data.getSecond().getMedia().getId());
-                            intent.putExtra(KeyUtil.arg_mediaType, data.getSecond().getMedia().getType());
+                            intent.putExtra(KeyUtil.Companion.getArg_id(), data.getSecond().getMedia().getId());
+                            intent.putExtra(KeyUtil.Companion.getArg_mediaType(), data.getSecond().getMedia().getType());
                             CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                             break;
                         case R.id.widget_users:
                             List<UserBase> likes = data.getSecond().getLikes();
                             if (likes.size() > 0) {
-                                mBottomSheet = new BottomSheetUsers.Builder()
+                                setMBottomSheet(new BottomSheetUsers.Builder()
                                         .setModel(likes)
                                         .setTitle(R.string.title_bottom_sheet_likes)
-                                        .build();
+                                        .build());
                                 showBottomSheet();
                             } else
-                                NotifyUtil.makeText(getActivity(), R.string.text_no_likes, Toast.LENGTH_SHORT).show();
+                                NotifyUtil.INSTANCE.makeText(getActivity(), R.string.text_no_likes, Toast.LENGTH_SHORT).show();
                             break;
                         case R.id.user_avatar:
                             intent = new Intent(getActivity(), ProfileActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.putExtra(KeyUtil.arg_id, data.getSecond().getUser().getId());
+                            intent.putExtra(KeyUtil.Companion.getArg_id(), data.getSecond().getUser().getId());
                             CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                             break;
                         case R.id.recipient_avatar:
                             intent = new Intent(getActivity(), ProfileActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.putExtra(KeyUtil.arg_id, data.getSecond().getRecipient().getId());
+                            intent.putExtra(KeyUtil.Companion.getArg_id(), data.getSecond().getRecipient().getId());
                             CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                             break;
                         case R.id.messenger_avatar:
                             intent = new Intent(getActivity(), ProfileActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.putExtra(KeyUtil.arg_id, data.getSecond().getMessenger().getId());
+                            intent.putExtra(KeyUtil.Companion.getArg_id(), data.getSecond().getMessenger().getId());
                             CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                             break;
                     }
@@ -229,12 +228,12 @@ public class CommentFragment extends FragmentBaseComment implements BaseConsumer
                 public void onItemLongClick(View target, IntPair<FeedList> data) {
                     switch (target.getId()) {
                         case R.id.series_image:
-                            if(getPresenter().getApplicationPref().isAuthenticated()) {
-                                mediaActionUtil = new MediaActionUtil.Builder()
-                                        .setId(data.getSecond().getMedia().getId()).build(getActivity());
-                                mediaActionUtil.startSeriesAction();
+                            if(getPresenter().getSettings().isAuthenticated()) {
+                                setMediaActionUtil(new MediaActionUtil.Builder()
+                                        .setId(data.getSecond().getMedia().getId()).build(getActivity()));
+                                getMediaActionUtil().startSeriesAction();
                             } else
-                                NotifyUtil.makeText(getContext(), R.string.info_login_req, R.drawable.ic_group_add_grey_600_18dp, Toast.LENGTH_SHORT).show();
+                                NotifyUtil.INSTANCE.makeText(getContext(), R.string.info_login_req, R.drawable.ic_group_add_grey_600_18dp, Toast.LENGTH_SHORT).show();
                             break;
                     }
                 }
@@ -249,7 +248,7 @@ public class CommentFragment extends FragmentBaseComment implements BaseConsumer
         Optional<IntPair<FeedReply>> pairOptional;
         int pairIndex;
         switch (consumer.getRequestMode()) {
-            case KeyUtil.MUT_SAVE_FEED_REPLY:
+            case KeyUtil.Companion.getMUT_SAVE_FEED_REPLY():
                 if(!consumer.hasModel()) {
                     if (mAdapter.getItemCount() > 1)
                         swipeRefreshLayout.setRefreshing(true);
@@ -262,14 +261,14 @@ public class CommentFragment extends FragmentBaseComment implements BaseConsumer
                     }
                 }
                 break;
-            case KeyUtil.MUT_DELETE_FEED_REPLY:
+            case KeyUtil.Companion.getMUT_DELETE_FEED_REPLY():
                 pairOptional = CompatUtil.INSTANCE.findIndexOf(mAdapter.getData(), consumer.getChangeModel());
                 if(pairOptional.isPresent()) {
                     pairIndex = pairOptional.get().getFirst();
                     mAdapter.onItemRemoved(pairIndex);
                 }
                 break;
-            case KeyUtil.MUT_DELETE_FEED:
+            case KeyUtil.Companion.getMUT_DELETE_FEED():
                 if(getActivity() != null)
                     getActivity().finish();
                 break;
@@ -293,7 +292,7 @@ public class CommentFragment extends FragmentBaseComment implements BaseConsumer
             feedList = content;
             initExtraComponents();
         } else
-            NotifyUtil.createAlerter(getActivity(), R.string.text_error_request, R.string.layout_empty_response,
+            NotifyUtil.INSTANCE.createAlerter(getActivity(), R.string.text_error_request, R.string.layout_empty_response,
                     R.drawable.ic_warning_white_18dp, R.color.colorStateOrange);
     }
 
@@ -311,32 +310,32 @@ public class CommentFragment extends FragmentBaseComment implements BaseConsumer
             case R.id.series_image:
                 MediaBase mediaBase = feedList.getMedia();
                 intent = new Intent(getActivity(), MediaActivity.class);
-                intent.putExtra(KeyUtil.arg_id, mediaBase.getId());
-                intent.putExtra(KeyUtil.arg_mediaType, mediaBase.getType());
+                intent.putExtra(KeyUtil.Companion.getArg_id(), mediaBase.getId());
+                intent.putExtra(KeyUtil.Companion.getArg_mediaType(), mediaBase.getType());
                 CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                 break;
             case R.id.widget_mention:
                 composerWidget.mentionUserFrom(data.getSecond());
                 break;
             case R.id.widget_edit:
-                composerWidget.setModel(data.getSecond(), KeyUtil.MUT_SAVE_FEED_REPLY);
+                composerWidget.setModel(data.getSecond(), KeyUtil.Companion.getMUT_SAVE_FEED_REPLY());
                 composerWidget.setText(data.getSecond().getReply());
                 break;
             case R.id.widget_users:
                 List<UserBase> likes = data.getSecond().getLikes();
                 if(likes.size() > 0) {
-                    mBottomSheet = new BottomSheetUsers.Builder()
+                    setMBottomSheet(new BottomSheetUsers.Builder()
                             .setModel(likes)
                             .setTitle(R.string.title_bottom_sheet_likes)
-                            .build();
+                            .build());
                     showBottomSheet();
                 } else
-                    NotifyUtil.makeText(getActivity(), R.string.text_no_likes, Toast.LENGTH_SHORT).show();
+                    NotifyUtil.INSTANCE.makeText(getActivity(), R.string.text_no_likes, Toast.LENGTH_SHORT).show();
                 break;
             case R.id.user_avatar:
                 intent = new Intent(getActivity(), ProfileActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra(KeyUtil.arg_id, data.getSecond().getUser().getId());
+                intent.putExtra(KeyUtil.Companion.getArg_id(), data.getSecond().getUser().getId());
                 CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                 break;
         }

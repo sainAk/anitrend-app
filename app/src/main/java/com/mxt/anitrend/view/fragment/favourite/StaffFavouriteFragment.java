@@ -2,7 +2,7 @@ package com.mxt.anitrend.view.fragment.favourite;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.View;
 
 import com.annimon.stream.IntPair;
@@ -42,10 +42,10 @@ public class StaffFavouriteFragment extends FragmentBaseList<StaffBase, Connecti
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null)
-            userId = getArguments().getLong(KeyUtil.arg_id);
-        mAdapter = new StaffAdapter(getContext());
+            userId = getArguments().getLong(KeyUtil.Companion.getArg_id());
+        setMAdapter(new StaffAdapter(getContext()));
         setPresenter(new BasePresenter(getContext()));
-        mColumnSize = R.integer.grid_giphy_x3; isPager = true;
+        setMColumnSize(R.integer.grid_giphy_x3); setIsPager(true);
         setViewModel(true);
     }
 
@@ -57,11 +57,11 @@ public class StaffFavouriteFragment extends FragmentBaseList<StaffBase, Connecti
 
     @Override
     public void makeRequest() {
-        QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(isPager)
-                .putVariable(KeyUtil.arg_id, userId)
-                .putVariable(KeyUtil.arg_page, getPresenter().getCurrentPage());
-        getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        getViewModel().requestData(KeyUtil.USER_STAFF_FAVOURITES_REQ, getContext());
+        QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(getIsPager())
+                .putVariable(KeyUtil.Companion.getArg_id(), userId)
+                .putVariable(KeyUtil.Companion.getArg_page(), getPresenter().getCurrentPage());
+        getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        getViewModel().requestData(KeyUtil.Companion.getUSER_STAFF_FAVOURITES_REQ(), getContext());
     }
 
     @Override
@@ -77,7 +77,7 @@ public class StaffFavouriteFragment extends FragmentBaseList<StaffBase, Connecti
                 onPostProcessed(Collections.emptyList());
         } else
             onPostProcessed(Collections.emptyList());
-        if(mAdapter.getItemCount() < 1)
+        if(getMAdapter().getItemCount() < 1)
             onPostProcessed(null);
     }
 
@@ -93,7 +93,7 @@ public class StaffFavouriteFragment extends FragmentBaseList<StaffBase, Connecti
         switch (target.getId()) {
             case R.id.container:
                 Intent intent = new Intent(getActivity(), StaffActivity.class);
-                intent.putExtra(KeyUtil.arg_id, data.getSecond().getId());
+                intent.putExtra(KeyUtil.Companion.getArg_id(), data.getSecond().getId());
                 CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                 break;
         }

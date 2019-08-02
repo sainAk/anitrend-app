@@ -1,7 +1,7 @@
 package com.mxt.anitrend.base.custom.view.widget;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -65,8 +65,8 @@ public class StatusDeleteWidget extends FrameLayout implements CustomView, Retro
     private void setParameters(long feedId, @KeyUtil.RequestType int requestType) {
         this.requestType = requestType;
         QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(false)
-                .putVariable(KeyUtil.arg_id, feedId);
-        presenter.getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
+                .putVariable(KeyUtil.Companion.getArg_id(), feedId);
+        presenter.getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
     }
 
     public void setModel(FeedList feedList, @KeyUtil.RequestType int requestType) {
@@ -92,20 +92,20 @@ public class StatusDeleteWidget extends FrameLayout implements CustomView, Retro
     }
 
     private void resetFlipperState() {
-        if(binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.LOADING_STATE)
-            binding.widgetFlipper.setDisplayedChild(WidgetPresenter.CONTENT_STATE);
+        if(binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.Companion.getLOADING_STATE())
+            binding.widgetFlipper.setDisplayedChild(WidgetPresenter.Companion.getCONTENT_STATE());
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.widget_flipper:
-                if (binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.CONTENT_STATE) {
+                if (binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.Companion.getCONTENT_STATE()) {
                     binding.widgetFlipper.showNext();
                     presenter.requestData(requestType, getContext(), this);
                 }
                 else
-                    NotifyUtil.makeText(getContext(), R.string.busy_please_wait, Toast.LENGTH_SHORT).show();
+                    NotifyUtil.INSTANCE.makeText(getContext(), R.string.busy_please_wait, Toast.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -126,12 +126,12 @@ public class StatusDeleteWidget extends FrameLayout implements CustomView, Retro
             if(response.isSuccessful() && (deleteState = response.body()) != null) {
                 resetFlipperState();
                 if(deleteState.isDeleted()) {
-                    if (requestType == KeyUtil.MUT_DELETE_FEED)
+                    if (requestType == KeyUtil.Companion.getMUT_DELETE_FEED())
                         presenter.notifyAllListeners(new BaseConsumer<>(requestType, feedList), false);
-                    else if (requestType == KeyUtil.MUT_DELETE_FEED_REPLY)
+                    else if (requestType == KeyUtil.Companion.getMUT_DELETE_FEED_REPLY())
                         presenter.notifyAllListeners(new BaseConsumer<>(requestType, feedReply), false);
                 } else
-                    NotifyUtil.makeText(getContext(), R.string.text_error_request, Toast.LENGTH_SHORT).show();
+                    NotifyUtil.INSTANCE.makeText(getContext(), R.string.text_error_request, Toast.LENGTH_SHORT).show();
             } else
                 Log.e(this.toString(), ErrorUtil.INSTANCE.getError(response));
         } catch (Exception e) {

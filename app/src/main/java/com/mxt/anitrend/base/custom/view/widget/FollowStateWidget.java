@@ -1,7 +1,7 @@
 package com.mxt.anitrend.base.custom.view.widget;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -64,7 +64,7 @@ public class FollowStateWidget extends FrameLayout implements CustomView, View.O
 
     public void setUserModel(UserBase model) {
         this.model = model;
-        if(presenter.getApplicationPref().isAuthenticated())
+        if(presenter.getSettings().isAuthenticated())
             if(!presenter.isCurrentUser(model))
                 setControlText();
             else
@@ -96,23 +96,23 @@ public class FollowStateWidget extends FrameLayout implements CustomView, View.O
     }
 
     private void resetFlipperState() {
-        if (binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.LOADING_STATE)
-            binding.widgetFlipper.setDisplayedChild(WidgetPresenter.CONTENT_STATE);
+        if (binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.Companion.getLOADING_STATE())
+            binding.widgetFlipper.setDisplayedChild(WidgetPresenter.Companion.getCONTENT_STATE());
     }
 
             @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.widget_flipper:
-                if (binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.CONTENT_STATE) {
+                if (binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.Companion.getCONTENT_STATE()) {
                     binding.widgetFlipper.showNext();
                     QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(false)
-                            .putVariable(KeyUtil.arg_userId, model.getId());
-                    presenter.getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-                    presenter.requestData(KeyUtil.MUT_TOGGLE_FOLLOW, getContext(), this);
+                            .putVariable(KeyUtil.Companion.getArg_userId(), model.getId());
+                    presenter.getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+                    presenter.requestData(KeyUtil.Companion.getMUT_TOGGLE_FOLLOW(), getContext(), this);
                 }
                 else
-                    NotifyUtil.makeText(getContext(), R.string.busy_please_wait, Toast.LENGTH_SHORT).show();
+                    NotifyUtil.INSTANCE.makeText(getContext(), R.string.busy_please_wait, Toast.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -131,7 +131,7 @@ public class FollowStateWidget extends FrameLayout implements CustomView, View.O
         try {
             if(response.isSuccessful()) {
                 model.toggleFollow();
-                presenter.notifyAllListeners(new BaseConsumer<>(KeyUtil.MUT_TOGGLE_FOLLOW, model), false);
+                presenter.notifyAllListeners(new BaseConsumer<>(KeyUtil.Companion.getMUT_TOGGLE_FOLLOW(), model), false);
                 setControlText();
             } else {
                 Log.e(this.toString(), ErrorUtil.INSTANCE.getError(response));

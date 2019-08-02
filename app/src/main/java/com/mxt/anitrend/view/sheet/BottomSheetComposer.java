@@ -3,8 +3,8 @@ package com.mxt.anitrend.view.sheet;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.view.View;
 
 import com.annimon.stream.IntPair;
@@ -58,9 +58,9 @@ public class BottomSheetComposer extends BottomSheetBase implements ItemClickLis
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null) {
-            feedList = getArguments().getParcelable(KeyUtil.arg_model);
-            requestType = getArguments().getInt(KeyUtil.arg_request_type);
-            user = getArguments().getParcelable(KeyUtil.arg_user_model);
+            feedList = getArguments().getParcelable(KeyUtil.Companion.getArg_model());
+            requestType = getArguments().getInt(KeyUtil.Companion.getArg_request_type());
+            user = getArguments().getParcelable(KeyUtil.Companion.getArg_user_model());
         }
     }
 
@@ -87,20 +87,20 @@ public class BottomSheetComposer extends BottomSheetBase implements ItemClickLis
         if(!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
         switch (requestType) {
-            case KeyUtil.MUT_SAVE_TEXT_FEED:
+            case KeyUtil.Companion.getMUT_SAVE_TEXT_FEED():
                 if(feedList != null) {
-                    composerWidget.setModel(feedList, KeyUtil.MUT_SAVE_TEXT_FEED);
+                    composerWidget.setModel(feedList, KeyUtil.Companion.getMUT_SAVE_TEXT_FEED());
                     composerWidget.setText(feedList.getText());
                 } else
-                    composerWidget.setRequestType(KeyUtil.MUT_SAVE_TEXT_FEED);
+                    composerWidget.setRequestType(KeyUtil.Companion.getMUT_SAVE_TEXT_FEED());
                 break;
-            case KeyUtil.MUT_SAVE_MESSAGE_FEED:
+            case KeyUtil.Companion.getMUT_SAVE_MESSAGE_FEED():
                 toolbarTitle.setText(getString(mTitle, user.getName()));
                 if(feedList != null) {
                     composerWidget.setText(feedList.getText());
                     composerWidget.setModel(feedList);
                 }
-                composerWidget.setModel(user, KeyUtil.MUT_SAVE_MESSAGE_FEED);
+                composerWidget.setModel(user, KeyUtil.Companion.getMUT_SAVE_MESSAGE_FEED());
                 break;
         }
         composerWidget.setItemClickListener(this);
@@ -110,7 +110,7 @@ public class BottomSheetComposer extends BottomSheetBase implements ItemClickLis
     @SuppressLint("SwitchIntDef")
     @Override @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void onModelChanged(BaseConsumer<FeedList> consumer) {
-        NotifyUtil.createAlerter(getActivity(), R.string.text_post_information, R.string.completed_success, R.drawable.ic_insert_emoticon_white_24dp, R.color.colorStateGreen);
+        NotifyUtil.INSTANCE.createAlerter(getActivity(), R.string.text_post_information, R.string.completed_success, R.drawable.ic_insert_emoticon_white_24dp, R.color.colorStateGreen);
         closeDialog();
     }
 
@@ -149,7 +149,7 @@ public class BottomSheetComposer extends BottomSheetBase implements ItemClickLis
                 CompatUtil.INSTANCE.hideKeyboard(getActivity());
                 break;
             default:
-                DialogUtil.createDialogAttachMedia(target.getId(), composerWidget.getEditor(), getContext());
+                DialogUtil.Companion.createDialogAttachMedia(target.getId(), composerWidget.getEditor(), getContext());
                 break;
         }
     }
@@ -173,17 +173,17 @@ public class BottomSheetComposer extends BottomSheetBase implements ItemClickLis
         }
 
         public Builder setRequestMode(@KeyUtil.RequestType int requestType) {
-            bundle.putInt(KeyUtil.arg_request_type, requestType);
+            bundle.putInt(KeyUtil.Companion.getArg_request_type(), requestType);
             return this;
         }
 
         public Builder setUserActivity(FeedList feedList) {
-            bundle.putParcelable(KeyUtil.arg_model, feedList);
+            bundle.putParcelable(KeyUtil.Companion.getArg_model(), feedList);
             return this;
         }
 
         public Builder setUserModel(UserBase userModel) {
-            bundle.putParcelable(KeyUtil.arg_user_model, userModel);
+            bundle.putParcelable(KeyUtil.Companion.getArg_user_model(), userModel);
             return this;
         }
     }

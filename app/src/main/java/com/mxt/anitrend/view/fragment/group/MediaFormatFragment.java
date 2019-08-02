@@ -2,7 +2,7 @@ package com.mxt.anitrend.view.fragment.group;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.View;
 import android.widget.Toast;
 
@@ -40,8 +40,8 @@ public class MediaFormatFragment extends FragmentBaseList<RecyclerItem, Connecti
 
     public static MediaFormatFragment newInstance(Bundle params, @KeyUtil.MediaType String mediaType, @KeyUtil.RequestType int requestType) {
         Bundle args = new Bundle(params);
-        args.putString(KeyUtil.arg_mediaType, mediaType);
-        args.putInt(KeyUtil.arg_request_type, requestType);
+        args.putString(KeyUtil.Companion.getArg_mediaType(), mediaType);
+        args.putInt(KeyUtil.Companion.getArg_request_type(), requestType);
         MediaFormatFragment fragment = new MediaFormatFragment();
         fragment.setArguments(args);
         return fragment;
@@ -56,12 +56,12 @@ public class MediaFormatFragment extends FragmentBaseList<RecyclerItem, Connecti
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null) {
-            requestType = getArguments().getInt(KeyUtil.arg_request_type);
-            id = getArguments().getLong(KeyUtil.arg_id);
-            mediaType = getArguments().getString(KeyUtil.arg_mediaType);
+            requestType = getArguments().getInt(KeyUtil.Companion.getArg_request_type());
+            id = getArguments().getLong(KeyUtil.Companion.getArg_id());
+            mediaType = getArguments().getString(KeyUtil.Companion.getArg_mediaType());
         }
-        mColumnSize = R.integer.grid_giphy_x3; isPager = true;
-        mAdapter = new GroupSeriesAdapter(getContext());
+        setMColumnSize(R.integer.grid_giphy_x3); setIsPager(true);
+        setMAdapter(new GroupSeriesAdapter(getContext()));
         setPresenter(new MediaPresenter(getContext()));
         setViewModel(true);
     }
@@ -80,11 +80,11 @@ public class MediaFormatFragment extends FragmentBaseList<RecyclerItem, Connecti
      */
     @Override
     public void makeRequest() {
-        QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(isPager)
-                .putVariable(KeyUtil.arg_id, id)
-                .putVariable(KeyUtil.arg_mediaType, mediaType)
-                .putVariable(KeyUtil.arg_page, getPresenter().getCurrentPage());
-        getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
+        QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(getIsPager())
+                .putVariable(KeyUtil.Companion.getArg_id(), id)
+                .putVariable(KeyUtil.Companion.getArg_mediaType(), mediaType)
+                .putVariable(KeyUtil.Companion.getArg_page(), getPresenter().getCurrentPage());
+        getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
         getViewModel().requestData(requestType, getContext());
     }
 
@@ -96,13 +96,13 @@ public class MediaFormatFragment extends FragmentBaseList<RecyclerItem, Connecti
                 if (pageContainer.hasPageInfo())
                     getPresenter().setPageInfo(pageContainer.getPageInfo());
                 if (!pageContainer.isEmpty())
-                    onPostProcessed(GroupingUtil.INSTANCE.groupMediaByFormat(pageContainer.getPageData(), mAdapter.getData()));
+                    onPostProcessed(GroupingUtil.INSTANCE.groupMediaByFormat(pageContainer.getPageData(), getMAdapter().getData()));
                 else
                     onPostProcessed(Collections.emptyList());
             }
         } else
             onPostProcessed(Collections.emptyList());
-        if(mAdapter.getItemCount() < 1)
+        if(getMAdapter().getItemCount() < 1)
             onPostProcessed(null);
     }
 
@@ -118,8 +118,8 @@ public class MediaFormatFragment extends FragmentBaseList<RecyclerItem, Connecti
         switch (target.getId()) {
             case R.id.container:
                 Intent intent = new Intent(getActivity(), MediaActivity.class);
-                intent.putExtra(KeyUtil.arg_id, ((MediaBase)data.getSecond()).getId());
-                intent.putExtra(KeyUtil.arg_mediaType, ((MediaBase)data.getSecond()).getType());
+                intent.putExtra(KeyUtil.Companion.getArg_id(), ((MediaBase)data.getSecond()).getId());
+                intent.putExtra(KeyUtil.Companion.getArg_mediaType(), ((MediaBase)data.getSecond()).getType());
                 CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                 break;
         }
@@ -136,12 +136,12 @@ public class MediaFormatFragment extends FragmentBaseList<RecyclerItem, Connecti
     public void onItemLongClick(View target, IntPair<RecyclerItem> data) {
         switch (target.getId()) {
             case R.id.container:
-                if(getPresenter().getApplicationPref().isAuthenticated()) {
-                    mediaActionUtil = new MediaActionUtil.Builder()
-                            .setId(((MediaBase)data.getSecond()).getId()).build(getActivity());
-                    mediaActionUtil.startSeriesAction();
+                if(getPresenter().getSettings().isAuthenticated()) {
+                    setMediaActionUtil(new MediaActionUtil.Builder()
+                            .setId(((MediaBase) data.getSecond()).getId()).build(getActivity()));
+                    getMediaActionUtil().startSeriesAction();
                 } else
-                    NotifyUtil.makeText(getContext(), R.string.info_login_req, R.drawable.ic_group_add_grey_600_18dp, Toast.LENGTH_SHORT).show();
+                    NotifyUtil.INSTANCE.makeText(getContext(), R.string.info_login_req, R.drawable.ic_group_add_grey_600_18dp, Toast.LENGTH_SHORT).show();
                 break;
         }
     }

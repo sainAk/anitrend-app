@@ -15,7 +15,6 @@ import com.mxt.anitrend.util.NotificationUtil
 import androidx.work.ListenableWorker
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import java.util.*
 
 /**
  * Created by Maxwell on 1/22/2017.
@@ -48,7 +47,7 @@ class JobDispatcherService(context: Context, workerParams: WorkerParameters) : W
      * [Result.failure]
      */
     override fun doWork(): Result {
-        if (presenter.applicationPref.isAuthenticated) {
+        if (presenter.settings.isAuthenticated) {
             val userModel = WebFactory.createService(UserModel::class.java, applicationContext)
             val userRequest = userModel.getCurrentUser(GraphUtil.getDefaultQuery(false))
             try {
@@ -59,7 +58,7 @@ class JobDispatcherService(context: Context, workerParams: WorkerParameters) : W
                     if (currentUser != null) {
                         val previousUserData = presenter.database.currentUser
                         presenter.database.saveCurrentUser(currentUser)
-                        if (previousUserData.unreadNotificationCount != currentUser.unreadNotificationCount) {
+                        if (previousUserData?.unreadNotificationCount != currentUser.unreadNotificationCount) {
                             if (currentUser.unreadNotificationCount != 0) {
                                 presenter.notifyAllListeners(BaseConsumer(KeyUtil.USER_CURRENT_REQ, currentUser), false)
                                 notificationUtil.createNotification(currentUser)

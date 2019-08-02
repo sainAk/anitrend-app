@@ -1,7 +1,7 @@
 package com.mxt.anitrend.base.custom.viewmodel
 
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
@@ -25,9 +25,7 @@ import retrofit2.Response
 
 class ViewModelBase<T>: ViewModel(), RetroCallback<T> {
 
-    val model by lazy {
-        MutableLiveData<T>()
-    }
+    val model = MutableLiveData<T>()
 
     var state: ResponseCallback? = null
 
@@ -41,7 +39,7 @@ class ViewModelBase<T>: ViewModel(), RetroCallback<T> {
         Bundle()
     }
 
-    fun setContext(context: Context?) {
+    fun setMessages(context: Context?) {
         context?.apply {
             emptyMessage = getString(R.string.layout_empty_response)
             errorMessage = getString(R.string.text_error_request)

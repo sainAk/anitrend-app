@@ -38,12 +38,12 @@ public class GroupingUtilTests {
 
     // all media relation types
     private static final String[] relationTypes = {
-            KeyUtil.ADAPTATION, KeyUtil.PREQUEL, KeyUtil.SEQUEL, KeyUtil.PARENT,
-            KeyUtil.SIDE_STORY, KeyUtil.CHARACTER, KeyUtil.SUMMARY, KeyUtil.ALTERNATIVE,
-            KeyUtil.SPIN_OFF
+            KeyUtil.Companion.getADAPTATION(), KeyUtil.Companion.getPREQUEL(), KeyUtil.Companion.getSEQUEL(), KeyUtil.Companion.getPARENT(),
+            KeyUtil.Companion.getSIDE_STORY(), KeyUtil.Companion.getCHARACTER(), KeyUtil.Companion.getSUMMARY(), KeyUtil.Companion.getALTERNATIVE(),
+            KeyUtil.Companion.getSPIN_OFF()
     };
     private static final String[] characterRoles = {
-            KeyUtil.MAIN, KeyUtil.SUPPORTING, KeyUtil.BACKGROUND
+            KeyUtil.Companion.getMAIN(), KeyUtil.Companion.getSUPPORTING(), KeyUtil.Companion.getBACKGROUND()
     };
     private static final String[] staffRoles = {
             "Character Dseign",
@@ -55,7 +55,7 @@ public class GroupingUtilTests {
 
     // a sorted list of MediaBase objects of all media formats
     private List<MediaBase> mediaOfAllFormats =
-            Stream.of(KeyUtil.MediaFormat)
+            Stream.of(KeyUtil.Companion.getMediaFormat())
                     .filter(Objects::nonNull)
                     .map(format -> {
                         MediaBase media = mock(MediaBase.class);
@@ -217,7 +217,7 @@ public class GroupingUtilTests {
     // TODO: 18/06/18 confirm whether exisiting media objects should be included in the results
     @Test
     public void groupMediaByFormat_ifTheExistingListIsNotEmpty_shouldNotReturnExistingHeaders() {
-        List<String> existingFormats = Arrays.asList(KeyUtil.MANGA, KeyUtil.OVA, KeyUtil.ONE_SHOT);
+        List<String> existingFormats = Arrays.asList(KeyUtil.Companion.getMANGA(), KeyUtil.Companion.getOVA(), KeyUtil.Companion.getONE_SHOT());
 
         List<RecyclerItem> existingItems =
                 existingFormats.stream()
@@ -361,7 +361,7 @@ public class GroupingUtilTests {
         // and the subgroup title is set to the character role
         for (int i = 0; i < media.size(); i++) {
             verify(media.get(i)).setSubGroupTitle(characterRoles[i]);
-            verify(media.get(i)).setContentType(KeyUtil.RECYCLER_TYPE_HEADER);
+            verify(media.get(i)).setContentType(KeyUtil.Companion.getRECYCLER_TYPE_HEADER());
         }
 
     }
@@ -421,7 +421,7 @@ public class GroupingUtilTests {
     // TODO: 18/06/18 confirm whether exisiting character objects should be included in the results
     @Test
     public void groupCharactersByRole_ifTheExistingListIsNotEmpty_shouldNotReturnExistingHeaders() {
-        List<String> existingRoles = Arrays.asList(KeyUtil.MAIN, KeyUtil.BACKGROUND);
+        List<String> existingRoles = Arrays.asList(KeyUtil.Companion.getMAIN(), KeyUtil.Companion.getBACKGROUND());
 
         List<RecyclerItem> existingItems =
                 existingRoles.stream()

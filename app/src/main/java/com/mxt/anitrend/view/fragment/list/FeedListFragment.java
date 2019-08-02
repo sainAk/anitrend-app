@@ -2,7 +2,7 @@ package com.mxt.anitrend.view.fragment.list;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,7 +52,7 @@ public class FeedListFragment extends FragmentBaseList<FeedList, PageContainer<F
 
     public static FeedListFragment newInstance(Bundle params, QueryContainerBuilder queryContainerBuilder) {
         Bundle args = new Bundle(params);
-        args.putParcelable(KeyUtil.arg_graph_params, queryContainerBuilder);
+        args.putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainerBuilder);
         FeedListFragment fragment = new FeedListFragment();
         fragment.setArguments(args);
         return fragment;
@@ -67,10 +67,10 @@ public class FeedListFragment extends FragmentBaseList<FeedList, PageContainer<F
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null)
-            queryContainer = getArguments().getParcelable(KeyUtil.arg_graph_params);
-        isPager = true; isFeed = true; mColumnSize = R.integer.single_list_x1;
-        hasSubscriber = true;
-        mAdapter = new FeedAdapter(getContext());
+            queryContainer = getArguments().getParcelable(KeyUtil.Companion.getArg_graph_params());
+        setIsPager(true); setIsFeed(true); setMColumnSize(R.integer.single_list_x1);
+        setHasSubscriber(true);
+        setMAdapter(new FeedAdapter(getContext()));
         setPresenter(new BasePresenter(getContext()));
         setViewModel(true);
     }
@@ -79,10 +79,10 @@ public class FeedListFragment extends FragmentBaseList<FeedList, PageContainer<F
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_post:
-                mBottomSheet = new BottomSheetComposer.Builder()
-                        .setRequestMode(KeyUtil.MUT_SAVE_TEXT_FEED)
+                setMBottomSheet(new BottomSheetComposer.Builder()
+                        .setRequestMode(KeyUtil.Companion.getMUT_SAVE_TEXT_FEED())
                         .setTitle(R.string.menu_title_new_activity_post)
-                        .build();
+                        .build());
                 showBottomSheet();
                 return true;
         }
@@ -95,16 +95,16 @@ public class FeedListFragment extends FragmentBaseList<FeedList, PageContainer<F
     @Override
     protected void updateUI() {
         injectAdapter();
-        if(!TapTargetUtil.isActive(KeyUtil.KEY_POST_TYPE_TIP) && isFeed) {
-            if (getPresenter().getApplicationPref().shouldShowTipFor(KeyUtil.KEY_POST_TYPE_TIP)) {
+        if(!TapTargetUtil.isActive(KeyUtil.Companion.getKEY_POST_TYPE_TIP()) && getIsFeed()) {
+            if (getPresenter().getSettings().shouldShowTipFor(KeyUtil.Companion.getKEY_POST_TYPE_TIP())) {
                 TapTargetUtil.buildDefault(getActivity(), R.string.tip_status_post_title, R.string.tip_status_post_text, R.id.action_post)
                         .setPromptStateChangeListener((prompt, state) -> {
                             if (state == MaterialTapTargetPrompt.STATE_NON_FOCAL_PRESSED || state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED)
-                                getPresenter().getApplicationPref().disableTipFor(KeyUtil.KEY_POST_TYPE_TIP);
+                                getPresenter().getSettings().disableTipFor(KeyUtil.Companion.getKEY_POST_TYPE_TIP());
                             if (state == MaterialTapTargetPrompt.STATE_DISMISSED)
-                                TapTargetUtil.setActive(KeyUtil.KEY_POST_TYPE_TIP, true);
+                                TapTargetUtil.setActive(KeyUtil.Companion.getKEY_POST_TYPE_TIP(), true);
                         }).show();
-                TapTargetUtil.setActive(KeyUtil.KEY_POST_TYPE_TIP, false);
+                TapTargetUtil.setActive(KeyUtil.Companion.getKEY_POST_TYPE_TIP(), false);
             }
         }
     }
@@ -114,9 +114,9 @@ public class FeedListFragment extends FragmentBaseList<FeedList, PageContainer<F
      */
     @Override
     public void makeRequest() {
-        queryContainer.putVariable(KeyUtil.arg_page, getPresenter().getCurrentPage());
-        getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        getViewModel().requestData(KeyUtil.FEED_LIST_REQ, getContext());
+        queryContainer.putVariable(KeyUtil.Companion.getArg_page(), getPresenter().getCurrentPage());
+        getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        getViewModel().requestData(KeyUtil.Companion.getFEED_LIST_REQ(), getContext());
     }
 
     @Override @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
@@ -124,35 +124,35 @@ public class FeedListFragment extends FragmentBaseList<FeedList, PageContainer<F
         Optional<IntPair<FeedList>> pairOptional;
         int pairIndex;
         switch (consumer.getRequestMode()) {
-            case KeyUtil.MUT_SAVE_TEXT_FEED:
+            case KeyUtil.Companion.getMUT_SAVE_TEXT_FEED():
                 if(consumer.getChangeModel() == null) {
-                    swipeRefreshLayout.setRefreshing(true);
+                    getSwipeRefreshLayout().setRefreshing(true);
                     onRefresh();
                 } else {
-                    pairOptional = CompatUtil.INSTANCE.findIndexOf(mAdapter.getData(), consumer.getChangeModel());
+                    pairOptional = CompatUtil.INSTANCE.findIndexOf(getMAdapter().getData(), consumer.getChangeModel());
                     if(pairOptional.isPresent()) {
                         pairIndex = pairOptional.get().getFirst();
-                        mAdapter.onItemChanged(consumer.getChangeModel(), pairIndex);
+                        getMAdapter().onItemChanged(consumer.getChangeModel(), pairIndex);
                     }
                 }
                 break;
-            case KeyUtil.MUT_SAVE_MESSAGE_FEED:
+            case KeyUtil.Companion.getMUT_SAVE_MESSAGE_FEED():
                 if(consumer.getChangeModel() == null) {
-                    swipeRefreshLayout.setRefreshing(true);
+                    getSwipeRefreshLayout().setRefreshing(true);
                     onRefresh();
                 } else {
-                    pairOptional = CompatUtil.INSTANCE.findIndexOf(mAdapter.getData(), consumer.getChangeModel());
+                    pairOptional = CompatUtil.INSTANCE.findIndexOf(getMAdapter().getData(), consumer.getChangeModel());
                     if (pairOptional.isPresent()) {
                         pairIndex = pairOptional.get().getFirst();
-                        mAdapter.onItemChanged(consumer.getChangeModel(), pairIndex);
+                        getMAdapter().onItemChanged(consumer.getChangeModel(), pairIndex);
                     }
                 }
                 break;
-            case KeyUtil.MUT_DELETE_FEED:
-                pairOptional = CompatUtil.INSTANCE.findIndexOf(mAdapter.getData(), consumer.getChangeModel());
+            case KeyUtil.Companion.getMUT_DELETE_FEED():
+                pairOptional = CompatUtil.INSTANCE.findIndexOf(getMAdapter().getData(), consumer.getChangeModel());
                 if(pairOptional.isPresent()) {
                     pairIndex = pairOptional.get().getFirst();
-                    mAdapter.onItemRemoved(pairIndex);
+                    getMAdapter().onItemRemoved(pairIndex);
                 }
                 break;
         }
@@ -174,7 +174,7 @@ public class FeedListFragment extends FragmentBaseList<FeedList, PageContainer<F
                 onPostProcessed(Collections.emptyList());
         } else
             onPostProcessed(Collections.emptyList());
-        if(mAdapter.getItemCount() < 1)
+        if(getMAdapter().getItemCount() < 1)
             onPostProcessed(null);
     }
 
@@ -192,38 +192,38 @@ public class FeedListFragment extends FragmentBaseList<FeedList, PageContainer<F
             case R.id.series_image:
                 MediaBase series = data.getSecond().getMedia();
                 intent = new Intent(getActivity(), MediaActivity.class);
-                intent.putExtra(KeyUtil.arg_id, series.getId());
-                intent.putExtra(KeyUtil.arg_mediaType, series.getType());
+                intent.putExtra(KeyUtil.Companion.getArg_id(), series.getId());
+                intent.putExtra(KeyUtil.Companion.getArg_mediaType(), series.getType());
                 CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                 break;
             case R.id.widget_comment:
                 intent = new Intent(getActivity(), CommentActivity.class);
-                intent.putExtra(KeyUtil.arg_model, data.getSecond());
+                intent.putExtra(KeyUtil.Companion.getArg_model(), data.getSecond());
                 CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                 break;
             case R.id.widget_edit:
-                mBottomSheet = new BottomSheetComposer.Builder().setUserActivity(data.getSecond())
-                        .setRequestMode(KeyUtil.MUT_SAVE_TEXT_FEED)
+                setMBottomSheet(new BottomSheetComposer.Builder().setUserActivity(data.getSecond())
+                        .setRequestMode(KeyUtil.Companion.getMUT_SAVE_TEXT_FEED())
                         .setTitle(R.string.edit_status_title)
-                        .build();
+                        .build());
                 showBottomSheet();
                 break;
             case R.id.widget_users:
                 List<UserBase> likes = data.getSecond().getLikes();
                 if(likes.size() > 0) {
-                    mBottomSheet = new BottomSheetUsers.Builder()
+                    setMBottomSheet(new BottomSheetUsers.Builder()
                             .setModel(likes)
                             .setTitle(R.string.title_bottom_sheet_likes)
-                            .build();
+                            .build());
                     showBottomSheet();
                 } else
-                    NotifyUtil.makeText(getActivity(), R.string.text_no_likes, Toast.LENGTH_SHORT).show();
+                    NotifyUtil.INSTANCE.makeText(getActivity(), R.string.text_no_likes, Toast.LENGTH_SHORT).show();
                 break;
             case R.id.user_avatar:
                 if(data.getSecond().getUser() != null) {
                     intent = new Intent(getActivity(), ProfileActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra(KeyUtil.arg_id, data.getSecond().getUser().getId());
+                    intent.putExtra(KeyUtil.Companion.getArg_id(), data.getSecond().getUser().getId());
                     CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                 }
                 break;
@@ -241,12 +241,12 @@ public class FeedListFragment extends FragmentBaseList<FeedList, PageContainer<F
     public void onItemLongClick(View target, IntPair<FeedList> data) {
         switch (target.getId()) {
             case R.id.series_image:
-                if(getPresenter().getApplicationPref().isAuthenticated()) {
-                    mediaActionUtil = new MediaActionUtil.Builder()
-                            .setId(data.getSecond().getMedia().getId()).build(getActivity());
-                    mediaActionUtil.startSeriesAction();
+                if(getPresenter().getSettings().isAuthenticated()) {
+                    setMediaActionUtil(new MediaActionUtil.Builder()
+                            .setId(data.getSecond().getMedia().getId()).build(getActivity()));
+                    getMediaActionUtil().startSeriesAction();
                 } else
-                    NotifyUtil.makeText(getContext(), R.string.info_login_req, R.drawable.ic_group_add_grey_600_18dp, Toast.LENGTH_SHORT).show();
+                    NotifyUtil.INSTANCE.makeText(getContext(), R.string.info_login_req, R.drawable.ic_group_add_grey_600_18dp, Toast.LENGTH_SHORT).show();
                 break;
         }
     }

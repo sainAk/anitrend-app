@@ -3,7 +3,7 @@ package com.mxt.anitrend.model.entity.container.request;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.mxt.anitrend.model.api.converter.GraphQLConverter;
+import com.mxt.anitrend.model.api.converter.response.AniGraphResponseConverter;
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -11,7 +11,7 @@ import java.util.WeakHashMap;
 /**
  * Actual query and variable container
  * Use case can be found here:
- * @see GraphQLConverter#requestBodyConverter
+ * @see AniGraphResponseConverter#requestBodyConverter
  */
 public class QueryContainer implements Parcelable {
 

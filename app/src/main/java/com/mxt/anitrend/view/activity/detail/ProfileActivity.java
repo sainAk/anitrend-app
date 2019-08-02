@@ -1,11 +1,11 @@
 package com.mxt.anitrend.view.activity.detail;
 
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.Nullable;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,7 +24,6 @@ import com.mxt.anitrend.util.GraphUtil;
 import com.mxt.anitrend.util.KeyUtil;
 import com.mxt.anitrend.util.NotifyUtil;
 import com.mxt.anitrend.util.TutorialUtil;
-import com.mxt.anitrend.view.activity.base.ImagePreviewActivity;
 import com.mxt.anitrend.view.sheet.BottomSheetComposer;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 
@@ -55,20 +54,20 @@ public class ProfileActivity extends ActivityBase<UserBase, BasePresenter> imple
         setSupportActionBar(toolbar);
         disableToolbarTitle();
         setViewModel(true);
-        if(getIntent().hasExtra(KeyUtil.arg_id))
-            id = getIntent().getLongExtra(KeyUtil.arg_id, -1);
-        if(getIntent().hasExtra(KeyUtil.arg_userName))
-            userName = getIntent().getStringExtra(KeyUtil.arg_userName);
+        if(getIntent().hasExtra(KeyUtil.Companion.getArg_id()))
+            setId(getIntent().getLongExtra(KeyUtil.Companion.getArg_id(), -1));
+        if(getIntent().hasExtra(KeyUtil.Companion.getArg_userName()))
+            userName = getIntent().getStringExtra(KeyUtil.Companion.getArg_userName());
     }
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mActionBar.setHomeAsUpIndicator(CompatUtil.INSTANCE.getDrawable(this, R.drawable.ic_arrow_back_white_24dp));
+        getMActionBar().setHomeAsUpIndicator(CompatUtil.INSTANCE.getDrawable(this, R.drawable.ic_arrow_back_white_24dp));
         ProfilePageAdapter profilePageAdapter = new ProfilePageAdapter(getSupportFragmentManager(), getApplicationContext());
         profilePageAdapter.setParams(getIntent().getExtras());
         viewPager.setAdapter(profilePageAdapter);
-        viewPager.setOffscreenPageLimit(offScreenLimit);
+        viewPager.setOffscreenPageLimit(getOffScreenLimit());
         smartTabLayout.setViewPager(viewPager);
     }
 
@@ -84,7 +83,7 @@ public class ProfileActivity extends ActivityBase<UserBase, BasePresenter> imple
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.profile_menu, menu);
-        if(!getPresenter().isCurrentUser(id, userName))
+        if(!getPresenter().isCurrentUser(getId(), userName))
             menu.findItem(R.id.action_notification).setVisible(false);
         return super.onCreateOptionsMenu(menu);
     }
@@ -101,14 +100,14 @@ public class ProfileActivity extends ActivityBase<UserBase, BasePresenter> imple
                     if (getPresenter().isCurrentUser(model.getId()))
                         startActivity(new Intent(ProfileActivity.this, MessageActivity.class));
                     else {
-                        mBottomSheet = new BottomSheetComposer.Builder().setUserModel(model)
-                                .setRequestMode(KeyUtil.MUT_SAVE_MESSAGE_FEED)
+                        setMBottomSheet(new BottomSheetComposer.Builder().setUserModel(model)
+                                .setRequestMode(KeyUtil.Companion.getMUT_SAVE_MESSAGE_FEED())
                                 .setTitle(R.string.text_message_to)
-                                .build();
-                        mBottomSheet.show(getSupportFragmentManager(), mBottomSheet.getTag());
+                                .build());
+                        getMBottomSheet().show(getSupportFragmentManager(), getMBottomSheet().getTag());
                     }
                 } else
-                    NotifyUtil.makeText(this, R.string.text_activity_loading, Toast.LENGTH_SHORT).show();
+                    NotifyUtil.INSTANCE.makeText(this, R.string.text_activity_loading, Toast.LENGTH_SHORT).show();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -120,8 +119,8 @@ public class ProfileActivity extends ActivityBase<UserBase, BasePresenter> imple
      */
     @Override
     protected void onActivityReady() {
-        if(id == -1 && userName == null)
-            NotifyUtil.createAlerter(this, R.string.text_user_model, R.string.layout_empty_response, R.drawable.ic_warning_white_18dp, R.color.colorStateRed);
+        if(getId() == -1 && userName == null)
+            NotifyUtil.INSTANCE.createAlerter(this, R.string.text_user_model, R.string.layout_empty_response, R.drawable.ic_warning_white_18dp, R.color.colorStateRed);
         else
             makeRequest();
     }
@@ -134,15 +133,15 @@ public class ProfileActivity extends ActivityBase<UserBase, BasePresenter> imple
         if(getPresenter().isCurrentUser(model.getId())) {
             new TutorialUtil().setContext(this)
                     .setFocalColour(R.color.colorGrey600)
-                    .setTapTarget(KeyUtil.KEY_NOTIFICATION_TIP)
-                    .setApplicationPref(getPresenter().getApplicationPref())
+                    .setTapTarget(KeyUtil.Companion.getKEY_NOTIFICATION_TIP())
+                    .setSettings(getPresenter().getSettings())
                     .showTapTarget(R.string.tip_notifications_title,
                             R.string.tip_notifications_text, R.id.action_notification);
         } else {
             new TutorialUtil().setContext(this)
                     .setFocalColour(R.color.colorGrey600)
-                    .setTapTarget(KeyUtil.KEY_MESSAGE_TIP)
-                    .setApplicationPref(getPresenter().getApplicationPref())
+                    .setTapTarget(KeyUtil.Companion.getKEY_MESSAGE_TIP())
+                    .setSettings(getPresenter().getSettings())
                     .showTapTarget(R.string.tip_compose_message_title,
                             R.string.tip_compose_message_text, R.id.action_message);
         }
@@ -151,12 +150,12 @@ public class ProfileActivity extends ActivityBase<UserBase, BasePresenter> imple
     @Override
     protected void makeRequest() {
         QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(false)
-                .putVariable(KeyUtil.arg_userName, userName);
-        if(id > 0)
-            queryContainer.putVariable(KeyUtil.arg_id, id);
+                .putVariable(KeyUtil.Companion.getArg_userName(), userName);
+        if(getId() > 0)
+            queryContainer.putVariable(KeyUtil.Companion.getArg_id(), getId());
 
-        getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        getViewModel().requestData(KeyUtil.USER_BASE_REQ, getApplicationContext());
+        getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        getViewModel().requestData(KeyUtil.Companion.getUSER_BASE_REQ(), getApplicationContext());
     }
 
     /**
@@ -168,11 +167,11 @@ public class ProfileActivity extends ActivityBase<UserBase, BasePresenter> imple
     public void onChanged(@Nullable UserBase model) {
         super.onChanged(model);
         if(model != null) {
-            this.id = model.getId();
+            this.setId(model.getId());
             this.model = model;
             updateUI();
         } else
-            NotifyUtil.createAlerter(this, R.string.text_user_model, R.string.layout_empty_response, R.drawable.ic_warning_white_18dp, R.color.colorStateRed);
+            NotifyUtil.INSTANCE.createAlerter(this, R.string.text_user_model, R.string.layout_empty_response, R.drawable.ic_warning_white_18dp, R.color.colorStateRed);
     }
 
     @Override

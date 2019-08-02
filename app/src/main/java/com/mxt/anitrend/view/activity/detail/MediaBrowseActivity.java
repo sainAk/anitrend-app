@@ -1,10 +1,10 @@
 package com.mxt.anitrend.view.activity.detail;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.appcompat.widget.Toolbar;
 import android.text.Spanned;
 
 import com.mxt.anitrend.R;
@@ -41,9 +41,9 @@ public class MediaBrowseActivity extends ActivityBase<MediaBase, MediaPresenter>
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        if(getIntent().hasExtra(KeyUtil.arg_activity_tag)) {
-            Spanned activityTitle = MarkDownUtil.INSTANCE.convert(getIntent().getStringExtra(KeyUtil.arg_activity_tag));
-            mActionBar.setTitle(activityTitle);
+        if(getIntent().hasExtra(KeyUtil.Companion.getArg_activity_tag())) {
+            Spanned activityTitle = MarkDownUtil.INSTANCE.convert(getIntent().getStringExtra(KeyUtil.Companion.getArg_activity_tag()));
+            getMActionBar().setTitle(activityTitle);
         }
         onActivityReady();
     }
@@ -59,10 +59,10 @@ public class MediaBrowseActivity extends ActivityBase<MediaBase, MediaPresenter>
 
     @Override
     protected void updateUI() {
-        mFragment = MediaBrowseFragment.newInstance(getIntent().getExtras());
+        setMFragment(MediaBrowseFragment.newInstance(getIntent().getExtras()));
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.content_frame, mFragment, mFragment.TAG);
+        fragmentTransaction.replace(R.id.content_frame, getMFragment(), getMFragment().getTAG());
         fragmentTransaction.commit();
     }
 

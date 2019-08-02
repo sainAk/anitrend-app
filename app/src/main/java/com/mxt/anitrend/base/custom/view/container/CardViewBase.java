@@ -1,11 +1,11 @@
 package com.mxt.anitrend.base.custom.view.container;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.CardView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 
+import com.google.android.material.card.MaterialCardView;
 import com.mxt.anitrend.R;
 import com.mxt.anitrend.base.interfaces.view.CustomView;
 import com.mxt.anitrend.util.CompatUtil;
@@ -21,7 +21,7 @@ import com.mxt.anitrend.util.CompatUtil;
  * app:cardBackgroundColor="?attr/cardColor"
  */
 
-public class CardViewBase extends CardView implements CustomView {
+public class CardViewBase extends MaterialCardView implements CustomView {
 
     public CardViewBase(@NonNull Context context) {
         super(context);

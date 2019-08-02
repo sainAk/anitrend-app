@@ -2,9 +2,9 @@ package com.mxt.anitrend.view.sheet;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
-import android.support.v7.widget.AppCompatButton;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.appcompat.widget.AppCompatButton;
 import android.view.View;
 
 import com.mxt.anitrend.R;
@@ -90,7 +90,7 @@ public class BottomSheetMessage extends BottomSheetBase implements View.OnClickL
         }
 
         public BottomSheetBuilder setText(@StringRes int text) {
-            bundle.putInt(KeyUtil.arg_text, text);
+            bundle.putInt(KeyUtil.Companion.getArg_text(), text);
             return this;
         }
     }

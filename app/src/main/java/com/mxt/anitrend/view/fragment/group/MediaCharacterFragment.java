@@ -2,7 +2,7 @@ package com.mxt.anitrend.view.fragment.group;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.View;
 
 import com.annimon.stream.IntPair;
@@ -48,10 +48,10 @@ public class MediaCharacterFragment extends FragmentBaseList<RecyclerItem, Conne
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null) {
-            mediaId = getArguments().getLong(KeyUtil.arg_id);
-            mediaType = getArguments().getString(KeyUtil.arg_mediaType);
-        } mColumnSize = R.integer.grid_giphy_x3; isPager = true;
-        mAdapter = new GroupCharacterAdapter(getContext());
+            mediaId = getArguments().getLong(KeyUtil.Companion.getArg_id());
+            mediaType = getArguments().getString(KeyUtil.Companion.getArg_mediaType());
+        } setMColumnSize(R.integer.grid_giphy_x3); setIsPager(true);
+        setMAdapter(new GroupCharacterAdapter(getContext()));
         setPresenter(new MediaPresenter(getContext()));
         setViewModel(true);
     }
@@ -70,13 +70,13 @@ public class MediaCharacterFragment extends FragmentBaseList<RecyclerItem, Conne
      */
     @Override
     public void makeRequest() {
-        QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(isPager)
-                .putVariable(KeyUtil.arg_id, mediaId)
-                .putVariable(KeyUtil.arg_type, mediaType)
-                .putVariable(KeyUtil.arg_page, getPresenter().getCurrentPage());
+        QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(getIsPager())
+                .putVariable(KeyUtil.Companion.getArg_id(), mediaId)
+                .putVariable(KeyUtil.Companion.getArg_type(), mediaType)
+                .putVariable(KeyUtil.Companion.getArg_page(), getPresenter().getCurrentPage());
 
-        getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
-        getViewModel().requestData(KeyUtil.MEDIA_CHARACTERS_REQ, getContext());
+        getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
+        getViewModel().requestData(KeyUtil.Companion.getMEDIA_CHARACTERS_REQ(), getContext());
     }
 
     @Override
@@ -87,13 +87,13 @@ public class MediaCharacterFragment extends FragmentBaseList<RecyclerItem, Conne
                 if (edgeContainer.hasPageInfo())
                     getPresenter().setPageInfo(edgeContainer.getPageInfo());
                 if (!edgeContainer.isEmpty())
-                    onPostProcessed(GroupingUtil.INSTANCE.groupCharactersByRole(edgeContainer.getEdges(), mAdapter.getData()));
+                    onPostProcessed(GroupingUtil.INSTANCE.groupCharactersByRole(edgeContainer.getEdges(), getMAdapter().getData()));
                 else
                     onPostProcessed(Collections.emptyList());
             }
         } else
             onPostProcessed(Collections.emptyList());
-        if(mAdapter.getItemCount() < 1)
+        if(getMAdapter().getItemCount() < 1)
             onPostProcessed(null);
     }
 
@@ -109,7 +109,7 @@ public class MediaCharacterFragment extends FragmentBaseList<RecyclerItem, Conne
         switch (target.getId()) {
             case R.id.container:
                 Intent intent = new Intent(getActivity(), CharacterActivity.class);
-                intent.putExtra(KeyUtil.arg_id, ((CharacterBase)data.getSecond()).getId());
+                intent.putExtra(KeyUtil.Companion.getArg_id(), ((CharacterBase)data.getSecond()).getId());
                 CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                 break;
         }

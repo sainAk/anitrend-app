@@ -1,7 +1,7 @@
 package com.mxt.anitrend.view.fragment.list;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
@@ -32,10 +32,10 @@ public class AiringListFragment extends MediaListFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         UserBase userBase = getPresenter().getDatabase().getCurrentUser();
-        userId = userBase.getId(); userName = userBase.getName(); mediaType = KeyUtil.ANIME;
-        ((MediaListAdapter)mAdapter).setCurrentUser(userName);
+        userId = userBase.getId(); userName = userBase.getName(); mediaType = KeyUtil.Companion.getANIME();
+        ((MediaListAdapter) getMAdapter()).setCurrentUser(userName);
         queryContainer = GraphUtil.INSTANCE.getDefaultQuery(false)
-                .putVariable(KeyUtil.arg_statusIn, KeyUtil.CURRENT);
+                .putVariable(KeyUtil.Companion.getArg_statusIn(), KeyUtil.Companion.getCURRENT());
     }
 
     /**
@@ -57,10 +57,10 @@ public class AiringListFragment extends MediaListFragment {
                     MediaListCollection mediaListCollection = mediaOptional.get();
 
                     List<MediaList> mediaList = Stream.of(mediaListCollection.getEntries())
-                            .filter(media -> CompatUtil.INSTANCE.equals(media.getMedia().getStatus(), KeyUtil.RELEASING))
+                            .filter(media -> CompatUtil.INSTANCE.equals(media.getMedia().getStatus(), KeyUtil.Companion.getRELEASING()))
                             .toList();
 
-                    if(MediaListUtil.isTitleSort(getPresenter().getApplicationPref().getMediaListSort()))
+                    if(MediaListUtil.isTitleSort(getPresenter().getSettings().getMediaListSort()))
                         sortMediaListByTitle(mediaList);
                     else
                         onPostProcessed(mediaList);
@@ -72,7 +72,7 @@ public class AiringListFragment extends MediaListFragment {
                 onPostProcessed(Collections.emptyList());
         } else
             onPostProcessed(Collections.emptyList());
-        if(mAdapter.getItemCount() < 1)
+        if(getMAdapter().getItemCount() < 1)
             onPostProcessed(null);
     }
 }

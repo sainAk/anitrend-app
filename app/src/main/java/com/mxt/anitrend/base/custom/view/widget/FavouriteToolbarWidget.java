@@ -3,8 +3,8 @@ package com.mxt.anitrend.base.custom.view.widget;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -75,7 +75,7 @@ public class FavouriteToolbarWidget extends FrameLayout implements CustomView, R
         presenter = new WidgetPresenter<>(getContext());
         binding = WidgetToolbarFavouriteBinding.inflate(CompatUtil.INSTANCE.getLayoutInflater(getContext()), this, true);
         queryContainer = GraphUtil.INSTANCE.getDefaultQuery(false)
-                .putVariable(KeyUtil.arg_page_limit, KeyUtil.SINGLE_ITEM_LIMIT);
+                .putVariable(KeyUtil.Companion.getArg_page_limit(), KeyUtil.Companion.getSINGLE_ITEM_LIMIT());
         binding.setOnClickEvent(this);
     }
 
@@ -90,39 +90,39 @@ public class FavouriteToolbarWidget extends FrameLayout implements CustomView, R
     }
 
     private void resetFlipperState() {
-        if(binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.LOADING_STATE)
-            binding.widgetFlipper.setDisplayedChild(WidgetPresenter.CONTENT_STATE);
+        if(binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.Companion.getLOADING_STATE())
+            binding.widgetFlipper.setDisplayedChild(WidgetPresenter.Companion.getCONTENT_STATE());
     }
 
     public void setModel(StaffBase staffBase) {
         this.staffBase = staffBase;
         setIconType();
-        queryContainer.putVariable(KeyUtil.arg_staffId, staffBase.getId());
-        presenter.getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
+        queryContainer.putVariable(KeyUtil.Companion.getArg_staffId(), staffBase.getId());
+        presenter.getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
         binding.widgetFlipper.setVisibility(VISIBLE);
     }
 
     public void setModel(CharacterBase characterBase) {
         this.characterBase = characterBase;
         setIconType();
-        queryContainer.putVariable(KeyUtil.arg_characterId, characterBase.getId());
-        presenter.getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
+        queryContainer.putVariable(KeyUtil.Companion.getArg_characterId(), characterBase.getId());
+        presenter.getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
         binding.widgetFlipper.setVisibility(VISIBLE);
     }
 
     public void setModel(StudioBase studioBase) {
         this.studioBase = studioBase;
         setIconType();
-        queryContainer.putVariable(KeyUtil.arg_studioId, studioBase.getId());
-        presenter.getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
+        queryContainer.putVariable(KeyUtil.Companion.getArg_studioId(), studioBase.getId());
+        presenter.getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
         binding.widgetFlipper.setVisibility(VISIBLE);
     }
 
     public void setModel(MediaBase mediaBase) {
         this.mediaBase = mediaBase;
         setIconType();
-        queryContainer.putVariable(MediaUtil.isAnimeType(mediaBase) ? KeyUtil.arg_animeId : KeyUtil.arg_mangaId, mediaBase.getId());
-        presenter.getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
+        queryContainer.putVariable(MediaUtil.isAnimeType(mediaBase) ? KeyUtil.Companion.getArg_animeId() : KeyUtil.Companion.getArg_mangaId(), mediaBase.getId());
+        presenter.getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
         binding.widgetFlipper.setVisibility(VISIBLE);
     }
 
@@ -133,22 +133,22 @@ public class FavouriteToolbarWidget extends FrameLayout implements CustomView, R
 
     @Override
     public void onClick(View view) {
-        if(presenter.getApplicationPref().isAuthenticated())
+        if(presenter.getSettings().isAuthenticated())
             switch (view.getId()) {
                 case R.id.widget_flipper:
                     if (isModelSet()) {
-                        if (binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.CONTENT_STATE) {
+                        if (binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.Companion.getCONTENT_STATE()) {
                             binding.widgetFlipper.showNext();
-                            presenter.requestData(KeyUtil.MUT_TOGGLE_FAVOURITE, getContext(), this);
+                            presenter.requestData(KeyUtil.Companion.getMUT_TOGGLE_FAVOURITE(), getContext(), this);
                         }
                         else
-                            NotifyUtil.makeText(getContext(), R.string.busy_please_wait, Toast.LENGTH_SHORT).show();
+                            NotifyUtil.INSTANCE.makeText(getContext(), R.string.busy_please_wait, Toast.LENGTH_SHORT).show();
                     } else
-                        NotifyUtil.makeText(getContext(), R.string.text_activity_loading, Toast.LENGTH_SHORT).show();
+                        NotifyUtil.INSTANCE.makeText(getContext(), R.string.text_activity_loading, Toast.LENGTH_SHORT).show();
                     break;
             }
             else
-                NotifyUtil.makeText(getContext(), R.string.info_login_req, R.drawable.ic_group_add_grey_600_18dp, Toast.LENGTH_SHORT).show();
+                NotifyUtil.INSTANCE.makeText(getContext(), R.string.info_login_req, R.drawable.ic_group_add_grey_600_18dp, Toast.LENGTH_SHORT).show();
     }
 
     private void setIconType() {
@@ -190,7 +190,7 @@ public class FavouriteToolbarWidget extends FrameLayout implements CustomView, R
                 setIconType();
             } else {
                 Log.e(toString(), ErrorUtil.INSTANCE.getError(response));
-                NotifyUtil.makeText(getContext(), R.string.text_error_request, Toast.LENGTH_SHORT).show();
+                NotifyUtil.INSTANCE.makeText(getContext(), R.string.text_error_request, Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
             e.printStackTrace();

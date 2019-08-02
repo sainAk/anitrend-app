@@ -64,13 +64,13 @@ public class MediaUtilTests {
 
     @Test
     public void isAnimeType_givenAnime_shouldReturnTrue() {
-        when(media.getType()).thenReturn(ANIME);
+        when(media.getType()).thenReturn(Companion.getANIME());
         assertThat(MediaUtil.isAnimeType(media), is(true));
     }
 
     @Test
     public void isAnimeType_givenManga_shouldReturnFalse() {
-        when(media.getType()).thenReturn(MANGA);
+        when(media.getType()).thenReturn(Companion.getMANGA());
         assertThat(MediaUtil.isAnimeType(media), is(false));
     }
 
@@ -85,13 +85,13 @@ public class MediaUtilTests {
 
     @Test
     public void isMangaType_givenAnime_shouldReturnFalse() {
-        when(media.getType()).thenReturn(ANIME);
+        when(media.getType()).thenReturn(Companion.getANIME());
         assertThat(MediaUtil.isMangaType(media), is(false));
     }
 
     @Test
     public void isMangaType_givenManga_shouldReturnTrue() {
-        when(media.getType()).thenReturn(MANGA);
+        when(media.getType()).thenReturn(Companion.getMANGA());
         assertThat(MediaUtil.isMangaType(media), is(true));
     }
 
@@ -105,7 +105,7 @@ public class MediaUtilTests {
         //noinspection UnnecessaryLocalVariable
         int progress = episodes;
 
-        when(media.getType()).thenReturn(ANIME);
+        when(media.getType()).thenReturn(Companion.getANIME());
         when(list.getProgress()).thenReturn(progress);
         when(media.getEpisodes()).thenReturn(episodes);
 
@@ -117,7 +117,7 @@ public class MediaUtilTests {
         int episodes = 10;
         int progress = 3;
 
-        when(media.getType()).thenReturn(ANIME);
+        when(media.getType()).thenReturn(Companion.getANIME());
         when(list.getProgress()).thenReturn(progress);
         when(media.getEpisodes()).thenReturn(episodes);
 
@@ -129,7 +129,7 @@ public class MediaUtilTests {
         int episodes = 10;
         int progress = 15;
 
-        when(media.getType()).thenReturn(ANIME);
+        when(media.getType()).thenReturn(Companion.getANIME());
         when(list.getProgress()).thenReturn(progress);
         when(media.getEpisodes()).thenReturn(episodes);
 
@@ -142,7 +142,7 @@ public class MediaUtilTests {
         //noinspection UnnecessaryLocalVariable
         int progress = chapters;
 
-        when(media.getType()).thenReturn(MANGA);
+        when(media.getType()).thenReturn(Companion.getMANGA());
         when(list.getProgress()).thenReturn(progress);
         when(media.getChapters()).thenReturn(chapters);
 
@@ -154,7 +154,7 @@ public class MediaUtilTests {
         int chapters = 10;
         int progress = 7;
 
-        when(media.getType()).thenReturn(MANGA);
+        when(media.getType()).thenReturn(Companion.getMANGA());
         when(list.getProgress()).thenReturn(progress);
         when(media.getChapters()).thenReturn(chapters);
 
@@ -167,7 +167,7 @@ public class MediaUtilTests {
         //noinspection UnnecessaryLocalVariable
         int progress = 20;
 
-        when(media.getType()).thenReturn(MANGA);
+        when(media.getType()).thenReturn(Companion.getMANGA());
         when(list.getProgress()).thenReturn(progress);
         when(media.getChapters()).thenReturn(chapters);
 
@@ -180,14 +180,14 @@ public class MediaUtilTests {
 
     @Test
     public void isAllowedStatus_ifMediaIsNotYetReleased_shouldReturnFalse() {
-        when(media.getStatus()).thenReturn(NOT_YET_RELEASED);
+        when(media.getStatus()).thenReturn(Companion.getNOT_YET_RELEASED());
         assertThat(MediaUtil.isAllowedStatus(list), is(false));
     }
 
     @Test
     public void isAllowedStatus_forAnyOtherStatus_shouldReturnTrue() {
-        for (String status : MediaStatus) {
-            if (!NOT_YET_RELEASED.equals(status)) {
+        for (String status : Companion.getMediaStatus()) {
+            if (!Companion.getNOT_YET_RELEASED().equals(status)) {
                 when(media.getStatus()).thenReturn(status);
                 assertThat("Incrementing should be allowed for status: " + status,
                         MediaUtil.isAllowedStatus(list), is(true));
@@ -261,11 +261,11 @@ public class MediaUtilTests {
                     return list;
                 }).collect(Collectors.toList());
 
-        releasing.forEach(media -> when(media.getMedia().getStatus()).thenReturn(RELEASING));
+        releasing.forEach(media -> when(media.getMedia().getStatus()).thenReturn(Companion.getRELEASING()));
 
         List<MediaList> notReleasing =
-                Stream.of(MediaStatus)
-                        .filter(status -> !RELEASING.equals(status))
+                Stream.of(Companion.getMediaStatus())
+                        .filter(status -> !Companion.getRELEASING().equals(status))
                         .map(status -> {
                             MediaBase media = mock(MediaBase.class);
                             when(media.getStatus()).thenReturn(status);

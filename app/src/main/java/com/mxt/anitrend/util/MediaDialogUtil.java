@@ -3,7 +3,7 @@ package com.mxt.anitrend.util;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.Html;
 import android.util.Log;
 import android.widget.Toast;
@@ -71,14 +71,14 @@ final class MediaDialogUtil extends DialogUtil {
     private static void onDialogPositive(Context context, CustomSeriesManageBase seriesManageBase, MaterialDialog dialog) {
         dialog.dismiss();
 
-        ProgressDialog progressDialog = NotifyUtil.createProgressDialog(context, R.string.text_processing_request);
+        ProgressDialog progressDialog = NotifyUtil.INSTANCE.createProgressDialog(context, R.string.text_processing_request);
         progressDialog.show();
 
         WidgetPresenter<MediaList> presenter = new WidgetPresenter<>(context);
         Bundle params = seriesManageBase.persistChanges();
         presenter.setParams(params);
 
-        @KeyUtil.RequestType int requestType = KeyUtil.MUT_SAVE_MEDIA_LIST;
+        @KeyUtil.RequestType int requestType = KeyUtil.Companion.getMUT_SAVE_MEDIA_LIST();
 
         presenter.requestData(requestType, context, new RetroCallback<MediaList>() {
             @Override
@@ -90,10 +90,10 @@ final class MediaDialogUtil extends DialogUtil {
                     if(response.isSuccessful() && (responseBody = response.body()) != null) {
                         responseBody.setMedia(modelClone.getMedia());
                         presenter.notifyAllListeners(new BaseConsumer<>(requestType, responseBody), false);
-                        NotifyUtil.makeText(context, context.getString(R.string.text_changes_saved), R.drawable.ic_check_circle_white_24dp, Toast.LENGTH_SHORT).show();
+                        NotifyUtil.INSTANCE.makeText(context, context.getString(R.string.text_changes_saved), R.drawable.ic_check_circle_white_24dp, Toast.LENGTH_SHORT).show();
                     } else {
                         Log.e(this.toString(), ErrorUtil.INSTANCE.getError(response));
-                        NotifyUtil.makeText(context, context.getString(R.string.text_error_request), R.drawable.ic_warning_white_18dp, Toast.LENGTH_SHORT).show();
+                        NotifyUtil.INSTANCE.makeText(context, context.getString(R.string.text_error_request), R.drawable.ic_warning_white_18dp, Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -106,7 +106,7 @@ final class MediaDialogUtil extends DialogUtil {
                 throwable.printStackTrace();
                 try {
                     progressDialog.dismiss();
-                    NotifyUtil.makeText(context, context.getString(R.string.text_error_request), R.drawable.ic_warning_white_18dp, Toast.LENGTH_SHORT).show();
+                    NotifyUtil.INSTANCE.makeText(context, context.getString(R.string.text_error_request), R.drawable.ic_warning_white_18dp, Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.e(this.toString(), e.getLocalizedMessage());
@@ -124,7 +124,7 @@ final class MediaDialogUtil extends DialogUtil {
     private static void onDialogNegative(Context context, CustomSeriesManageBase seriesManageBase, MaterialDialog dialog) {
         dialog.dismiss();
 
-        ProgressDialog progressDialog = NotifyUtil.createProgressDialog(context, R.string.text_processing_request);
+        ProgressDialog progressDialog = NotifyUtil.INSTANCE.createProgressDialog(context, R.string.text_processing_request);
         progressDialog.show();
 
         seriesManageBase.persistChanges();
@@ -133,7 +133,7 @@ final class MediaDialogUtil extends DialogUtil {
         Bundle params = seriesManageBase.persistChanges();
         presenter.setParams(params);
 
-        @KeyUtil.RequestType int requestType = KeyUtil.MUT_DELETE_MEDIA_LIST;
+        @KeyUtil.RequestType int requestType = KeyUtil.Companion.getMUT_DELETE_MEDIA_LIST();
 
         presenter.requestData(requestType, context, new RetroCallback<DeleteState>() {
             @Override
@@ -144,11 +144,11 @@ final class MediaDialogUtil extends DialogUtil {
                     if(response.isSuccessful() && (deleteState = response.body()) != null) {
                         if(deleteState.isDeleted()) {
                             presenter.notifyAllListeners(new BaseConsumer<>(requestType, seriesManageBase.getModel()), false);
-                            NotifyUtil.makeText(context, context.getString(R.string.text_changes_saved), R.drawable.ic_check_circle_white_24dp, Toast.LENGTH_SHORT).show();
+                            NotifyUtil.INSTANCE.makeText(context, context.getString(R.string.text_changes_saved), R.drawable.ic_check_circle_white_24dp, Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         Log.e(this.toString(), ErrorUtil.INSTANCE.getError(response));
-                        NotifyUtil.makeText(context, context.getString(R.string.text_error_request), R.drawable.ic_warning_white_18dp, Toast.LENGTH_SHORT).show();
+                        NotifyUtil.INSTANCE.makeText(context, context.getString(R.string.text_error_request), R.drawable.ic_warning_white_18dp, Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -160,7 +160,7 @@ final class MediaDialogUtil extends DialogUtil {
                 throwable.printStackTrace();
                 try {
                     progressDialog.dismiss();
-                    NotifyUtil.makeText(context, context.getString(R.string.text_error_request), R.drawable.ic_warning_white_18dp, Toast.LENGTH_SHORT).show();
+                    NotifyUtil.INSTANCE.makeText(context, context.getString(R.string.text_error_request), R.drawable.ic_warning_white_18dp, Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -175,7 +175,7 @@ final class MediaDialogUtil extends DialogUtil {
      * @param context from a fragment activity derived class
      */
     private static CustomSeriesManageBase buildManagerType(Context context, @KeyUtil.MediaType String seriesType) {
-        if(CompatUtil.INSTANCE.equals(seriesType, KeyUtil.ANIME))
+        if(CompatUtil.INSTANCE.equals(seriesType, KeyUtil.Companion.getANIME()))
             return new CustomSeriesAnimeManage(context);
         return new CustomSeriesMangaManage(context);
     }
@@ -184,7 +184,7 @@ final class MediaDialogUtil extends DialogUtil {
      * Dialog builder helper for series entities
      */
     private static MaterialDialog.Builder createSeriesManageDialog(Context context, boolean isNewEntry, String title) {
-        MaterialDialog.Builder materialBuilder = createDefaultDialog(context)
+        MaterialDialog.Builder materialBuilder = Companion.createDefaultDialog(context)
                 .icon(CompatUtil.INSTANCE.getDrawableTintAttr(context, isNewEntry ? R.drawable.ic_fiber_new_white_24dp : R.drawable.ic_border_color_white_24dp, R.attr.colorAccent))
                 .title(Html.fromHtml(context.getString(isNewEntry ? R.string.dialog_add_title : R.string.dialog_edit_title, title)))
                 .positiveText(isNewEntry? R.string.Add: R.string.Update)

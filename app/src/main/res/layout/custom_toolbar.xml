@@ -5,25 +5,27 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <!--
         android:background="?attr/colorPrimary"
         android:theme="?attr/toolbarColor"
-        app:popupTheme="@style/AppThemeLight.PopupOverlay" />
+        app:popupTheme="@style/SupportTheme.PopupTheme"
+    -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <com.miguelcatalan.materialsearchview.MaterialSearchView
         android:id="@+id/search_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textColor="?titleColor"
-        android:textColorHint="?subtitleColor"
+        android:textColor="@color/primaryTextColor"
+        android:textColorHint="@color/secondaryTextColor"
         app:searchVoiceIcon="?voiceDrawable"
         app:searchSuggestionIcon="?suggestionDrawable"
         app:searchSuggestionBackground="?colorPrimary"
         app:searchCloseIcon="?closeDrawable"
         app:searchBackIcon="?backDrawable"
-        app:searchBackground="?colorPrimary" />
+        app:searchBackground="@color/primaryColor" />
 
 </FrameLayout>

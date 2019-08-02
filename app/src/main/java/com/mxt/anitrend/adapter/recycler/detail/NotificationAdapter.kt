@@ -23,6 +23,7 @@ import com.mxt.anitrend.util.KeyUtil
 
 import butterknife.OnClick
 import butterknife.OnLongClick
+import com.mxt.anitrend.extension.getLayoutInflater
 import io.objectbox.Box
 
 /**
@@ -39,9 +40,9 @@ class NotificationAdapter(context: Context) : RecyclerViewAdapter<Notification>(
     override fun onCreateViewHolder(parent: ViewGroup, @KeyUtil.RecyclerViewType viewType: Int): RecyclerViewHolder<Notification> {
         return when (viewType) {
             KeyUtil.RECYCLER_TYPE_CONTENT ->
-                NotificationHolder(AdapterNotificationBinding.inflate(CompatUtil.getLayoutInflater(parent.context), parent, false))
+                NotificationHolder(AdapterNotificationBinding.inflate(parent.getLayoutInflater(), parent, false))
             else ->
-                UnresolvedViewHolder(CustomRecyclerUnresolvedBinding.inflate(CompatUtil.getLayoutInflater(parent.context), parent, false))
+                UnresolvedViewHolder(CustomRecyclerUnresolvedBinding.inflate(parent.getLayoutInflater(), parent, false))
         }
     }
 
@@ -102,7 +103,7 @@ class NotificationAdapter(context: Context) : RecyclerViewAdapter<Notification>(
          *
          * @param model Is the model at the current adapter position
          */
-        override fun onBindViewHolder(model: Notification) {
+        override fun onBindViewHolder(model: Notification?) {
             val notificationHistory = historyBox.query()
                     .equal(NotificationHistory_.id, model.id)
                     .build().findFirst()
@@ -114,7 +115,7 @@ class NotificationAdapter(context: Context) : RecyclerViewAdapter<Notification>(
 
             binding.notificationTime.text = DateUtil.getPrettyDateUnix(model.createdAt)
 
-            if (!CompatUtil.equals(model.type, KeyUtil.AIRING) && !CompatUtil.equals(model.type, KeyUtil.RELATED_MEDIA_ADDITION)) {
+            if (model.type != KeyUtil.AIRING && model.type != KeyUtil.RELATED_MEDIA_ADDITION) {
                 if (model.user != null && model.user.avatar != null)
                     AspectImageView.setImage(binding.notificationImg, model.user.avatar.large)
             } else
@@ -154,7 +155,7 @@ class NotificationAdapter(context: Context) : RecyclerViewAdapter<Notification>(
                 KeyUtil.AIRING -> {
                     binding.notificationSubject.setText(R.string.notification_series)
                     binding.notificationHeader.text = model.media.title.userPreferred
-                    binding.notificationContent.text = context.getString(R.string.notification_episode,
+                    binding.notificationContent.text = binding.container.context.getString(R.string.notification_episode,
                             model.episode.toString(), model.media.title.userPreferred)
                 }
                 KeyUtil.ACTIVITY_LIKE -> {
@@ -199,7 +200,7 @@ class NotificationAdapter(context: Context) : RecyclerViewAdapter<Notification>(
          * @see Glide
          */
         override fun onViewRecycled() {
-            Glide.with(context).clear(binding.notificationImg)
+            Glide.with(binding.notificationImg).clear(binding.notificationImg)
             binding.unbind()
         }
 

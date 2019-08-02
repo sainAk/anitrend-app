@@ -1,12 +1,12 @@
 package com.mxt.anitrend.view.activity.index;
 
-import android.arch.lifecycle.Observer;
+import androidx.lifecycle.Observer;
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -25,8 +25,8 @@ import com.mxt.anitrend.model.api.retro.WebFactory;
 import com.mxt.anitrend.model.entity.anilist.User;
 import com.mxt.anitrend.presenter.base.BasePresenter;
 import com.mxt.anitrend.presenter.widget.WidgetPresenter;
-import com.mxt.anitrend.util.AnalyticsUtil;
-import com.mxt.anitrend.util.ApplicationPref;
+import com.mxt.anitrend.analytics.AnalyticsLogging;
+import com.mxt.anitrend.util.Settings;
 import com.mxt.anitrend.util.GraphUtil;
 import com.mxt.anitrend.util.JobSchedulerUtil;
 import com.mxt.anitrend.util.KeyUtil;
@@ -52,7 +52,7 @@ public class LoginActivity extends ActivityBase<User, BasePresenter> implements 
      */
     @Override
     protected void configureActivity() {
-        setTheme(new ApplicationPref(this).getTheme() == R.style.AppThemeLight ?
+        setTheme(new Settings(this).getTheme() == R.style.AppThemeLight ?
                 R.style.AppThemeLight_Translucent: R.style.AppThemeDark_Translucent);
     }
 
@@ -77,8 +77,8 @@ public class LoginActivity extends ActivityBase<User, BasePresenter> implements 
     @Override
     protected void onActivityReady() {
         binding.setOnClickListener(this);
-        if(getPresenter().getApplicationPref().isAuthenticated()) {
-            NotifyUtil.makeText(this, R.string.text_already_authenticated, Toast.LENGTH_SHORT).show();
+        if(getPresenter().getSettings().isAuthenticated()) {
+            NotifyUtil.INSTANCE.makeText(this, R.string.text_already_authenticated, Toast.LENGTH_SHORT).show();
             binding.widgetFlipper.setVisibility(View.GONE);
         } else
             checkNewIntent(getIntent());
@@ -86,7 +86,7 @@ public class LoginActivity extends ActivityBase<User, BasePresenter> implements 
 
     @Override
     protected void updateUI() {
-        if(getPresenter().getApplicationPref().isNotificationEnabled())
+        if(getPresenter().getSettings().isNotificationEnabled())
             JobSchedulerUtil.INSTANCE.scheduleJob(getApplicationContext());
         createApplicationShortcuts();
         finish();
@@ -95,30 +95,30 @@ public class LoginActivity extends ActivityBase<User, BasePresenter> implements 
     private void createApplicationShortcuts() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             Bundle SHORTCUT_MY_ANIME_BUNDLE = new Bundle();
-            SHORTCUT_MY_ANIME_BUNDLE.putString(KeyUtil.arg_mediaType, KeyUtil.ANIME);
-            SHORTCUT_MY_ANIME_BUNDLE.putString(KeyUtil.arg_userName, model.getName());
+            SHORTCUT_MY_ANIME_BUNDLE.putString(KeyUtil.Companion.getArg_mediaType(), KeyUtil.Companion.getANIME());
+            SHORTCUT_MY_ANIME_BUNDLE.putString(KeyUtil.Companion.getArg_userName(), model.getName());
 
             Bundle SHORTCUT_MY_MANGA_BUNDLE = new Bundle();
-            SHORTCUT_MY_MANGA_BUNDLE.putString(KeyUtil.arg_mediaType, KeyUtil.MANGA);
-            SHORTCUT_MY_MANGA_BUNDLE.putString(KeyUtil.arg_userName, model.getName());
+            SHORTCUT_MY_MANGA_BUNDLE.putString(KeyUtil.Companion.getArg_mediaType(), KeyUtil.Companion.getMANGA());
+            SHORTCUT_MY_MANGA_BUNDLE.putString(KeyUtil.Companion.getArg_userName(), model.getName());
 
             Bundle SHORTCUT_PROFILE_BUNDLE = new Bundle();
-            SHORTCUT_PROFILE_BUNDLE.putString(KeyUtil.arg_userName, model.getName());
+            SHORTCUT_PROFILE_BUNDLE.putString(KeyUtil.Companion.getArg_userName(), model.getName());
 
             ShortcutUtil.createShortcuts(LoginActivity.this,
                     new ShortcutUtil.ShortcutBuilder()
-                            .setShortcutType(KeyUtil.SHORTCUT_NOTIFICATION)
+                            .setShortcutType(KeyUtil.Companion.getSHORTCUT_NOTIFICATION())
                             .build(),
                     new ShortcutUtil.ShortcutBuilder()
-                            .setShortcutType(KeyUtil.SHORTCUT_MY_ANIME)
+                            .setShortcutType(KeyUtil.Companion.getSHORTCUT_MY_ANIME())
                             .setShortcutParams(SHORTCUT_MY_ANIME_BUNDLE)
                             .build(),
                     new ShortcutUtil.ShortcutBuilder()
-                            .setShortcutType(KeyUtil.SHORTCUT_MY_MANGA)
+                            .setShortcutType(KeyUtil.Companion.getSHORTCUT_MY_MANGA())
                             .setShortcutParams(SHORTCUT_MY_MANGA_BUNDLE)
                             .build(),
                     new ShortcutUtil.ShortcutBuilder()
-                            .setShortcutType(KeyUtil.SHORTCUT_PROFILE)
+                            .setShortcutType(KeyUtil.Companion.getSHORTCUT_PROFILE())
                             .setShortcutParams(SHORTCUT_PROFILE_BUNDLE)
                             .build());
         }
@@ -141,22 +141,22 @@ public class LoginActivity extends ActivityBase<User, BasePresenter> implements 
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.auth_sign_in:
-                if(binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.CONTENT_STATE) {
+                if(binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.Companion.getCONTENT_STATE()) {
                     binding.widgetFlipper.showNext();
                     try {
-                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(WebFactory.API_AUTH_LINK)));
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(WebFactory.INSTANCE.getAPI_AUTH_LINK())));
                     } catch (Exception e) {
                         e.printStackTrace();
-                        Log.e(TAG, e.getLocalizedMessage());
-                        NotifyUtil.makeText(this, R.string.text_unknown_error, Toast.LENGTH_SHORT).show();
+                        Log.e(getTAG(), e.getLocalizedMessage());
+                        NotifyUtil.INSTANCE.makeText(this, R.string.text_unknown_error, Toast.LENGTH_SHORT).show();
                     }
-                } else NotifyUtil.makeText(this, R.string.busy_please_wait, Toast.LENGTH_SHORT).show();
+                } else NotifyUtil.INSTANCE.makeText(this, R.string.busy_please_wait, Toast.LENGTH_SHORT).show();
                 break;
             case R.id.container:
-                if(binding.widgetFlipper.getDisplayedChild() != WidgetPresenter.LOADING_STATE)
+                if(binding.widgetFlipper.getDisplayedChild() != WidgetPresenter.Companion.getLOADING_STATE())
                     finish();
                 else
-                    NotifyUtil.makeText(this, R.string.busy_please_wait, Toast.LENGTH_SHORT).show();
+                    NotifyUtil.INSTANCE.makeText(this, R.string.busy_please_wait, Toast.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -166,10 +166,10 @@ public class LoginActivity extends ActivityBase<User, BasePresenter> implements 
         if(isAlive()) {
             WebTokenRequest.invalidateInstance(getApplicationContext());
             if(error == null) error = getString(R.string.text_error_auth_login);
-            NotifyUtil.createAlerter(this, getString(R.string.login_error_title),
-                    error, R.drawable.ic_warning_white_18dp, R.color.colorStateRed, KeyUtil.DURATION_LONG);
-            if (getPresenter() != null && getPresenter().getApplicationPref().isCrashReportsEnabled())
-                AnalyticsUtil.reportException(TAG, error);
+            NotifyUtil.INSTANCE.createAlerter(this, getString(R.string.login_error_title),
+                    error, R.drawable.ic_warning_white_18dp, R.color.colorStateRed, KeyUtil.Companion.getDURATION_LONG());
+            if (getPresenter() != null && getPresenter().getSettings().isCrashReportsEnabled())
+                AnalyticsLogging.INSTANCE.reportException(getTAG(), error);
             binding.widgetFlipper.showPrevious();
             Log.e(this.toString(), error);
         }
@@ -180,8 +180,8 @@ public class LoginActivity extends ActivityBase<User, BasePresenter> implements 
         if(isAlive()) {
             WebTokenRequest.invalidateInstance(getApplicationContext());
             if(message == null) message = getString(R.string.text_error_auth_login);
-            NotifyUtil.createAlerter(this, getString(R.string.text_error_request),
-                    message, R.drawable.ic_warning_white_18dp, R.color.colorStateOrange, KeyUtil.DURATION_LONG);
+            NotifyUtil.INSTANCE.createAlerter(this, getString(R.string.text_error_request),
+                    message, R.drawable.ic_warning_white_18dp, R.color.colorStateOrange, KeyUtil.Companion.getDURATION_LONG());
             binding.widgetFlipper.showPrevious();
             Log.w(this.toString(), message);
         }
@@ -191,22 +191,22 @@ public class LoginActivity extends ActivityBase<User, BasePresenter> implements 
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        if(!getPresenter().getApplicationPref().isAuthenticated())
+        if(!getPresenter().getSettings().isAuthenticated())
             checkNewIntent(intent);
     }
 
     private void checkNewIntent(Intent intent) {
         if (intent != null && intent.getData() != null) {
             if (isAlive()) {
-                if (binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.CONTENT_STATE)
+                if (binding.widgetFlipper.getDisplayedChild() == WidgetPresenter.Companion.getCONTENT_STATE())
                     binding.widgetFlipper.showNext();
 
                 Data workerInputData = new Data.Builder()
-                        .putString(KeyUtil.arg_model, intent.getData().toString())
+                        .putString(KeyUtil.Companion.getArg_model(), intent.getData().toString())
                         .build();
 
                 OneTimeWorkRequest authenticatorWorker = new OneTimeWorkRequest.Builder(AuthenticatorWorker.class)
-                        .addTag(KeyUtil.WorkAuthenticatorTag)
+                        .addTag(KeyUtil.Companion.getWorkAuthenticatorTag())
                         .setInputData(workerInputData)
                         .build();
                 WorkManager.getInstance().enqueue(authenticatorWorker);
@@ -221,19 +221,19 @@ public class LoginActivity extends ActivityBase<User, BasePresenter> implements 
         public void onChanged(@Nullable WorkInfo workInfo) {
             if (workInfo != null && workInfo.getState().isFinished()) {
                 Data outputData = workInfo.getOutputData();
-                if (outputData.getBoolean(KeyUtil.arg_model, false)) {
-                    getViewModel().getParams().putParcelable(KeyUtil.arg_graph_params, GraphUtil.INSTANCE.getDefaultQuery(false));
-                    getViewModel().requestData(KeyUtil.USER_CURRENT_REQ, getApplicationContext());
+                if (outputData.getBoolean(KeyUtil.Companion.getArg_model(), false)) {
+                    getViewModel().getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), GraphUtil.INSTANCE.getDefaultQuery(false));
+                    getViewModel().requestData(KeyUtil.Companion.getUSER_CURRENT_REQ(), getApplicationContext());
                 }
                 else {
-                    if (!TextUtils.isEmpty(outputData.getString(KeyUtil.arg_uri_error)) && !TextUtils.isEmpty(outputData.getString(KeyUtil.arg_uri_error_description)))
-                        NotifyUtil.createAlerter(LoginActivity.this, outputData.getString(KeyUtil.arg_uri_error),
-                                outputData.getString(KeyUtil.arg_uri_error_description), R.drawable.ic_warning_white_18dp,
-                                R.color.colorStateOrange, KeyUtil.DURATION_LONG);
+                    if (!TextUtils.isEmpty(outputData.getString(KeyUtil.Companion.getArg_uri_error())) && !TextUtils.isEmpty(outputData.getString(KeyUtil.Companion.getArg_uri_error_description())))
+                        NotifyUtil.INSTANCE.createAlerter(LoginActivity.this, outputData.getString(KeyUtil.Companion.getArg_uri_error()),
+                                outputData.getString(KeyUtil.Companion.getArg_uri_error_description()), R.drawable.ic_warning_white_18dp,
+                                R.color.colorStateOrange, KeyUtil.Companion.getDURATION_LONG());
                     else
-                        NotifyUtil.createAlerter(LoginActivity.this, R.string.login_error_title,
+                        NotifyUtil.INSTANCE.createAlerter(LoginActivity.this, R.string.login_error_title,
                                 R.string.text_error_auth_login, R.drawable.ic_warning_white_18dp,
-                                R.color.colorStateRed, KeyUtil.DURATION_LONG);
+                                R.color.colorStateRed, KeyUtil.Companion.getDURATION_LONG());
                     binding.widgetFlipper.showPrevious();
                 }
             }

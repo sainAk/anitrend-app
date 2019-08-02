@@ -1,8 +1,8 @@
 package com.mxt.anitrend.base.custom.view.text
 
 import android.content.Context
-import android.support.v4.text.util.LinkifyCompat
-import android.support.v7.widget.AppCompatTextView
+import androidx.core.text.util.LinkifyCompat
+import androidx.appcompat.widget.AppCompatTextView
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.text.util.Linkify

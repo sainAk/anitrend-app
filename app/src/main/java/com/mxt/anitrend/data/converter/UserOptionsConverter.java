@@ -15,13 +15,13 @@ public class UserOptionsConverter implements PropertyConverter<UserOptions, Stri
     public UserOptions convertToEntityProperty(String databaseValue) {
         if(databaseValue == null)
             return null;
-        return WebFactory.gson.fromJson(databaseValue, UserOptions.class);
+        return WebFactory.INSTANCE.getGson().fromJson(databaseValue, UserOptions.class);
     }
 
     @Override
     public String convertToDatabaseValue(UserOptions entityProperty) {
         if(entityProperty == null)
             return null;
-        return WebFactory.gson.toJson(entityProperty);
+        return WebFactory.INSTANCE.getGson().toJson(entityProperty);
     }
 }

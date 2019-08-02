@@ -2,7 +2,7 @@ package com.mxt.anitrend.view.activity.base;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -52,11 +52,11 @@ public class GiphyPreviewActivity extends ActivityBase<Void, BasePresenter> impl
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        if(getIntent().hasExtra(KeyUtil.arg_model) && !TextUtils.isEmpty(getIntent().getStringExtra(KeyUtil.arg_model)))
-            Glide.with(this).load(getIntent().getStringExtra(KeyUtil.arg_model))
+        if(getIntent().hasExtra(KeyUtil.Companion.getArg_model()) && !TextUtils.isEmpty(getIntent().getStringExtra(KeyUtil.Companion.getArg_model())))
+            Glide.with(this).load(getIntent().getStringExtra(KeyUtil.Companion.getArg_model()))
                     .listener(this).into(previewImage);
         else
-            NotifyUtil.makeText(this, R.string.layout_empty_response, R.drawable.ic_warning_white_18dp, Toast.LENGTH_SHORT).show();
+            NotifyUtil.INSTANCE.makeText(this, R.string.layout_empty_response, R.drawable.ic_warning_white_18dp, Toast.LENGTH_SHORT).show();
         onActivityReady();
     }
 

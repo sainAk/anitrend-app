@@ -51,7 +51,7 @@
             android:label="@string/title_activity_message" />
 
         <activity android:name=".view.activity.index.LoginActivity"
-            android:theme="@style/AppThemeLight.Translucent"
+            android:theme="@style/SupportTheme.Translucent"
             android:exported="true"
             android:launchMode="singleTop" >
             <intent-filter>
@@ -178,7 +178,7 @@
 
         <activity android:name=".view.activity.base.SharedContentActivity"
             android:label="@string/menu_title_new_activity_post"
-            android:theme="@style/AppThemeLight.Translucent"
+            android:theme="@style/SupportTheme.Translucent"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />

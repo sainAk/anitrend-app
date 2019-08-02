@@ -3,7 +3,7 @@ package com.mxt.anitrend.base.custom.view.widget;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -69,7 +69,7 @@ public class CustomSeriesAnimeManage extends CustomSeriesManageBase {
 
         model.setHidden(binding.diaCurrentPrivacy.isChecked());
         model.setNotes(binding.diaCurrentNotes.getFormattedText());
-        model.setStatus(KeyUtil.MediaListStatus[binding.diaCurrentStatus.getSelectedItemPosition()]);
+        model.setStatus(KeyUtil.Companion.getMediaListStatus()[binding.diaCurrentStatus.getSelectedItemPosition()]);
         return MediaListUtil.getMediaListParams(model, getMediaListOptions().getScoreFormat());
     }
 
@@ -85,9 +85,9 @@ public class CustomSeriesAnimeManage extends CustomSeriesManageBase {
         binding.diaCurrentStatus.setAdapter(getIconArrayAdapter());
 
         if (!TextUtils.isEmpty(model.getStatus()))
-            binding.diaCurrentStatus.setSelection(CompatUtil.INSTANCE.constructListFrom(KeyUtil.MediaListStatus).indexOf(model.getStatus()));
+            binding.diaCurrentStatus.setSelection(CompatUtil.INSTANCE.constructListFrom(KeyUtil.Companion.getMediaListStatus()).indexOf(model.getStatus()));
         else
-            binding.diaCurrentStatus.setSelection(CompatUtil.INSTANCE.constructListFrom(KeyUtil.MediaListStatus).indexOf(KeyUtil.PLANNING));
+            binding.diaCurrentStatus.setSelection(CompatUtil.INSTANCE.constructListFrom(KeyUtil.Companion.getMediaListStatus()).indexOf(KeyUtil.Companion.getPLANNING()));
 
         binding.diaCurrentPrivacy.setChecked(model.isHidden());
         if (model.getMedia().getEpisodes() > 0)
@@ -116,17 +116,17 @@ public class CustomSeriesAnimeManage extends CustomSeriesManageBase {
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        model.setStatus(KeyUtil.MediaListStatus[i]);
-        switch (KeyUtil.MediaListStatus[i]) {
-            case KeyUtil.CURRENT:
-                if (CompatUtil.INSTANCE.equals(getSeriesModel().getStatus(), KeyUtil.NOT_YET_RELEASED))
-                    NotifyUtil.makeText(getContext(), R.string.warning_anime_not_airing, Toast.LENGTH_LONG).show();
+        model.setStatus(KeyUtil.Companion.getMediaListStatus()[i]);
+        switch (KeyUtil.Companion.getMediaListStatus()[i]) {
+            case KeyUtil.Companion.getCURRENT():
+                if (CompatUtil.INSTANCE.equals(getSeriesModel().getStatus(), KeyUtil.Companion.getNOT_YET_RELEASED()))
+                    NotifyUtil.INSTANCE.makeText(getContext(), R.string.warning_anime_not_airing, Toast.LENGTH_LONG).show();
                 break;
-            case KeyUtil.PLANNING:
+            case KeyUtil.Companion.getPLANNING():
                 break;
-            case KeyUtil.COMPLETED:
-                if (!CompatUtil.INSTANCE.equals(getSeriesModel().getStatus(), KeyUtil.FINISHED))
-                    NotifyUtil.makeText(getContext(), R.string.warning_anime_is_airing, Toast.LENGTH_LONG).show();
+            case KeyUtil.Companion.getCOMPLETED():
+                if (!CompatUtil.INSTANCE.equals(getSeriesModel().getStatus(), KeyUtil.Companion.getFINISHED()))
+                    NotifyUtil.INSTANCE.makeText(getContext(), R.string.warning_anime_is_airing, Toast.LENGTH_LONG).show();
                 else {
                     int total = getSeriesModel().getEpisodes();
                     model.setProgress(total);
@@ -135,8 +135,8 @@ public class CustomSeriesAnimeManage extends CustomSeriesManageBase {
                 }
                 break;
             default:
-                if (CompatUtil.INSTANCE.equals(getSeriesModel().getStatus(), KeyUtil.NOT_YET_RELEASED))
-                    NotifyUtil.makeText(getContext(), R.string.warning_anime_not_airing, Toast.LENGTH_LONG).show();
+                if (CompatUtil.INSTANCE.equals(getSeriesModel().getStatus(), KeyUtil.Companion.getNOT_YET_RELEASED()))
+                    NotifyUtil.INSTANCE.makeText(getContext(), R.string.warning_anime_not_airing, Toast.LENGTH_LONG).show();
                 break;
         }
     }

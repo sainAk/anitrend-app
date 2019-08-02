@@ -1,13 +1,13 @@
 package com.mxt.anitrend.view.sheet;
 
 import android.app.Dialog;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.view.View;
 
 import com.annimon.stream.IntPair;
@@ -70,9 +70,9 @@ public class BottomSheetListUsers extends BottomSheetBase<PageContainer<UserBase
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null) {
-            count = getArguments().getInt(KeyUtil.arg_model);
-            userId = getArguments().getLong(KeyUtil.arg_userId);
-            requestType = getArguments().getInt(KeyUtil.arg_request_type);
+            count = getArguments().getInt(KeyUtil.Companion.getArg_model());
+            userId = getArguments().getLong(KeyUtil.Companion.getArg_userId());
+            requestType = getArguments().getInt(KeyUtil.Companion.getArg_request_type());
         }
         mAdapter = new UserAdapter(getContext());
         setViewModel(true); isPager = true;
@@ -164,7 +164,7 @@ public class BottomSheetListUsers extends BottomSheetBase<PageContainer<UserBase
     protected void setViewModel(boolean stateSupported) {
         if(viewModel == null) {
             viewModel = ViewModelProviders.of(this).get(ViewModelBase.class);
-            viewModel.setContext(getContext());
+            viewModel.setMessages(getContext());
             if(!viewModel.getModel().hasActiveObservers())
                 viewModel.getModel().observe(this, this);
             if(stateSupported)
@@ -202,10 +202,10 @@ public class BottomSheetListUsers extends BottomSheetBase<PageContainer<UserBase
      */
     public void makeRequest() {
         QueryContainerBuilder queryContainer = GraphUtil.INSTANCE.getDefaultQuery(isPager)
-                .putVariable(KeyUtil.arg_id, userId)
-                .putVariable(KeyUtil.arg_page, presenter.getCurrentPage());
+                .putVariable(KeyUtil.Companion.getArg_id(), userId)
+                .putVariable(KeyUtil.Companion.getArg_page(), presenter.getCurrentPage());
 
-        viewModel.getParams().putParcelable(KeyUtil.arg_graph_params, queryContainer);
+        viewModel.getParams().putParcelable(KeyUtil.Companion.getArg_graph_params(), queryContainer);
         viewModel.requestData(requestType, getContext());
     }
 
@@ -281,7 +281,7 @@ public class BottomSheetListUsers extends BottomSheetBase<PageContainer<UserBase
             case R.id.container:
                 Intent intent = new Intent(getActivity(), ProfileActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra(KeyUtil.arg_id, data.getSecond().getId());
+                intent.putExtra(KeyUtil.Companion.getArg_id(), data.getSecond().getId());
                 CompatUtil.INSTANCE.startRevealAnim(getActivity(), target, intent);
                 break;
         }
@@ -311,17 +311,17 @@ public class BottomSheetListUsers extends BottomSheetBase<PageContainer<UserBase
         }
 
         public Builder setUserId(long userId) {
-            bundle.putLong(KeyUtil.arg_userId, userId);
+            bundle.putLong(KeyUtil.Companion.getArg_userId(), userId);
             return this;
         }
 
         public Builder setModelCount(int count) {
-            bundle.putInt(KeyUtil.arg_model, count);
+            bundle.putInt(KeyUtil.Companion.getArg_model(), count);
             return this;
         }
 
         public BottomSheetBuilder setRequestType(@KeyUtil.RequestType int requestType) {
-            bundle.putInt(KeyUtil.arg_request_type, requestType);
+            bundle.putInt(KeyUtil.Companion.getArg_request_type(), requestType);
             return this;
         }
     }

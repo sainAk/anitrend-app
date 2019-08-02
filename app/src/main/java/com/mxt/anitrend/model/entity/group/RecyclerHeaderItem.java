@@ -15,7 +15,7 @@ public class RecyclerHeaderItem extends RecyclerItem {
     public RecyclerHeaderItem(String title, int size) {
         this.title = title;
         this.size = size;
-        this.setContentType(KeyUtil.RECYCLER_TYPE_HEADER);
+        this.setContentType(KeyUtil.Companion.getRECYCLER_TYPE_HEADER());
     }
 
     public RecyclerHeaderItem(String title) {

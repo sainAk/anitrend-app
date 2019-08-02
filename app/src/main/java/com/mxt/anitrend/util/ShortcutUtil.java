@@ -8,8 +8,8 @@ import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import com.mxt.anitrend.R;
 import com.mxt.anitrend.view.activity.detail.MediaListActivity;
@@ -48,55 +48,55 @@ public class ShortcutUtil {
         for (ShortcutBuilder shortcutBuilder : builders) {
             switch (shortcutBuilder.getShortcutType()) {
                 case KeyUtil.SHORTCUT_NOTIFICATION:
-                    shortcutInfo.add(new ShortcutInfo.Builder(context, KeyUtil.ShortcutTypes[shortcutBuilder.getShortcutType()])
+                    shortcutInfo.add(new ShortcutInfo.Builder(context, KeyUtil.Companion.getShortcutTypes()[shortcutBuilder.getShortcutType()])
                             .setShortLabel(context.getString(R.string.menu_title_notifications))
                             .setDisabledMessage(context.getString(R.string.info_login_req))
                             .setIcon(Icon.createWithResource(context, R.drawable.ic_shortcut_notifications))
                             .setIntent(createIntentAction(context, NotificationActivity.class, shortcutBuilder.getParams())).build());
                     break;
                 case KeyUtil.SHORTCUT_AIRING:
-                    shortcutInfo.add(new ShortcutInfo.Builder(context, KeyUtil.ShortcutTypes[shortcutBuilder.getShortcutType()])
+                    shortcutInfo.add(new ShortcutInfo.Builder(context, KeyUtil.Companion.getShortcutTypes()[shortcutBuilder.getShortcutType()])
                             .setShortLabel(context.getString(R.string.drawer_title_airing))
                             .setDisabledMessage(context.getString(R.string.info_login_req))
                             .setIcon(Icon.createWithResource(context, R.drawable.ic_shortcut_airing))
                             .setIntent(createIntentAction(context, MainActivity.class, shortcutBuilder.getParams())).build());
                     break;
                 case KeyUtil.SHORTCUT_MY_ANIME:
-                    shortcutInfo.add(new ShortcutInfo.Builder(context, KeyUtil.ShortcutTypes[shortcutBuilder.getShortcutType()])
+                    shortcutInfo.add(new ShortcutInfo.Builder(context, KeyUtil.Companion.getShortcutTypes()[shortcutBuilder.getShortcutType()])
                             .setShortLabel(context.getString(R.string.drawer_title_myanime))
                             .setDisabledMessage(context.getString(R.string.info_login_req))
                             .setIcon(Icon.createWithResource(context, R.drawable.ic_shortcut_anime))
                             .setIntent(createIntentAction(context, MediaListActivity.class, shortcutBuilder.getParams())).build());
                     break;
                 case KeyUtil.SHORTCUT_MY_MANGA:
-                    shortcutInfo.add(new ShortcutInfo.Builder(context, KeyUtil.ShortcutTypes[shortcutBuilder.getShortcutType()])
+                    shortcutInfo.add(new ShortcutInfo.Builder(context, KeyUtil.Companion.getShortcutTypes()[shortcutBuilder.getShortcutType()])
                             .setShortLabel(context.getString(R.string.drawer_title_mymanga))
                             .setDisabledMessage(context.getString(R.string.info_login_req))
                             .setIcon(Icon.createWithResource(context, R.drawable.ic_shortcut_manga))
                             .setIntent(createIntentAction(context, MediaListActivity.class, shortcutBuilder.getParams())).build());
                     break;
                 case KeyUtil.SHORTCUT_FEEDS:
-                    shortcutInfo.add(new ShortcutInfo.Builder(context, KeyUtil.ShortcutTypes[shortcutBuilder.getShortcutType()])
+                    shortcutInfo.add(new ShortcutInfo.Builder(context, KeyUtil.Companion.getShortcutTypes()[shortcutBuilder.getShortcutType()])
                             .setShortLabel(context.getString(R.string.drawer_title_home))
                             .setDisabledMessage(context.getString(R.string.info_login_req))
                             .setIcon(Icon.createWithResource(context, R.drawable.ic_shortcut_feeds))
                             .setIntent(createIntentAction(context, MainActivity.class, shortcutBuilder.getParams())).build());
                     break;
                 case KeyUtil.SHORTCUT_PROFILE:
-                    shortcutInfo.add(new ShortcutInfo.Builder(context, KeyUtil.ShortcutTypes[shortcutBuilder.getShortcutType()])
+                    shortcutInfo.add(new ShortcutInfo.Builder(context, KeyUtil.Companion.getShortcutTypes()[shortcutBuilder.getShortcutType()])
                             .setShortLabel(context.getString(R.string.drawer_title_profile))
                             .setDisabledMessage(context.getString(R.string.info_login_req))
                             .setIcon(Icon.createWithResource(context, R.drawable.ic_shortcut_profile))
                             .setIntent(createIntentAction(context, ProfileActivity.class, shortcutBuilder.getParams())).build());
                     break;
                 case KeyUtil.SHORTCUT_SEARCH:
-                    shortcutInfo.add(new ShortcutInfo.Builder(context, KeyUtil.ShortcutTypes[shortcutBuilder.getShortcutType()])
+                    shortcutInfo.add(new ShortcutInfo.Builder(context, KeyUtil.Companion.getShortcutTypes()[shortcutBuilder.getShortcutType()])
                             .setShortLabel(context.getString(R.string.action_search))
                             .setIcon(Icon.createWithResource(context, R.drawable.ic_shortcut_search))
                             .setIntent(createIntentAction(context, SearchActivity.class, shortcutBuilder.getParams())).build());
                     break;
                 case KeyUtil.SHORTCUT_TRENDING:
-                    shortcutInfo.add(new ShortcutInfo.Builder(context, KeyUtil.ShortcutTypes[shortcutBuilder.getShortcutType()])
+                    shortcutInfo.add(new ShortcutInfo.Builder(context, KeyUtil.Companion.getShortcutTypes()[shortcutBuilder.getShortcutType()])
                             .setShortLabel(context.getString(R.string.drawer_title_trending))
                             .setIcon(Icon.createWithResource(context, R.drawable.ic_shortcut_trending))
                             .setIntent(createIntentAction(context, MainActivity.class, shortcutBuilder.getParams())).build());
@@ -111,19 +111,19 @@ public class ShortcutUtil {
     public static void disableShortcut(Context context, @KeyUtil.ShortcutType int... shortcuts) {
         List<String> shortcutQueue = new ArrayList<>(shortcuts.length);
         for (int shortcut: shortcuts)
-            shortcutQueue.add(KeyUtil.ShortcutTypes[shortcut]);
+            shortcutQueue.add(KeyUtil.Companion.getShortcutTypes()[shortcut]);
         getShortcutManager(context).disableShortcuts(shortcutQueue);
     }
 
     public static void enableShortcuts(Context context, @KeyUtil.ShortcutType int... shortcuts) {
         List<String> shortcutQueue = new ArrayList<>(shortcuts.length);
         for (int shortcut: shortcuts)
-            shortcutQueue.add(KeyUtil.ShortcutTypes[shortcut]);
+            shortcutQueue.add(KeyUtil.Companion.getShortcutTypes()[shortcut]);
         getShortcutManager(context).enableShortcuts(shortcutQueue);
     }
 
     public static void reportShortcutUsage(Context context, @KeyUtil.ShortcutType int shortcutType) {
-        getShortcutManager(context).reportShortcutUsed(KeyUtil.ShortcutTypes[shortcutType]);
+        getShortcutManager(context).reportShortcutUsed(KeyUtil.Companion.getShortcutTypes()[shortcutType]);
     }
 
     public static void removeAllDynamicShortcuts(Context context) {

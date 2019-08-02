@@ -1,10 +1,10 @@
 package com.mxt.anitrend.view.activity.detail;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.appcompat.widget.Toolbar;
 
 import com.mxt.anitrend.R;
 import com.mxt.anitrend.base.custom.activity.ActivityBase;
@@ -45,16 +45,16 @@ public class CommentActivity extends ActivityBase<FeedList, BasePresenter> {
      */
     @Override
     protected void onActivityReady() {
-        mFragment = CommentFragment.newInstance(getIntent().getExtras());
+        setMFragment(CommentFragment.newInstance(getIntent().getExtras()));
         updateUI();
     }
 
     @Override
     protected void updateUI() {
-        if(mFragment != null) {
+        if(getMFragment() != null) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.content_frame, mFragment, mFragment.TAG);
+            fragmentTransaction.replace(R.id.content_frame, getMFragment(), getMFragment().getTAG());
             fragmentTransaction.commit();
         }
     }

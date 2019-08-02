@@ -15,11 +15,9 @@ import com.mxt.anitrend.adapter.recycler.detail.NotificationAdapter
 import com.mxt.anitrend.base.custom.async.ThreadPool
 import com.mxt.anitrend.base.custom.fragment.FragmentBaseList
 import com.mxt.anitrend.model.entity.anilist.Notification
-import com.mxt.anitrend.model.entity.anilist.User
 import com.mxt.anitrend.model.entity.base.NotificationHistory
 import com.mxt.anitrend.model.entity.base.NotificationHistory_
 import com.mxt.anitrend.model.entity.container.body.PageContainer
-import com.mxt.anitrend.model.entity.container.request.QueryContainerBuilder
 import com.mxt.anitrend.presenter.base.BasePresenter
 import com.mxt.anitrend.util.CompatUtil
 import com.mxt.anitrend.util.DialogUtil
@@ -30,8 +28,6 @@ import com.mxt.anitrend.util.NotifyUtil
 import com.mxt.anitrend.view.activity.detail.CommentActivity
 import com.mxt.anitrend.view.activity.detail.MediaActivity
 import com.mxt.anitrend.view.activity.detail.ProfileActivity
-
-import java.util.Collections
 
 /**
  * Created by max on 2017/12/06.
@@ -125,8 +121,8 @@ class NotificationFragment : FragmentBaseList<Notification, PageContainer<Notifi
                 .putVariable(KeyUtil.arg_page, presenter.currentPage)
                 .putVariable(KeyUtil.arg_resetNotificationCount, true)
 
-        getViewModel().params.putParcelable(KeyUtil.arg_graph_params, queryContainer)
-        getViewModel().requestData(KeyUtil.USER_NOTIFICATION_REQ, context!!)
+        viewModel.params.putParcelable(KeyUtil.arg_graph_params, queryContainer)
+        viewModel.requestData(KeyUtil.USER_NOTIFICATION_REQ, context!!)
     }
 
     /**
@@ -249,7 +245,7 @@ class NotificationFragment : FragmentBaseList<Notification, PageContainer<Notifi
     override fun onItemLongClick(target: View, data: IntPair<Notification>) {
         if (CompatUtil.equals(data.second.type, KeyUtil.AIRING)) {
             setItemAsRead(data.second)
-            if (presenter.applicationPref.isAuthenticated) {
+            if (presenter.settings.isAuthenticated) {
                 mediaActionUtil = MediaActionUtil.Builder()
                         .setId(data.second.media.id).build(activity)
                 mediaActionUtil.startSeriesAction()

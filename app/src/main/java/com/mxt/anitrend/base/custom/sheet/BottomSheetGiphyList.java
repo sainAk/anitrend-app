@@ -1,12 +1,12 @@
 package com.mxt.anitrend.base.custom.sheet;
 
 import android.app.Activity;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,11 +90,11 @@ public abstract class BottomSheetGiphyList extends BottomSheetBase implements It
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(KeyUtil.key_pagination, isPager);
-        outState.putInt(KeyUtil.key_columns, mColumnSize);
+        outState.putBoolean(KeyUtil.Companion.getKey_pagination(), isPager);
+        outState.putInt(KeyUtil.Companion.getKey_columns(), mColumnSize);
         if(presenter != null) {
-            outState.putInt(KeyUtil.arg_page, presenter.getCurrentPage());
-            outState.putInt(KeyUtil.arg_page_offset, presenter.getCurrentOffset());
+            outState.putInt(KeyUtil.Companion.getArg_page(), presenter.getCurrentPage());
+            outState.putInt(KeyUtil.Companion.getArg_page_offset(), presenter.getCurrentOffset());
         }
     }
 
@@ -113,11 +113,11 @@ public abstract class BottomSheetGiphyList extends BottomSheetBase implements It
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if(savedInstanceState != null) {
-            isPager = savedInstanceState.getBoolean(KeyUtil.key_pagination);
-            mColumnSize = savedInstanceState.getInt(KeyUtil.key_columns);
+            isPager = savedInstanceState.getBoolean(KeyUtil.Companion.getKey_pagination());
+            mColumnSize = savedInstanceState.getInt(KeyUtil.Companion.getKey_columns());
             if(presenter != null) {
-                presenter.setCurrentPage(savedInstanceState.getInt(KeyUtil.arg_page));
-                presenter.setCurrentOffset(savedInstanceState.getInt(KeyUtil.arg_page_offset));
+                presenter.setCurrentPage(savedInstanceState.getInt(KeyUtil.Companion.getArg_page()));
+                presenter.setCurrentOffset(savedInstanceState.getInt(KeyUtil.Companion.getArg_page_offset()));
             }
         }
     }
@@ -169,7 +169,7 @@ public abstract class BottomSheetGiphyList extends BottomSheetBase implements It
     protected void setViewModel(boolean stateSupported) {
         if(viewModel == null) {
             viewModel = ViewModelProviders.of(this).get(ViewModelBase.class);
-            viewModel.setContext(getContext());
+            viewModel.setMessages(getContext());
             if(!viewModel.getModel().hasActiveObservers())
                 viewModel.getModel().observe(this, this);
             if(stateSupported)

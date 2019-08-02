@@ -1,15 +1,14 @@
 package com.mxt.anitrend.view.fragment.youtube
 
-import android.arch.lifecycle.Lifecycle
 import android.os.Bundle
-import android.util.Log
-
+import androidx.lifecycle.Lifecycle
 import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer
 import com.google.android.youtube.player.YouTubePlayerSupportFragment
 import com.mxt.anitrend.BuildConfig
 import com.mxt.anitrend.model.entity.anilist.meta.MediaTrailer
 import com.mxt.anitrend.util.KeyUtil
+import timber.log.Timber
 
 /**
  * Created by max on 2017/12/29.
@@ -18,7 +17,9 @@ import com.mxt.anitrend.util.KeyUtil
 
 class YoutubePlayerFragment : YouTubePlayerSupportFragment(), YouTubePlayer.OnInitializedListener {
 
-    private var mediaTrailer: MediaTrailer? = null
+    private val mediaTrailer by lazy {
+        arguments?.getParcelable(KeyUtil.arg_media_trailer)
+    }
 
     private var youTubePlayer: YouTubePlayer? = null
     private var isFullScreen: Boolean = false
@@ -27,10 +28,6 @@ class YoutubePlayerFragment : YouTubePlayerSupportFragment(), YouTubePlayer.OnIn
         fullScreen -> isFullScreen = fullScreen
     }
 
-    override fun onCreate(bundle: Bundle?) {
-        super.onCreate(bundle)
-        mediaTrailer = arguments?.getParcelable(KeyUtil.arg_media_trailer)
-    }
 
     override fun onResume() {
         super.onResume()
@@ -38,7 +35,7 @@ class YoutubePlayerFragment : YouTubePlayerSupportFragment(), YouTubePlayer.OnIn
             initialize(BuildConfig.API_KEY, this)
         } catch (e: Exception) {
             e.printStackTrace()
-            Log.e(YoutubePlayerFragment::class.java.simpleName, e.localizedMessage)
+            Timber.tag(javaClass.simpleName).e(e)
         }
     }
 
@@ -78,7 +75,7 @@ class YoutubePlayerFragment : YouTubePlayerSupportFragment(), YouTubePlayer.OnIn
 
     companion object {
 
-        fun newInstance(mediaTrailer: MediaTrailer): YoutubePlayerFragment {
+        fun newInstance(mediaTrailer: MediaTrailer?): YoutubePlayerFragment {
             return YoutubePlayerFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(KeyUtil.arg_media_trailer, mediaTrailer)
