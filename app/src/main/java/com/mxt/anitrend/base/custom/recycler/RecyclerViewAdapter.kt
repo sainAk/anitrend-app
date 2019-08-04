@@ -28,7 +28,7 @@ abstract class RecyclerViewAdapter<T>(
 ) : RecyclerView.Adapter<RecyclerViewHolder<T>>(), Filterable, RecyclerChangeListener<T> {
 
     protected var data: MutableList<T?> = ArrayList()
-    protected var clone: List<T?> = ArrayList()
+    protected var clone: MutableList<T?> = ArrayList()
 
     var clickListener: ItemClickListener<T>? = null
 

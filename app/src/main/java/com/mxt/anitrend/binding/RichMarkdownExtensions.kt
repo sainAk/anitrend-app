@@ -7,6 +7,7 @@ import android.widget.TextView
 import com.mxt.anitrend.base.custom.view.text.RichMarkdownTextView
 import com.mxt.anitrend.util.MarkDownUtil
 import com.mxt.anitrend.util.RegexUtil
+import io.noties.markwon.Markwon
 
 @BindingAdapter("markDown")
 fun markDown(richMarkdownTextView: RichMarkdownTextView, markdown: String?) {

@@ -32,14 +32,14 @@ class UserAdapter(context: Context) : RecyclerViewAdapter<UserBase>(context) {
 
     override fun getFilter(): Filter {
         return object : Filter() {
-            override fun performFiltering(constraint: CharSequence): Filter.FilterResults {
-                val results = Filter.FilterResults()
-                if (CompatUtil.isEmpty(clone))
+            override fun performFiltering(constraint: CharSequence): FilterResults {
+                val results = FilterResults()
+                if (clone.isEmpty())
                     clone = data
                 val filter = constraint.toString()
                 if (TextUtils.isEmpty(filter)) {
                     results.values = ArrayList(clone)
-                    clone = null
+                    clone.clear()
                 } else {
                     results.values = ArrayList(Stream.of(clone)
                         .filter { model -> model.name.toLowerCase().contains(filter) }
@@ -48,9 +48,9 @@ class UserAdapter(context: Context) : RecyclerViewAdapter<UserBase>(context) {
                 return results
             }
 
-            override fun publishResults(constraint: CharSequence, results: Filter.FilterResults) {
+            override fun publishResults(constraint: CharSequence, results: FilterResults) {
                 if (results.values != null) {
-                    data = results.values as List<UserBase>
+                    data = results.values as MutableList<UserBase?>
                     notifyDataSetChanged()
                 }
             }
@@ -85,7 +85,7 @@ class UserAdapter(context: Context) : RecyclerViewAdapter<UserBase>(context) {
          * @see Glide
          */
         override fun onViewRecycled() {
-            Glide.with(getContext()).clear(binding.userAvatar)
+            Glide.with(binding.userAvatar).clear(binding.userAvatar)
             binding.userFollowStateWidget.onViewRecycled()
             binding.unbind()
         }

@@ -58,8 +58,8 @@ public abstract class BottomSheetList<T extends Parcelable> extends BottomSheetB
     protected void addScrollLoadTrigger() {
         if(isPager)
             if (!recyclerView.hasOnScrollListener()) {
-                presenter.initListener(mLayoutManager, this);
-                recyclerView.addOnScrollListener(presenter);
+                getPresenter().initListener(mLayoutManager, this);
+                recyclerView.addOnScrollListener(getPresenter());
             }
     }
 
@@ -105,13 +105,13 @@ public abstract class BottomSheetList<T extends Parcelable> extends BottomSheetB
 
     @SuppressWarnings("unchecked")
     protected void setViewModel(boolean stateSupported) {
-        if(viewModel == null) {
-            viewModel = ViewModelProviders.of(this).get(ViewModelBase.class);
-            viewModel.setMessages(getContext());
-            if(!viewModel.getModel().hasActiveObservers())
-                viewModel.getModel().observe(this, this);
+        if(getViewModel() == null) {
+            setViewModel(ViewModelProviders.of(this).get(ViewModelBase.class));
+            getViewModel().setMessages(getContext());
+            if(!getViewModel().getModel().hasActiveObservers())
+                getViewModel().getModel().observe(this, this);
             if(stateSupported)
-                viewModel.setState(this);
+                getViewModel().setState(this);
         }
     }
 
@@ -119,14 +119,14 @@ public abstract class BottomSheetList<T extends Parcelable> extends BottomSheetB
      * While paginating if our request was a success and
      */
     public void setLimitReached() {
-        if(presenter != null && presenter.getCurrentPage() != 0)
+        if(getPresenter() != null && getPresenter().getCurrentPage() != 0)
             isLimit = true;
     }
 
     @Override
     public void onRefresh() {
-        if (isPager && presenter != null)
-            presenter.onRefreshPage();
+        if (isPager && getPresenter() != null)
+            getPresenter().onRefreshPage();
         makeRequest();
     }
 
@@ -152,7 +152,7 @@ public abstract class BottomSheetList<T extends Parcelable> extends BottomSheetB
      */
     @Override
     public void onChanged(@Nullable List<T> data) {
-        Log.d(TAG, "onChanged(@Nullable List<T> data) invoked");
+        Log.d(getTAG(), "onChanged(@Nullable List<T> data) invoked");
     }
 
     @Override

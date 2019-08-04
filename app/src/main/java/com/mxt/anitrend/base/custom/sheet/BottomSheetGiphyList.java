@@ -92,9 +92,9 @@ public abstract class BottomSheetGiphyList extends BottomSheetBase implements It
         super.onSaveInstanceState(outState);
         outState.putBoolean(KeyUtil.Companion.getKey_pagination(), isPager);
         outState.putInt(KeyUtil.Companion.getKey_columns(), mColumnSize);
-        if(presenter != null) {
-            outState.putInt(KeyUtil.Companion.getArg_page(), presenter.getCurrentPage());
-            outState.putInt(KeyUtil.Companion.getArg_page_offset(), presenter.getCurrentOffset());
+        if(getPresenter() != null) {
+            outState.putInt(KeyUtil.Companion.getArg_page(), getPresenter().getCurrentPage());
+            outState.putInt(KeyUtil.Companion.getArg_page_offset(), getPresenter().getCurrentOffset());
         }
     }
 
@@ -115,9 +115,9 @@ public abstract class BottomSheetGiphyList extends BottomSheetBase implements It
         if(savedInstanceState != null) {
             isPager = savedInstanceState.getBoolean(KeyUtil.Companion.getKey_pagination());
             mColumnSize = savedInstanceState.getInt(KeyUtil.Companion.getKey_columns());
-            if(presenter != null) {
-                presenter.setCurrentPage(savedInstanceState.getInt(KeyUtil.Companion.getArg_page()));
-                presenter.setCurrentOffset(savedInstanceState.getInt(KeyUtil.Companion.getArg_page_offset()));
+            if(getPresenter() != null) {
+                getPresenter().setCurrentPage(savedInstanceState.getInt(KeyUtil.Companion.getArg_page()));
+                getPresenter().setCurrentOffset(savedInstanceState.getInt(KeyUtil.Companion.getArg_page_offset()));
             }
         }
     }
@@ -125,8 +125,8 @@ public abstract class BottomSheetGiphyList extends BottomSheetBase implements It
     protected void addScrollLoadTrigger() {
         if(isPager)
             if (!recyclerView.hasOnScrollListener()) {
-                presenter.initListener(mLayoutManager, this);
-                recyclerView.addOnScrollListener(presenter);
+                getPresenter().initListener(mLayoutManager, this);
+                recyclerView.addOnScrollListener(getPresenter());
             }
     }
 
@@ -181,7 +181,7 @@ public abstract class BottomSheetGiphyList extends BottomSheetBase implements It
      * While paginating if our request was a success and
      */
     public void setLimitReached() {
-        if(presenter != null && presenter.getCurrentOffset() != 0)
+        if(getPresenter() != null && getPresenter().getCurrentOffset() != 0)
             isLimit = true;
     }
 
@@ -189,8 +189,8 @@ public abstract class BottomSheetGiphyList extends BottomSheetBase implements It
     public void onRefresh() {
         if(mAdapter != null)
             mAdapter.clearDataSet();
-        if (isPager && presenter != null)
-            presenter.onRefreshPage();
+        if (isPager && getPresenter() != null)
+            getPresenter().onRefreshPage();
         makeRequest();
     }
 

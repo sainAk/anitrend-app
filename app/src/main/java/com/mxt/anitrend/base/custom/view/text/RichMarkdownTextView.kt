@@ -11,19 +11,13 @@ import android.widget.TextView
 import com.mxt.anitrend.base.interfaces.view.CustomView
 import com.mxt.anitrend.util.MarkDownUtil
 import com.mxt.anitrend.util.RegexUtil
+import io.noties.markwon.Markwon
 import org.commonmark.parser.Parser
-import ru.noties.markwon.AbstractMarkwonPlugin
-import ru.noties.markwon.Markwon
-import ru.noties.markwon.MarkwonConfiguration
-import ru.noties.markwon.core.CorePlugin
-import ru.noties.markwon.html.HtmlPlugin
-import ru.noties.markwon.html.MarkwonHtmlParserImpl
-import ru.noties.markwon.image.AsyncDrawableScheduler
-import ru.noties.markwon.image.ImagesPlugin
-import ru.noties.markwon.image.okhttp.OkHttpImagesPlugin
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 import java.util.Arrays.asList
 
-class RichMarkdownTextView : AppCompatTextView, CustomView {
+class RichMarkdownTextView : AppCompatTextView, CustomView, KoinComponent {
 
     constructor(context: Context) :
             super(context) { onInit() }
@@ -34,34 +28,7 @@ class RichMarkdownTextView : AppCompatTextView, CustomView {
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr) { onInit() }
 
-    val markwon by lazy {
-        Markwon.builder(context)
-                .usePlugins(asList(
-                        CorePlugin.create(),
-                        ImagesPlugin.create(context),
-                        OkHttpImagesPlugin.create(),
-                        HtmlPlugin.create(),
-                        object: AbstractMarkwonPlugin() {
-                            @Override
-                            override fun configureParser(builder: Parser.Builder) {
-
-                            }
-
-                            override fun configureConfiguration(builder: MarkwonConfiguration.Builder) {
-                                builder.htmlParser(MarkwonHtmlParserImpl.create())
-                            }
-
-                            override fun beforeSetText(textView: TextView, markdown: Spanned) {
-                                AsyncDrawableScheduler.unschedule(textView)
-                            }
-
-                            override fun afterSetText(textView: TextView) {
-                                AsyncDrawableScheduler.schedule(textView)
-                            }
-                        }
-                ))
-                .build()
-    }
+    val markwon by inject<Markwon>()
 
     /**
      * Optionally included when constructing custom views

@@ -53,9 +53,9 @@ class WidgetPresenter<T>(
             return String.format(Locale.getDefault(), " %d ", count)
         }
 
-        fun valueFormatter(size: Int): String {
-            return if (size != 0) {
-                if (size > 1000) String.format(
+        fun valueFormatter(size: Int?): String {
+            return if (size != null || size != 0) {
+                if (size!! > 1000) String.format(
                     Locale.getDefault(),
                     "%.1f K",
                     size.toFloat() / 1000

@@ -19,8 +19,15 @@ import io.noties.markwon.image.AsyncDrawable
 import io.noties.markwon.image.glide.GlideImagesPlugin
 import io.noties.markwon.linkify.LinkifyPlugin
 import com.mxt.anitrend.analytics.contract.ISupportAnalytics
+import com.mxt.anitrend.extension.widgetPresenterFactory
+import com.mxt.anitrend.model.entity.anilist.Favourite
+import com.mxt.anitrend.model.entity.base.UserBase
+import com.mxt.anitrend.model.entity.container.body.ConnectionContainer
+import com.mxt.anitrend.model.entity.container.body.PageContainer
+import com.mxt.anitrend.presenter.widget.WidgetPresenter
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 
@@ -44,8 +51,7 @@ val appModules = module {
                             RoundedCorners(androidApplication().resources.getDimensionPixelSize(R.dimen.md_margin))
                         )
                 }
-            }))
-            .build()
+            })).build()
     }
 
     single<ISupportAnalytics> {
@@ -79,4 +85,18 @@ val appPresentersModules = module {
             context = androidApplication(),
             applicationPref = get())
     }
+
+    widgetPresenterFactory {
+        WidgetPresenter<PageContainer<UserBase>>(
+            context = androidApplication(),
+            applicationPref = get()
+        )
+    } bind WidgetPresenter::class
+
+    widgetPresenterFactory {
+        WidgetPresenter<ConnectionContainer<Favourite>>(
+            context = androidApplication(),
+            applicationPref = get()
+        )
+    } bind WidgetPresenter::class
 }
